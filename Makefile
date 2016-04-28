@@ -162,42 +162,25 @@ ifneq ($(wildcard ./libft),)
 endif
 endif
 
-
-#################
-##    SDL      ##
-#################
-
-SDLDIR = SDL2/INSTALL.txt
-SDLLIB = SDL2/build/libSDL2main.a
-
-$(SDLDIR):
-	git submodule init
-	git submodule update
-
-$(SDLLIB): $(SDLDIR)
-	cd SDL2 && ./configure && make
-
-#################
-##    SFML     ##
-#################
-
-SFMLDIR = SFML/CONTRIBUTING
-SFMLLIB = SFML/build/libSFFM.a #CHANGE THIS
-
-$(SFMLDIR):
-	git submodule init
-	git submodule update
-
-$(SFMLLIB):
-	cd SFML && mkdir build && cd build && cmake .. && make
-
 #################
 ##  TARGETS    ##
 #################
 
-#	First target
-all: $(NAME) $(SDLLIB)
+SDLLIB = SDL2/build/libSDL2main.a
+SFMLLIB = SFML/build/libSFFM.a #CHANGE THIS
 
+#	First target
+all: $(NAME) $(SDLLIB) $(SFMLLIB)
+
+pull_submodules:
+	@git submodule init
+	@git submodule update
+
+$(SDLLIB): $(SDLDIR)
+	cd SDL2 && ./configure && make
+
+$(SFMLLIB):
+	cd SFML && mkdir -p build && cd build && cmake .. && make
 
 #	Linking
 $(NAME): $(OBJ)
