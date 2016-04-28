@@ -177,6 +177,19 @@ $(SDLDIR):
 $(SDLLIB): $(SDLDIR)
 	cd SDL2 && ./configure && make
 
+#################
+##    SFML     ##
+#################
+
+SFMLDIR = SFML/CONTRIBUTING
+SFMLLIB = SFML/build/libSFFM.a #CHANGE THIS
+
+$(SFMLDIR):
+	git submodule init
+	git submodule update
+
+$(SFMLLIB):
+	cd SFML && mkdir build && cd build && cmake .. && make
 
 #################
 ##  TARGETS    ##
