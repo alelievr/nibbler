@@ -6,7 +6,7 @@
 #    By: alelievr <marvin@42.fr>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2014/07/15 15:13:38 by alelievr          #+#    #+#              #
-#    Updated: 2016/03/31 22:21:17 by alelievr         ###   ########.fr        #
+#    Updated: 2016/04/28 21:36:54 by fdaudre-         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -15,8 +15,10 @@
 #################
 
 #	Sources
-SRCDIR		=	src
-SRC			=	main.c			\
+SRCDIR		=	sources
+SRC			=	main.cpp			\
+				Main.class.cpp		\
+				Exception.class.cpp	\
 
 #	Objects
 OBJDIR		=	obj
@@ -32,7 +34,7 @@ CPPVERSION	=	c++11
 #Example $> make DEBUG=2 will set debuglevel to 2
 
 #	Includes
-INCDIRS		=	.
+INCDIRS		=	sources
 
 #	Libraries
 LIBDIRS		=	
@@ -43,7 +45,7 @@ NAME		=	nibbler
 
 #	Compiler
 WERROR		=	-Werror
-CFLAGS		=	-Weverything -pedantic
+CFLAGS		=	-Wall -Wextra -pedantic
 CPROTECTION	=	-z execstack -fno-stack-protector
 
 DEBUGFLAGS1	=	-ggdb -fsanitize=address -fno-omit-frame-pointer -fno-optimize-sibling-calls -O0

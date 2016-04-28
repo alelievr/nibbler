@@ -6,7 +6,7 @@
 /*   By: fdaudre- <fdaudre-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/04/28 19:58:37 by fdaudre-          #+#    #+#             */
-/*   Updated: 2016/04/28 20:42:05 by fdaudre-         ###   ########.fr       */
+/*   Updated: 2016/04/28 21:08:09 by fdaudre-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,8 +51,8 @@ enum class KEY
 
 enum class EVENT
 {
-	LOSE,
-	END
+	GAMEOVER,
+	SWITCH
 };
 
 struct ISlave
@@ -69,5 +69,5 @@ struct ISlave
 	render(Points const & snake, Items const & items, bool pause) const = 0;
 
 	virtual void
-	close(EVENT event);
+	close(EVENT event) = 0;
 };
