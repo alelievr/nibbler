@@ -167,21 +167,23 @@ endif
 ##    SDL      ##
 #################
 
-SDL = SDL2
+SDLDIR = SDL2
+SDLLIB = SDL2/build/libSDL2main.a
 
-$(SDL2):
+$(SDLDIR):
 	git submodule init
 	git submodule update
+
+$(SDLLIB): $(SDLDIR)
 	cd SDL2 && ./configure && make
 
-SDLLIB = SDL2/build/libSDL2main.a
 
 #################
 ##  TARGETS    ##
 #################
 
 #	First target
-all: $(NAME) $(SDL)
+all: $(NAME)# $(SDLLIB)
 
 
 #	Linking

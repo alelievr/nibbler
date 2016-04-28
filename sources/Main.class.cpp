@@ -6,7 +6,7 @@
 /*   By: fdaudre- <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/04/28 21:21:01 by fdaudre-          #+#    #+#             */
-/*   Updated: 2016/04/28 21:38:37 by fdaudre-         ###   ########.fr       */
+/*   Updated: 2016/04/28 21:47:32 by fdaudre-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,4 +31,5 @@ Main::arguments(int argc, char **argv)
 	(void)argc, (void)argv;
 	// handle arguments
 	// throw if error
+	throw Exception(ERROR::BAD_ARGS);
 }
