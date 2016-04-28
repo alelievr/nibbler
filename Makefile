@@ -167,7 +167,7 @@ endif
 ##    SDL      ##
 #################
 
-SDLDIR = SDL2
+SDLDIR = SDL2/INSTALL.txt
 SDLLIB = SDL2/build/libSDL2main.a
 
 $(SDLDIR):
