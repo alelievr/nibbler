@@ -28,6 +28,6 @@
 *.app
 
 nibbler
-SDL2/
+SDL2
 SDL2/*
 *.swp
