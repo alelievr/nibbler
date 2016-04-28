@@ -6,7 +6,7 @@
 /*   By: fdaudre- <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/04/28 21:00:11 by fdaudre-          #+#    #+#             */
-/*   Updated: 2016/04/28 21:37:27 by fdaudre-         ###   ########.fr       */
+/*   Updated: 2016/04/28 21:49:09 by fdaudre-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,11 +17,9 @@
 int
 main(int argc, char **argv)
 {
-	Main		prog(argc, argv);
-
 	try
 	{
-		return prog.run();
+		return Main(argc, argv).run();
 	}
 	catch (Exception const & e)
 	{
