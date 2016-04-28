@@ -167,10 +167,11 @@ endif
 #################
 
 SDLLIB = SDL2/build/libSDL2main.a
+GLFWLIB = GLFW/build/src/libglfw3.a
 SFMLLIB = SFML/build/libSFFM.a #CHANGE THIS
 
 #	First target
-all: $(NAME) $(SDLLIB) $(SFMLLIB)
+all: $(NAME) $(SDLLIB) $(GLFWLIB)# $(SFMLLIB)
 
 pull_submodules:
 	@git submodule init
@@ -181,6 +182,9 @@ $(SDLLIB): $(SDLDIR)
 
 $(SFMLLIB):
 	cd SFML && mkdir -p build && cd build && cmake .. && make
+
+$(GLFWLIB):
+	cd GLFW && mkdir -p build && cd build && cmake .. && make
 
 #	Linking
 $(NAME): $(OBJ)
