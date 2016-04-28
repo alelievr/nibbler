@@ -6,7 +6,7 @@
 /*   By: fdaudre- <fdaudre-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/04/28 19:58:37 by fdaudre-          #+#    #+#             */
-/*   Updated: 2016/04/28 20:34:39 by fdaudre-         ###   ########.fr       */
+/*   Updated: 2016/04/28 20:42:05 by fdaudre-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@ struct Point
 {
 	std::size_t		x;
 	std::size_t		y;
-}
+};
 
 struct Item
 {
@@ -27,10 +27,10 @@ struct Item
 	{
 		FOOD,
 		POOP
-	}
+	};
 	Point			coo;
 	TYPE			type;
-}
+};
 
 typedef std::queue<Point>	Points;
 typedef std::deque<Item>	Items;
@@ -47,13 +47,13 @@ enum class KEY
 	TWO,
 	THREE,
 	ESCAPE
-}
+};
 
 enum class EVENT
 {
 	LOSE,
 	END
-}
+};
 
 struct ISlave
 {
@@ -70,4 +70,4 @@ struct ISlave
 
 	virtual void
 	close(EVENT event);
-}
+};
