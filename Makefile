@@ -160,12 +160,27 @@ ifneq ($(wildcard ./libft),)
 endif
 endif
 
+
+#################
+##    SDL      ##
+#################
+
+SDL = SDL2
+
+$(SDL2):
+	git submodule init
+	git submodule update
+	cd SDL2 && ./configure && make
+
+SDLLIB = SDL2/build/libSDL2main.a
+
 #################
 ##  TARGETS    ##
 #################
 
 #	First target
-all: $(NAME)
+all: $(NAME) $(SDL)
+
 
 #	Linking
 $(NAME): $(OBJ)
