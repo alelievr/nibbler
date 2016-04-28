@@ -15,7 +15,7 @@
 #################
 
 #	Sources
-SRCDIR		=	src
+SRCDIR		=	sources
 SRC			=	main.c			\
 
 #	Objects
