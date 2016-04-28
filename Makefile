@@ -183,7 +183,7 @@ $(SDLLIB): $(SDLDIR)
 #################
 
 #	First target
-all: $(NAME)# $(SDLLIB)
+all: $(NAME) $(SDLLIB)
 
 
 #	Linking
