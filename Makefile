@@ -5,8 +5,8 @@
 #                                                     +:+ +:+         +:+      #
 #    By: alelievr <marvin@42.fr>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
-#    Created: 2014/07/15 15:13:38 by alelievr          #+#    #+#              #
-#    Updated: 2016/04/28 21:40:46 by fdaudre-         ###   ########.fr        #
+#    Created  2014/07/15 15:13:38 by alelievr          #+#    #+#              #
+#    Updated  2016/04/29 15:41:39 by alelievr         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -49,7 +49,7 @@ CFLAGS		=	-Wall -Wextra -pedantic
 CPROTECTION	=	-z execstack -fno-stack-protector
 
 DEBUGFLAGS1	=	-ggdb -fsanitize=address -fno-omit-frame-pointer -fno-optimize-sibling-calls -O0
-DEBUGFLAGS2	=	-fsanitize-memory-track-origins=2
+DEBUGFLAGS2	=	#-fsanitize-memory-track-origins=2
 OPTFLAGS1	=	-funroll-loops -O2
 OPTFLAGS2	=	-pipe -funroll-loops -Ofast
 
@@ -89,8 +89,10 @@ OPTFLAGS	=	""
 ifeq "$(OS)" "Windows_NT"
 endif
 ifeq "$(OS)" "Linux"
-	LDLIBS		+= ""
-	DEBUGFLAGS	+= " -fsanitize=memory -fsanitize-memory-use-after-dtor -fsanitize=thread"
+	LDLIBS		+=
+ifneq ($(filter clang,$(CC) $(CXX)),)
+	DEBUGFLAGS	+= " "-fsanitize=memory -fsanitize=thread
+endif
 endif
 ifeq "$(OS)" "Darwin"
 endif
@@ -123,13 +125,13 @@ color_exec_t=	$(call disp_indent); \
 ifneq ($(filter 1,$(strip $(DEBUGLEVEL)) ${DEBUG}),)
 	OPTLEVEL = 0
 	OPTI = 0
-	DEBUGFLAGS += $(DEBUGFLAGS1)
+	DEBUGFLAGS = $(DEBUGFLAGS1)
 endif
 ifneq ($(filter 2,$(strip $(DEBUGLEVEL)) ${DEBUG}),)
 	OPTLEVEL = 0
 	OPTI = 0
-	DEBUGFLAGS += $(DEBUGFLAGS1)
-	LINKDEBUG += $(DEBUGFLAGS1) $(DEBUGFLAGS2)
+	DEBUGFLAGS = $(DEBUGFLAGS1)
+	LINKDEBUG = $(DEBUGFLAGS1) $(DEBUGFLAGS2)
 	export ASAN_OPTIONS=check_initialization_order=1
 endif
 
@@ -177,27 +179,26 @@ pull_submodules:
 	@git submodule init
 	@git submodule update
 
-$(SDLLIB): $(SDLDIR)
-	cd SDL2 && ./configure && make ;cd ../..
+$(SDLLIB): pull_submodules
+	cd SDL2 && ./configure && make
 
-$(SFMLLIB):
-	cd SFML && mkdir -p build && cd build && cmake .. && make ;cd../..
+$(SFMLLIB): pull_submodules
+	cd SFML && mkdir -p build && cd build && cmake .. && make
 
-$(GLFWLIB):
-	cd GLFW && mkdir -p build && cd build && cmake .. && make ;cd../..
+$(GLFWLIB): pull_submodules
+	cd GLFW && mkdir -p build && cd build && cmake .. && make
 
 #	Linking
 $(NAME): $(OBJ)
 	@$(if $(findstring lft,$(LDLIBS)),$(call color_exec_t,$(CCLEAR),$(CCLEAR),\
 		make -j 4 -C libft))
 	@$(call color_exec,$(CLINK_T),$(CLINK),"Link of $(NAME):",\
-		$(LINKER) $(WERROR) $(CFLAGS) $(LDFLAGS) $(LDLIBS) $(OPTFLAGS) $(DEBUGFLAGS) $(LINKDEBUG) $(VFRAME) -o $@ $^)
+		$(LINKER) $(WERROR) $(CFLAGS) $(LDFLAGS) $(LDLIBS) $(OPTFLAGS)$(DEBUGFLAGS)$(LINKDEBUG) $(VFRAME) -o $@ $(strip $^))
 
 $(OBJDIR)/%.o: %.cpp $(INCFILES)
 	@mkdir -p $(OBJDIR)
-	ls $<
 	@$(call color_exec,$(COBJ_T),$(COBJ),"Object: $@",\
-		$(CXX) -std=$(CPPVERSION) $(WERROR) $(CFLAGS) $(OPTFLAGS) $(DEBUGFLAGS) $(CPPFLAGS) -o $@ -c $<)
+		$(CXX) -std=$(CPPVERSION) $(WERROR) $(CFLAGS) $(OPTFLAGS)$(DEBUGFLAGS) $(CPPFLAGS) -o $@ -c $(strip $<))
 
 #	Objects compilation
 $(OBJDIR)/%.o: %.c $(INCFILES)
