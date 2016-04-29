@@ -21,7 +21,7 @@ main(int argc, char **argv)
 	{
 		return Main(argc, argv).run();
 	}
-	catch (Exception const & e)
+	catch (std::exception const & e)
 	{
 		std::cout << "Exception: " << e.what() << "\n";
 		return -1;
