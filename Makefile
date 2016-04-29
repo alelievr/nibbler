@@ -143,7 +143,7 @@ ifneq ($(filter 2,$(strip $(OPTLEVEL)) ${OPTI}),)
 endif
 
 ifndef $(CXX)
-	CXX = clang++
+	CXX = c++
 endif
 
 ifneq ($(filter %.cpp,$(SRC)),)
@@ -178,13 +178,13 @@ pull_submodules:
 	@git submodule update
 
 $(SDLLIB): $(SDLDIR)
-	cd SDL2 && ./configure && make
+	cd SDL2 && ./configure && make ;cd ../..
 
 $(SFMLLIB):
-	cd SFML && mkdir -p build && cd build && cmake .. && make
+	cd SFML && mkdir -p build && cd build && cmake .. && make ;cd../..
 
 $(GLFWLIB):
-	cd GLFW && mkdir -p build && cd build && cmake .. && make
+	cd GLFW && mkdir -p build && cd build && cmake .. && make ;cd../..
 
 #	Linking
 $(NAME): $(OBJ)
@@ -195,6 +195,7 @@ $(NAME): $(OBJ)
 
 $(OBJDIR)/%.o: %.cpp $(INCFILES)
 	@mkdir -p $(OBJDIR)
+	ls $<
 	@$(call color_exec,$(COBJ_T),$(COBJ),"Object: $@",\
 		$(CXX) -std=$(CPPVERSION) $(WERROR) $(CFLAGS) $(OPTFLAGS) $(DEBUGFLAGS) $(CPPFLAGS) -o $@ -c $<)
 
