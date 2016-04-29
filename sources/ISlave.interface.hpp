@@ -6,7 +6,7 @@
 /*   By: fdaudre- <fdaudre-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/04/28 19:58:37 by fdaudre-          #+#    #+#             */
-/*   Updated: 2016/04/28 21:08:09 by fdaudre-         ###   ########.fr       */
+/*   Updated: 2016/04/29 22:02:12 by alelievr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,3 +71,6 @@ struct ISlave
 	virtual void
 	close(EVENT event) = 0;
 };
+
+typedef ISlave	*(*createGUI_f)(void);
+typedef void	(*deleteGUI_f)(ISlave *);

@@ -20,6 +20,12 @@ SRC			=	main.cpp			\
 				Main.class.cpp		\
 				Exception.class.cpp	\
 
+GLFWLIB_SRC	=	GUI/GLFW_gui.class.cpp	\
+
+SDLLIB_SRC	=	
+
+SFMLLIB_SRC	=	
+
 #	Objects
 OBJDIR		=	obj
 
@@ -53,8 +59,11 @@ DEBUGFLAGS2	=	#-fsanitize-memory-track-origins=2
 OPTFLAGS1	=	-funroll-loops -O2
 OPTFLAGS2	=	-pipe -funroll-loops -Ofast
 
+#	Shared
+SHAREDLIB_FLAGS = 	-shared -fPIC
+
 #	Framework
-FRAMEWORK	=	
+FRAMEWORK	=	Cocoa OpenGL IOKit CoreVideo Carbon
 
 #################
 ##  COLORS     ##
@@ -106,8 +115,14 @@ OBJS		=	$(patsubst %.c,%.o, $(filter %.c, $(SRC))) \
 				$(patsubst %.cpp,%.o, $(filter %.cpp, $(SRC))) \
 				$(patsubst %.s,%.o, $(filter %.s, $(SRC)))
 OBJ			=	$(addprefix $(OBJDIR)/,$(notdir $(OBJS)))
+GLFWLIB_OBJ	=	$(addprefix $(OBJDIR)/,$(notdir $(GLFWLIB_SRC:.cpp=.o)))
+SDLLIB_OBJ	=	$(addprefix $(OBJDIR)/,$(notdir $(SDLLIB_SRC:.cpp=.o)))
+SFMLLIB_OBJ	=	$(addprefix $(OBJDIR)/,$(notdir $(SFMLLIB_SRC:.cpp=.o)))
 NORME		=	**/*.[ch]
 VPATH		+=	$(dir $(addprefix $(SRCDIR)/,$(SRC)))
+VPATH		+=	$(dir $(addprefix $(SRCDIR)/,$(GLFWLIB_SRC)))
+VPATH		+=	$(dir $(addprefix $(SRCDIR)/,$(SDLLIB_SRC)))
+VPATH		+=	$(dir $(addprefix $(SRCDIR)/,$(SFMLLIB_SRC)))
 VFRAME		=	$(addprefix -framework ,$(FRAMEWORK))
 INCFILES	=	$(foreach inc, $(INCDIRS), $(wildcard $(inc)/*.h))
 CPPFLAGS	=	$(addprefix -I,$(INCDIRS))
@@ -169,14 +184,22 @@ endif
 #################
 
 SDLLIB = SDL2/build/libSDL2main.a
+SDLINCDIR = SDL2/include
 SDLDIR_CHECK = SDL2/INSTALL.txt
-GLFWLIB = GLFW/build/src/libglfw3.a
+SDL_NIBBLER_LIB = SDLnibbler.so
+GLFWLIB = GLFW/src/libglfw3.a
 GLFWDIR_CHECK = GLFW/README.md
+GLFWINCDIR = GLFW/include
+GLFW_NIBBLER_LIB = GLFWnibbler.so
 SFMLLIB = SFML/build/libSFFM.a #CHANGE THIS
 SFMLDIR_CHECK = SFML/readme.txt
+SFMLINCDIR = SFML/include
+SFML_NIBBLER_LIB = SFMLnibbler.so
+
+CPPFLAGS += -I$(GLFWINCDIR) -I$(SDLINCDIR) -I$(SFMLINCDIR)
 
 #	First target
-all: $(NAME) $(SDLLIB) $(GLFWLIB)# $(SFMLLIB)
+all: $(NAME) $(SDLLIB) $(GLFWLIB) $(GLFW_NIBBLER_LIB) # $(SFMLLIB)
 
 $(SDLDIR_CHECK):
 	@git submodule init
@@ -197,14 +220,18 @@ $(SFMLLIB): $(SFMLDIR_CHECK)
 	cd SFML && mkdir -p build && cd build && cmake .. && make
 
 $(GLFWLIB): $(GLFWDIR_CHECK)
-	cd GLFW && mkdir -p build && cd build && cmake .. && make
+	cd GLFW && cmake . && make
+
+$(GLFW_NIBBLER_LIB): $(GLFWLIB_OBJ)
+	@$(call color_exec,$(CLINK_T),$(CLINK),"Link of $(GLFW_NIBBLER_LIB):",\
+		$(LINKER) $(SHAREDLIB_FLAGS) $(GLFWLIB) $(OPTFLAGS)$(DEBUGFLAGS) $(VFRAME) -o $@ $(strip $^))
 
 #	Linking
 $(NAME): $(OBJ)
 	@$(if $(findstring lft,$(LDLIBS)),$(call color_exec_t,$(CCLEAR),$(CCLEAR),\
 		make -j 4 -C libft))
 	@$(call color_exec,$(CLINK_T),$(CLINK),"Link of $(NAME):",\
-		$(LINKER) $(WERROR) $(CFLAGS) $(LDFLAGS) $(LDLIBS) $(OPTFLAGS)$(DEBUGFLAGS)$(LINKDEBUG) $(VFRAME) -o $@ $(strip $^))
+		$(LINKER) $(LDFLAGS) $(LDLIBS) $(OPTFLAGS)$(DEBUGFLAGS)$(LINKDEBUG) -o $@ $(strip $^))
 
 $(OBJDIR)/%.o: %.cpp $(INCFILES)
 	@mkdir -p $(OBJDIR)
@@ -225,17 +252,24 @@ $(OBJDIR)/%.o: %.s
 #	Removing objects
 clean:
 	@$(call color_exec,$(CCLEAN_T),$(CCLEAN),"Clean:",\
-		$(RM) $(OBJ))
+		$(RM) -f $(OBJ))
 	@rm -rf $(OBJDIR)
+	@rm -rf GUI
 
 #	Removing objects and exe
 fclean: clean
 	@$(call color_exec,$(CCLEAN_T),$(CCLEAN),"Fclean:",\
-		$(RM) $(NAME))
+		$(RM) -f $(NAME))
 
 #	All removing then compiling
 re: fclean all
 
+cleanall: fclean
+	@$(call color_exec,$(CCLEAN_T),$(CCLEAN),"Fclean:",\
+		$(RM) -f $(GLFWLIB) $(SDLLIB) $(SFMLLIB))
+
+reall: cleanall all
+ 
 f:	all run
 
 #	Checking norme
