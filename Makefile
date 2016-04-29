@@ -169,23 +169,34 @@ endif
 #################
 
 SDLLIB = SDL2/build/libSDL2main.a
+SDLDIR_CHECK = SDL2/INSTALL.txt
 GLFWLIB = GLFW/build/src/libglfw3.a
+GLFWDIR_CHECK = GLFW/README.md
 SFMLLIB = SFML/build/libSFFM.a #CHANGE THIS
+SFMLDIR_CHECK = SFML/readme.txt
 
 #	First target
 all: $(NAME) $(SDLLIB) $(GLFWLIB)# $(SFMLLIB)
 
-pull_submodules:
+$(SDLDIR_CHECK):
 	@git submodule init
 	@git submodule update
 
-$(SDLLIB): pull_submodules
+$(GLFWDIR_CHECK):
+	@git submodule init
+	@git submodule update
+
+$(SFMLDIR_CHECK):
+	@git submodule init
+	@git submodule update
+
+$(SDLLIB): $(SDLDIR_CHECK)
 	cd SDL2 && ./configure && make
 
-$(SFMLLIB): pull_submodules
+$(SFMLLIB): $(SFMLDIR_CHECK)
 	cd SFML && mkdir -p build && cd build && cmake .. && make
 
-$(GLFWLIB): pull_submodules
+$(GLFWLIB): $(GLFWDIR_CHECK)
 	cd GLFW && mkdir -p build && cd build && cmake .. && make
 
 #	Linking
