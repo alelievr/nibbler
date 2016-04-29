@@ -33,9 +33,7 @@ class Main
 		std::vector<std::string>
 		initArgs(int args, char **argv);
 		std::size_t
-		initWidth(void);
-		std::size_t
-		initHeight(void);
+		getDim(std::size_t idx, std::size_t min, std::size_t max);
 
 		std::vector<std::string>	_args;
 
