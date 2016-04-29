@@ -15,6 +15,9 @@
 #include "Exception.class.hpp"
 #include "ISlave.interface.hpp"
 
+#include <vector>
+#include <string>
+
 class Main
 {
 	public:
@@ -27,10 +30,14 @@ class Main
 		run(void);
 
 	private:
-		void
-		arguments(int argc, char **argv);
+		std::vector<std::string>
+		initArgs(int args, char **argv);
+		std::size_t
+		getDim(std::size_t idx, std::size_t min, std::size_t max);
 
-		std::size_t		_width;
-		std::size_t		_height;
+		std::vector<std::string>	_args;
+
+		std::size_t	const			_width;
+		std::size_t	const			_height;
 };
 

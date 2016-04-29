@@ -145,7 +145,7 @@ ifneq ($(filter 2,$(strip $(OPTLEVEL)) ${OPTI}),)
 endif
 
 ifndef $(CXX)
-	CXX = g++
+	CXX = c++
 endif
 
 ifneq ($(filter %.cpp,$(SRC)),)
