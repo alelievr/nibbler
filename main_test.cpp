@@ -6,7 +6,7 @@
 /*   By: alelievr <alelievr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/04/29 17:22:36 by alelievr          #+#    #+#             */
-/*   Updated: 2016/04/30 01:23:41 by alelievr         ###   ########.fr       */
+/*   Updated: 2016/05/02 16:14:09 by alelievr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,11 +36,13 @@ int			main(void)
 		exit(printf("%s\n", dlerror()));
 	
 	gui = cgui();
-	gui->open(500, 500, "olol");
+	gui->open(500, 500, 8, "olol");
 	while (42)
 	{
 		gui->render(snake, items, false);
 		gui->getEvent(ev);
+		if (ev == KEY::ESCAPE)
+			exit(0);
 		usleep(1000);
 	}
 	dgui(gui);

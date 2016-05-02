@@ -6,7 +6,7 @@
 /*   By: alelievr <alelievr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/04/29 22:09:48 by alelievr          #+#    #+#             */
-/*   Updated: 2016/04/30 01:45:10 by alelievr         ###   ########.fr       */
+/*   Updated: 2016/05/02 16:14:37 by alelievr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,13 +15,16 @@
 #include <map>
 
 int GLFW_gui::pressedKey = 0;
-std::map<int, char > keyMap = {
-	{GLFW_KEY_UP, 0},
-	{GLFW_KEY_DOWN, 1},
-	{GLFW_KEY_LEFT, 2},
-	{GLFW_KEY_RIGHT, 3},
-	{GLFW_KEY_P, 4},
-	{GLFW_KEY_ESCAPE, 5},
+std::map<int, std::pair< char, KEY > > keyMap = {
+	{GLFW_KEY_UP, {0, KEY::UP}},
+	{GLFW_KEY_DOWN, {1, KEY::DOWN}},
+	{GLFW_KEY_LEFT, {2, KEY::LEFT}},
+	{GLFW_KEY_RIGHT, {3, KEY::RIGHT}},
+	{GLFW_KEY_P, {4, KEY::PAUSE}},
+	{GLFW_KEY_ESCAPE, {5, KEY::ESCAPE}},
+	{GLFW_KEY_0, {6, KEY::ONE}},
+	{GLFW_KEY_1, {7, KEY::TWO}},
+	{GLFW_KEY_2, {8, KEY::THREE}},
 };
  
 static void error_callback(int error, const char* description)
@@ -35,9 +38,9 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
 	if (keyMap.count(key))
 	{
 		if (action == 1)
-			GLFW_gui::pressedKey |= 1 << keyMap[key];
+			GLFW_gui::pressedKey |= 1 << keyMap[key].first;
 		else if (action == 0)
-			GLFW_gui::pressedKey &= ~(1 << keyMap[key]);
+			GLFW_gui::pressedKey &= ~(1 << keyMap[key].first);
 	}
 	std::cout << GLFW_gui::pressedKey << std::endl;
 	(void)scancode;
@@ -47,16 +50,8 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
 
 GLFW_gui::GLFW_gui(void)
 {
-	if (!init)
-	{
-		glfwSetErrorCallback(error_callback);
-		if (!glfwInit())
-			this->init = false;
-		else
-			this->init = true;
-	}
+	glfwSetErrorCallback(error_callback);
 	this->win = NULL;
-	std::cout << "Default constructor of GLFW_gui called" << std::endl;
 }
 
 GLFW_gui::GLFW_gui(GLFW_gui const & src)
@@ -81,25 +76,35 @@ GLFW_gui &	GLFW_gui::operator=(GLFW_gui const & src)
 }
 
 
-bool	GLFW_gui::open(std::size_t width, std::size_t height, std::string && name)
+bool	GLFW_gui::open(std::size_t width, std::size_t height, std::size_t mapSize, std::string && name)
 {
-	if (!init)
-		return (false);
-	if (!(this->win = glfwCreateWindow(width, height, name.c_str(), NULL, NULL)))
-		return (false);
+	// Initialise GLFW
+	if(!glfwInit()) {
+		return false;
+		init = true;
+	}
+
+	glfwWindowHint(GLFW_SAMPLES, 4);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 2);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
+
 	this->width = width;
 	this->height = height;
+	this->mapSize = mapSize;
+	if (!(this->win = glfwCreateWindow(width, height, name.c_str(), NULL, NULL))) {
+		glfwTerminate();
+		return false;
+	}
 	glfwMakeContextCurrent(this->win);
-	glfwSwapInterval(1);
 	glfwSetKeyCallback(this->win, key_callback);
-	(void)width;
-	(void)height;
-	(void)name;
 	return (true);
 }
 
 void	GLFW_gui::getEvent(KEY & key) const
 {
+	for (auto & m : keyMap)
+		if (this->pressedKey & (1 << m.second.first))
+			key = m.second.second;
 	(void)key;
 }
 
@@ -110,7 +115,8 @@ void	GLFW_gui::render(Points const & snake, Items const & items, bool pause) con
 	ratio = this->width / (float)this->height;
 	glViewport(0, 0, this->width, this->height);
 	glClear(GL_COLOR_BUFFER_BIT);
-	glMatrixMode(GL_PROJECTION);
+
+/*	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 	glOrtho(-ratio, ratio, -1.f, 1.f, 1.f, -1.f);
 	glMatrixMode(GL_MODELVIEW);
@@ -123,7 +129,8 @@ void	GLFW_gui::render(Points const & snake, Items const & items, bool pause) con
 	glVertex3f(0.6f, -0.4f, 0.f);
 	glColor3f(0.f, 0.f, 1.f);
 	glVertex3f(0.f, 0.6f, 0.f);
-	glEnd();
+	glEnd();*/
+
 	glfwSwapBuffers(this->win);
 	glfwPollEvents();
 	(void)pause;

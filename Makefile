@@ -196,10 +196,13 @@ SFMLDIR_CHECK = SFML/readme.txt
 SFMLINCDIR = SFML/include
 SFML_NIBBLER_LIB = SFMLnibbler.so
 
+SOILLIB = SOIL/lib/libSOIL.a
+SOILDIR_CHECK = SOIL/README.md
+
 CPPFLAGS += -I$(GLFWINCDIR) -I$(SDLINCDIR) -I$(SFMLINCDIR)
 
 #	First target
-all: $(NAME) $(SDLLIB) $(GLFWLIB) $(GLFW_NIBBLER_LIB) # $(SFMLLIB)
+all: $(NAME) $(SDLLIB) $(GLFWLIB) $(GLFW_NIBBLER_LIB) $(SOILLIB) # $(SFMLLIB)
 
 $(SDLDIR_CHECK):
 	@git submodule init
@@ -221,6 +224,9 @@ $(SFMLLIB): $(SFMLDIR_CHECK)
 
 $(GLFWLIB): $(GLFWDIR_CHECK)
 	cd GLFW && cmake . && make
+
+$(SOILLIB): $(SOILDIR_CHECK)
+	cd SOIL && make
 
 $(GLFW_NIBBLER_LIB): $(GLFWLIB_OBJ)
 	@$(call color_exec,$(CLINK_T),$(CLINK),"Link of $(GLFW_NIBBLER_LIB):",\
