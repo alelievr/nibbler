@@ -6,7 +6,7 @@
 /*   By: alelievr <alelievr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/04/29 22:09:48 by alelievr          #+#    #+#             */
-/*   Updated: 2016/05/03 16:42:18 by alelievr         ###   ########.fr       */
+/*   Updated: 2016/05/03 17:33:59 by alelievr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,22 +77,20 @@ GLFW_gui &	GLFW_gui::operator=(GLFW_gui const & src)
 
 bool	GLFW_gui::loadItemTextures(void)
 {
-	GLuint	foodTex = -1;
-//	GLuint	poopTex = -1;
+	GLuint	foodTex = 0;
 
-/*	foodTex = SOIL_load_OGL_texture (
-		 "sprites/pizza.png",
-		 SOIL_LOAD_AUTO,
-		 SOIL_CREATE_NEW_ID,
-		 SOIL_FLAG_MIPMAPS | SOIL_FLAG_INVERT_Y | SOIL_FLAG_NTSC_SAFE_RGB
-		 );*/
+	foodTex = SOIL_load_OGL_texture (
+		 	"./sprites/pizza.png",
+		 	SOIL_LOAD_AUTO,
+		 	SOIL_CREATE_NEW_ID,
+		 	SOIL_FLAG_MIPMAPS | SOIL_FLAG_INVERT_Y | SOIL_FLAG_NTSC_SAFE_RGB | SOIL_FLAG_COMPRESS_TO_DXT
+		 	);
 
-	if (foodTex == 0)
+	if (foodTex == 0 || (int)foodTex == -1)
 		return (false);
 
 	this->texMap.insert(std::pair< Item::TYPE, GLuint >(Item::TYPE::FOOD, foodTex));
 	return (true);
-	(void)foodTex;
 }
 
 bool	GLFW_gui::open(std::size_t width, std::size_t height, std::string && name)
@@ -102,9 +100,6 @@ bool	GLFW_gui::open(std::size_t width, std::size_t height, std::string && name)
 		return false;
 		init = true;
 	}
-
-	if (!loadItemTextures())
-		return (false);
 
 	glfwWindowHint(GLFW_SAMPLES, 4);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 2);
@@ -120,6 +115,9 @@ bool	GLFW_gui::open(std::size_t width, std::size_t height, std::string && name)
 	}
 	glfwMakeContextCurrent(this->win);
 	glfwSetKeyCallback(this->win, key_callback);
+
+	if (!loadItemTextures())
+		return (false);
 	return (true);
 }
 
@@ -140,7 +138,6 @@ void	GLFW_gui::drawRect(Point const & p, const unsigned int color) const
 		return ;
 	getCasesBounds(p, bx1, by1, bx2, by2);
 
-	std::cout << bx1 << by1 << bx2 << by2 << std::endl;
    	glBegin(GL_QUADS);
 		glColor1u(color);
     	glVertex2f(-1 + bx1, 1 - by1);
@@ -168,14 +165,13 @@ void	GLFW_gui::drawItem(Item const & i) const
 		return ;
 	getCasesBounds(i.coo, bx1, by1, bx2, by2);
 
+	glBindTexture(GL_TEXTURE_2D, this->texMap.at(i.type));
+
    	glBegin(GL_QUADS);
-		glBindTexture(GL_TEXTURE_2D, this->texMap.at(i.type));
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    	glVertex2f(-1 + bx1, 1 - by1);
-    	glVertex2f(-1 + bx2, 1 - by1);
-    	glVertex2f(-1 + bx2, 1 - by2);
-    	glVertex2f(-1 + bx1, 1 - by2);
+    	glTexCoord2f(0, 0); glVertex2f(-1 + bx1, 1 - by1);
+    	glTexCoord2f(0, 1); glVertex2f(-1 + bx2, 1 - by1);
+    	glTexCoord2f(1, 1); glVertex2f(-1 + bx2, 1 - by2);
+    	glTexCoord2f(1, 0); glVertex2f(-1 + bx1, 1 - by2);
    	glEnd();
 }
 
@@ -197,8 +193,11 @@ void	GLFW_gui::render(Points const & snake, Items const & items, bool pause) con
 	for (auto & s : snake)
 		drawRect(s, 0xFF00FF);
 
+	glDisable(GL_LIGHTING);
+	glEnable(GL_TEXTURE_2D);
 	for (auto & i : items)
 		drawItem(i);
+	glDisable(GL_TEXTURE_2D);
 
    	glFlush();
 
