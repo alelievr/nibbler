@@ -272,7 +272,7 @@ clean:
 #	Removing objects and exe
 fclean: clean
 	@$(call color_exec,$(CCLEAN_T),$(CCLEAN),"Fclean:",\
-		$(RM) -f $(NAME))
+		$(RM) -f $(NAME) $(GLFW_NIBBLER_LIB) $(SDL_NIBBLER_LIB) $(SFML_NIBBLER_LIB))
 
 #	All removing then compiling
 re: fclean all
@@ -298,6 +298,9 @@ codesize:
 
 functions: $(NAME)
 	@nm $(NAME) | grep U
+
+test: all
+	g++ -std=c++11 main_test.cpp -I sources -o test && ./test
 
 coffee:
 	@clear
@@ -400,4 +403,4 @@ coffee:
 	@echo '         ""--..,,_____            _____,,..--"""'''
 	@echo '                      """------"""'
 
-.PHONY: all clean fclean re norme codesize
+.PHONY: all clean fclean re norme codesize test

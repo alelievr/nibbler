@@ -13,9 +13,9 @@ class		GLFW_gui : ISlave
 		bool							init;
 		std::size_t						width;
 		std::size_t						height;
-		std::size_t						mapSize;
 		Point							squareSize;
 		std::map<Item::TYPE, GLuint>	texMap;
+		const Point						winSize = {1000, 1000};
 
 		void drawRect(Point const & p, const unsigned int color) const;
 		void drawItem(Item const & i) const;
@@ -31,7 +31,7 @@ class		GLFW_gui : ISlave
 
 		GLFW_gui &	operator=(GLFW_gui const & src);
 
-		bool open(std::size_t width, std::size_t height, std::size_t mapSize, std::string && name);
+		bool open(std::size_t width, std::size_t height, std::string && name);
 		void getEvent(KEY & key) const;
 		void render(Points const & snake, Items const & items, bool pause) const;
 		void close(EVENT event);
