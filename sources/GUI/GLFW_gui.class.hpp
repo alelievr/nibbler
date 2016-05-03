@@ -5,6 +5,7 @@
 # include <map>
 # include "GLFW/glfw3.h"
 # include "ISlave.interface.hpp"
+# include "constant.h"
 
 class		GLFW_gui : ISlave
 {
@@ -15,7 +16,7 @@ class		GLFW_gui : ISlave
 		std::size_t						height;
 		Point							squareSize;
 		std::map<Item::TYPE, GLuint>	texMap;
-		const Point						winSize = {1000, 1000};
+		const Point						winSize = {WIN_W, WIN_H};
 
 		void drawRect(Point const & p, const unsigned int color) const;
 		void drawItem(Item const & i) const;

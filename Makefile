@@ -24,7 +24,7 @@ SRC			=	main.cpp			\
 
 GLFWLIB_SRC	=	GUI/GLFW_gui.class.cpp	\
 
-SDLLIB_SRC	=	
+SDLLIB_SRC	=	GUI/SDL_gui.class.cpp	\
 
 SFMLLIB_SRC	=	
 
@@ -33,9 +33,9 @@ OBJDIR		=	obj
 
 #	Variables
 LIBFT		=	2	#1 or 0 to include the libft / 2 for autodetct
-DEBUGLEVEL	=	1	#can be 0 for no debug 1 for or 2 for harder debug
+DEBUGLEVEL	=	0	#can be 0 for no debug 1 for or 2 for harder debug
 					#Warrning: non null debuglevel will disable optlevel
-OPTLEVEL	=	0	#same than debuglevel
+OPTLEVEL	=	1	#same than debuglevel
 					#Warrning: non null optlevel will disable debuglevel
 CPPVERSION	=	c++11
 #For simpler and faster use, use commnd line variables DEBUG and OPTI:
@@ -65,7 +65,7 @@ OPTFLAGS2	=	-pipe -funroll-loops -Ofast
 SHAREDLIB_FLAGS = 	-shared -fPIC
 
 #	Framework
-FRAMEWORK	=	Cocoa OpenGL IOKit CoreVideo Carbon
+FRAMEWORK	=	Cocoa OpenGL IOKit CoreVideo Carbon ForceFeedback AudioUnit CoreAudio
 
 #################
 ##  COLORS     ##
@@ -185,7 +185,7 @@ endif
 ##  TARGETS    ##
 #################
 
-SDLLIB = SDL2/build/libSDL2main.a
+SDLLIB = SDL2/build/.libs/libSDL2.a
 SDLINCDIR = SDL2/include
 SDLDIR_CHECK = SDL2/INSTALL.txt
 SDL_NIBBLER_LIB = SDLnibbler.so
@@ -205,7 +205,7 @@ SOILINCDIR = SOIL/src
 CPPFLAGS += -I$(GLFWINCDIR) -I$(SDLINCDIR) -I$(SFMLINCDIR) -I$(SOILINCDIR)
 
 #	First target
-all: $(NAME) $(SDLLIB) $(GLFWLIB) $(SOILLIB) $(GLFW_NIBBLER_LIB) #$(SFMLLIB)
+all: $(NAME) $(SDLLIB) $(GLFWLIB) $(SOILLIB) $(GLFW_NIBBLER_LIB) $(SDL_NIBBLER_LIB) #$(SFMLLIB)
 
 $(SDLDIR_CHECK):
 	@git submodule init
@@ -238,6 +238,10 @@ $(SOILLIB): $(SOILDIR_CHECK)
 $(GLFW_NIBBLER_LIB): $(GLFWLIB_OBJ)
 	@$(call color_exec,$(CLINK_T),$(CLINK),"Link of $(GLFW_NIBBLER_LIB):",\
 		$(LINKER) $(SHAREDLIB_FLAGS) $(GLFWLIB) $(SOILLIB) $(OPTFLAGS)$(DEBUGFLAGS) $(VFRAME) -o $@ $(strip $^))
+
+$(SDL_NIBBLER_LIB): $(SDLLIB_OBJ)
+	@$(call color_exec,$(CLINK_T),$(CLINK),"Link of $(SDL_NIBBLER_LIB):",\
+		$(LINKER) $(SHAREDLIB_FLAGS) $(SDLLIB) -liconv $(SOILLIB) $(OPTFLAGS)$(DEBUGFLAGS) $(VFRAME) -o $@ $(strip $^))
 
 #	Linking
 $(NAME): $(OBJ)
@@ -300,7 +304,7 @@ functions: $(NAME)
 	@nm $(NAME) | grep U
 
 test: all
-	g++ -std=c++11 main_test.cpp -I sources -o test && ./test
+	g++ -std=c++11 main_test.cpp -I sources -o test && ./test $(SDL_NIBBLER_LIB)
 
 coffee:
 	@clear

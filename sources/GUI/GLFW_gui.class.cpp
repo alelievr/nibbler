@@ -6,7 +6,7 @@
 /*   By: alelievr <alelievr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/04/29 22:09:48 by alelievr          #+#    #+#             */
-/*   Updated: 2016/05/03 18:11:29 by alelievr         ###   ########.fr       */
+/*   Updated: 2016/05/03 19:34:50 by alelievr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -96,10 +96,9 @@ bool	GLFW_gui::loadItemTextures(void)
 bool	GLFW_gui::open(std::size_t width, std::size_t height, std::string && name)
 {
 	// Initialise GLFW
-	if(!glfwInit()) {
+	if(!glfwInit())
 		return false;
-		init = true;
-	}
+	init = true;
 
 	glfwWindowHint(GLFW_SAMPLES, 4);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 2);

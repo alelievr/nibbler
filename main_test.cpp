@@ -18,7 +18,7 @@
 #include <queue>
 #include <deque>
 
-int			main(void)
+int			main(__attribute__((unused)) int ac, char **av)
 {
 	void		*handler;
 	createGUI_f	cgui;
@@ -28,7 +28,7 @@ int			main(void)
 	KEY			ev;
 	ISlave		*gui;
 
-	if (!(handler = dlopen("GLFWnibbler.so", RTLD_LAZY | RTLD_LOCAL)))
+	if (!(handler = dlopen(av[1], RTLD_LAZY | RTLD_LOCAL)))
 		exit(printf("%s\n", dlerror()));
 	if (!(cgui = (createGUI_f)dlsym(handler, "createGUI")))
 		exit(printf("%s\n", dlerror()));
