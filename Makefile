@@ -46,7 +46,7 @@ INCDIRS		=	sources
 
 #	Libraries
 LIBDIRS		=	
-LDLIBS		=	
+LDLIBS		=	-ldl
 
 #	Output
 NAME		=	nibbler
