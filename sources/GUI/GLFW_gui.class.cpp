@@ -6,7 +6,7 @@
 /*   By: alelievr <alelievr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/04/29 22:09:48 by alelievr          #+#    #+#             */
-/*   Updated: 2016/05/03 17:50:30 by alelievr         ###   ########.fr       */
+/*   Updated: 2016/05/03 18:11:29 by alelievr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,14 +86,6 @@ bool	GLFW_gui::loadItemTextures(void)
 		 	SOIL_FLAG_MIPMAPS | SOIL_FLAG_INVERT_Y | SOIL_FLAG_NTSC_SAFE_RGB | SOIL_FLAG_COMPRESS_TO_DXT
 		 	);
 
-	glGenTextures(1, &foodTex);
-
-	int width, height;
-	glBindTexture(GL_TEXTURE_2D, foodTex);
-	unsigned char *image = SOIL_load_image("sample.png", &width, &height, 0, SOIL_LOAD_RGB);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, image);
-	SOIL_free_image_data(image);
-
 	if (foodTex == 0 || (int)foodTex == -1)
 		return (false);
 
@@ -149,11 +141,9 @@ void	GLFW_gui::drawRect(Point const & p, const unsigned int color) const
    	glBegin(GL_QUADS);
 		glColor1u(color);
     	glVertex2f(-1 + bx1, 1 - by1);
-		glColor1u(0xFF0000);
     	glVertex2f(-1 + bx2, 1 - by1);
-		glColor1u(0x00FF00);
+		glColor1u(0x9300FF);
     	glVertex2f(-1 + bx2, 1 - by2);
-		glColor1u(0x0000FF);
     	glVertex2f(-1 + bx1, 1 - by2);
    	glEnd();
 }
@@ -173,8 +163,8 @@ void	GLFW_gui::drawItem(Item const & i) const
 		return ;
 	getCasesBounds(i.coo, bx1, by1, bx2, by2);
 
+	glColor3f(1, 1, 1);
 	glBindTexture(GL_TEXTURE_2D, this->texMap.at(i.type));
-
    	glBegin(GL_QUADS);
     	glTexCoord2f(0, 0); glVertex2f(-1 + bx1, 1 - by1);
     	glTexCoord2f(0, 1); glVertex2f(-1 + bx2, 1 - by1);
