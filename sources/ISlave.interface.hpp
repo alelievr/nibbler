@@ -6,7 +6,7 @@
 /*   By: fdaudre- <fdaudre-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/04/28 19:58:37 by fdaudre-          #+#    #+#             */
-/*   Updated: 2016/04/28 21:08:09 by fdaudre-         ###   ########.fr       */
+/*   Updated: 2016/05/03 02:24:28 by alelievr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,7 @@ struct Item
 	TYPE			type;
 };
 
-typedef std::queue<Point>	Points;
+typedef std::deque<Point>	Points;
 typedef std::deque<Item>	Items;
 
 enum class KEY
@@ -60,7 +60,7 @@ struct ISlave
 	virtual ~ISlave(void) {};
 
 	virtual bool
-	open(std::size_t width, std::size_t height, std::string && name) = 0;
+	open(std::size_t width, std::size_t height, std::size_t mapSize, std::string && name) = 0;
 
 	virtual void
 	getEvent(KEY & key) const = 0;
@@ -71,3 +71,6 @@ struct ISlave
 	virtual void
 	close(EVENT event) = 0;
 };
+
+typedef ISlave	*(*createGUI_f)(void);
+typedef void	(*deleteGUI_f)(ISlave *);
