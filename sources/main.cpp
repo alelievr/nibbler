@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "Main.class.hpp"
+#include "Game.class.hpp"
 
 #include <iostream>
 
@@ -19,7 +19,7 @@ main(int argc, char **argv)
 {
 	try
 	{
-		return Main(argc, argv).run();
+		return Game(argc, argv).run();
 	}
 	catch (std::exception const & e)
 	{
