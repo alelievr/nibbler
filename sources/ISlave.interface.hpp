@@ -6,7 +6,7 @@
 /*   By: fdaudre- <fdaudre-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/04/28 19:58:37 by fdaudre-          #+#    #+#             */
-/*   Updated: 2016/05/02 16:10:22 by alelievr         ###   ########.fr       */
+/*   Updated: 2016/05/03 02:24:28 by alelievr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,7 @@ struct Item
 	TYPE			type;
 };
 
-typedef std::queue<Point>	Points;
+typedef std::deque<Point>	Points;
 typedef std::deque<Item>	Items;
 
 enum class KEY

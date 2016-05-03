@@ -6,13 +6,13 @@
 /*   By: alelievr <alelievr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/04/29 22:09:48 by alelievr          #+#    #+#             */
-/*   Updated: 2016/05/02 16:14:37 by alelievr         ###   ########.fr       */
+/*   Updated: 2016/05/03 03:20:55 by alelievr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "GLFW_gui.class.hpp"
 #include <unistd.h>
-#include <map>
+#include "SOIL.h"
 
 int GLFW_gui::pressedKey = 0;
 std::map<int, std::pair< char, KEY > > keyMap = {
@@ -26,7 +26,7 @@ std::map<int, std::pair< char, KEY > > keyMap = {
 	{GLFW_KEY_1, {7, KEY::TWO}},
 	{GLFW_KEY_2, {8, KEY::THREE}},
 };
- 
+
 static void error_callback(int error, const char* description)
 {
 	(void)error;
@@ -75,6 +75,25 @@ GLFW_gui &	GLFW_gui::operator=(GLFW_gui const & src)
 	return (*this);
 }
 
+bool	GLFW_gui::loadItemTextures(void)
+{
+	GLuint	foodTex = -1;
+//	GLuint	poopTex = -1;
+
+/*	foodTex = SOIL_load_OGL_texture (
+		 "sprites/pizza.png",
+		 SOIL_LOAD_AUTO,
+		 SOIL_CREATE_NEW_ID,
+		 SOIL_FLAG_MIPMAPS | SOIL_FLAG_INVERT_Y | SOIL_FLAG_NTSC_SAFE_RGB
+		 );*/
+
+	if (foodTex == 0)
+		return (false);
+
+	this->texMap.insert(std::pair< Item::TYPE, GLuint >(Item::TYPE::FOOD, foodTex));
+	return (true);
+	(void)foodTex;
+}
 
 bool	GLFW_gui::open(std::size_t width, std::size_t height, std::size_t mapSize, std::string && name)
 {
@@ -84,6 +103,9 @@ bool	GLFW_gui::open(std::size_t width, std::size_t height, std::size_t mapSize, 
 		init = true;
 	}
 
+	if (!loadItemTextures())
+		return (false);
+
 	glfwWindowHint(GLFW_SAMPLES, 4);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 2);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
@@ -91,6 +113,8 @@ bool	GLFW_gui::open(std::size_t width, std::size_t height, std::size_t mapSize, 
 	this->width = width;
 	this->height = height;
 	this->mapSize = mapSize;
+	this->squareSize.x = width / mapSize;
+	this->squareSize.y = height / mapSize;
 	if (!(this->win = glfwCreateWindow(width, height, name.c_str(), NULL, NULL))) {
 		glfwTerminate();
 		return false;
@@ -108,6 +132,53 @@ void	GLFW_gui::getEvent(KEY & key) const
 	(void)key;
 }
 
+#define glColor1u(x) glColor3ub((char)(x >> 16), (char)(x >> 8), (char)x)
+void	GLFW_gui::drawRect(Point const & p, const unsigned int color) const
+{
+	float	bx1, bx2, by1, by2;
+
+	if (p.x > this->mapSize || p.y > this->mapSize)
+		return ;
+	getCasesBounds(p, bx1, by1, bx2, by2);
+
+   	glBegin(GL_QUADS);
+		glColor1u(color);
+    	glVertex2f(-1 + bx1, 1 - by1);
+		glColor1u(0xFF0000);
+    	glVertex2f(-1 + bx2, 1 - by1);
+		glColor1u(0x00FF00);
+    	glVertex2f(-1 + bx2, 1 - by2);
+		glColor1u(0x0000FF);
+    	glVertex2f(-1 + bx1, 1 - by2);
+   	glEnd();
+}
+
+void	GLFW_gui::getCasesBounds(Point const & p, float & x1, float & y1, float & x2, float & y2) const {
+	x1 = ((float)this->squareSize.x * p.x / this->width) * 2;
+	y1 = ((float)this->squareSize.y * p.y / this->height) * 2;
+	x2 = ((float)this->squareSize.x * (p.x + 1) / this->width) * 2;
+	y2 = ((float)this->squareSize.y * (p.y + 1) / this->height) * 2;
+}
+
+void	GLFW_gui::drawItem(Item const & i) const
+{
+	float	bx1, bx2, by1, by2;
+
+	if (i.coo.x > this->mapSize || i.coo.y > this->mapSize)
+		return ;
+	getCasesBounds(i.coo, bx1, by1, bx2, by2);
+
+   	glBegin(GL_QUADS);
+		glBindTexture(GL_TEXTURE_2D, this->texMap.at(i.type));
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    	glVertex2f(-1 + bx1, 1 - by1);
+    	glVertex2f(-1 + bx2, 1 - by1);
+    	glVertex2f(-1 + bx2, 1 - by2);
+    	glVertex2f(-1 + bx1, 1 - by2);
+   	glEnd();
+}
+
 void	GLFW_gui::render(Points const & snake, Items const & items, bool pause) const
 {
     float	ratio;
@@ -116,26 +187,24 @@ void	GLFW_gui::render(Points const & snake, Items const & items, bool pause) con
 	glViewport(0, 0, this->width, this->height);
 	glClear(GL_COLOR_BUFFER_BIT);
 
-/*	glMatrixMode(GL_PROJECTION);
+	glViewport(0, 0, this->width, this->height);
+	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-	glOrtho(-ratio, ratio, -1.f, 1.f, 1.f, -1.f);
-	glMatrixMode(GL_MODELVIEW);
-	glLoadIdentity();
-	glRotatef((float) glfwGetTime() * 50.f, 0.f, 0.f, 1.f);
-	glBegin(GL_TRIANGLES);
-	glColor3f(1.f, 0.f, 0.f);
-	glVertex3f(-0.6f, -0.4f, 0.f);
-	glColor3f(0.f, 1.f, 0.f);
-	glVertex3f(0.6f, -0.4f, 0.f);
-	glColor3f(0.f, 0.f, 1.f);
-	glVertex3f(0.f, 0.6f, 0.f);
-	glEnd();*/
+
+	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+   	glClear(GL_COLOR_BUFFER_BIT);
+
+	for (auto & s : snake)
+		drawRect(s, 0xFF00FF);
+
+	for (auto & i : items)
+		drawItem(i);
+
+   	glFlush();
 
 	glfwSwapBuffers(this->win);
 	glfwPollEvents();
 	(void)pause;
-	(void)items;
-	(void)snake;
 }
 
 void	GLFW_gui::close(EVENT event)

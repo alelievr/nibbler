@@ -6,7 +6,7 @@
 /*   By: alelievr <alelievr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/04/29 17:22:36 by alelievr          #+#    #+#             */
-/*   Updated: 2016/05/02 16:14:09 by alelievr         ###   ########.fr       */
+/*   Updated: 2016/05/03 03:14:36 by alelievr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,12 @@ int			main(void)
 		exit(printf("%s\n", dlerror()));
 	
 	gui = cgui();
-	gui->open(500, 500, 8, "olol");
+	if (!gui->open(800, 800, 8, "olol"))
+		exit(printf("an error occured during window opening !\n"));
+	snake.push_front({0, 0});
+	snake.push_front({1, 0});
+	snake.push_front({2, 0});
+	items.push_front({{2, 2}, Item::TYPE::FOOD});
 	while (42)
 	{
 		gui->render(snake, items, false);

@@ -2,17 +2,25 @@
 # define GLFW_GUI_HPP
 # include <iostream>
 # include <string>
+# include <map>
 # include "GLFW/glfw3.h"
 # include "ISlave.interface.hpp"
 
 class		GLFW_gui : ISlave
 {
 	private:
-		GLFWwindow		*win;
-		bool			init;
-		std::size_t		width;
-		std::size_t		height;
-		std::size_t		mapSize;
+		GLFWwindow						*win;
+		bool							init;
+		std::size_t						width;
+		std::size_t						height;
+		std::size_t						mapSize;
+		Point							squareSize;
+		std::map<Item::TYPE, GLuint>	texMap;
+
+		void drawRect(Point const & p, const unsigned int color) const;
+		void drawItem(Item const & i) const;
+		void getCasesBounds(Point const & p, float & x1, float & y1, float & x2, float & y2) const;
+		bool loadItemTextures();
 
 	public:
 		static int		pressedKey;

@@ -198,8 +198,9 @@ SFML_NIBBLER_LIB = SFMLnibbler.so
 
 SOILLIB = SOIL/lib/libSOIL.a
 SOILDIR_CHECK = SOIL/README.md
+SOILINCDIR = SOIL/src
 
-CPPFLAGS += -I$(GLFWINCDIR) -I$(SDLINCDIR) -I$(SFMLINCDIR)
+CPPFLAGS += -I$(GLFWINCDIR) -I$(SDLINCDIR) -I$(SFMLINCDIR) -I$(SOILINCDIR)
 
 #	First target
 all: $(NAME) $(SDLLIB) $(GLFWLIB) $(GLFW_NIBBLER_LIB) $(SOILLIB) # $(SFMLLIB)
@@ -213,6 +214,10 @@ $(GLFWDIR_CHECK):
 	@git submodule update
 
 $(SFMLDIR_CHECK):
+	@git submodule init
+	@git submodule update
+
+$(SOILDIR_CHECK):
 	@git submodule init
 	@git submodule update
 
@@ -230,7 +235,7 @@ $(SOILLIB): $(SOILDIR_CHECK)
 
 $(GLFW_NIBBLER_LIB): $(GLFWLIB_OBJ)
 	@$(call color_exec,$(CLINK_T),$(CLINK),"Link of $(GLFW_NIBBLER_LIB):",\
-		$(LINKER) $(SHAREDLIB_FLAGS) $(GLFWLIB) $(OPTFLAGS)$(DEBUGFLAGS) $(VFRAME) -o $@ $(strip $^))
+		$(LINKER) $(SHAREDLIB_FLAGS) $(GLFWLIB) $(SOILLIB) $(OPTFLAGS)$(DEBUGFLAGS) $(VFRAME) -o $@ $(strip $^))
 
 #	Linking
 $(NAME): $(OBJ)
