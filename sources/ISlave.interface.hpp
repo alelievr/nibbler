@@ -16,7 +16,7 @@
 #include <deque>
 
 struct Point
-{
+{	/* Origin: Up && Left */
 	std::size_t		x;
 	std::size_t		y;
 };
