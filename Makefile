@@ -18,7 +18,9 @@
 SRCDIR		=	sources
 SRC			=	main.cpp			\
 				Main.class.cpp		\
+				Game.class.cpp		\
 				Exception.class.cpp	\
+				Timer.class.cpp		\
 
 #	Objects
 OBJDIR		=	obj

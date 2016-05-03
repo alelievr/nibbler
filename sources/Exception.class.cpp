@@ -28,9 +28,9 @@ Exception::getString(ERROR code)
 {
 	switch (code)
 	{
-		case ERROR::BAD_ARGS:
-			return "Invalid arguments.\n"
-					"Usage: nibbler <width> <height>.";
+		case ERROR::BAD_ARGS_NUMBER:
+			return "Invalid arguments number\n"
+					"Usage: nibbler <width> <height> <libraries> <...>";
 	}
 	return "";
 }

@@ -17,7 +17,7 @@
 
 enum class ERROR
 {
-	BAD_ARGS,
+	BAD_ARGS_NUMBER,
 };
 
 class Exception : public std::runtime_error

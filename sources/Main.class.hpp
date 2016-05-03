@@ -26,10 +26,10 @@ class Main
 		Main(Main const &) = delete;
 		Main & operator=(Main const &) = delete;
 
-		int
-		run(void);
+		virtual int
+		run(void) = 0;
 
-	private:
+	protected:
 		std::vector<std::string>
 		initArgs(int args, char **argv);
 		std::size_t
