@@ -6,7 +6,7 @@
 /*   By: alelievr <alelievr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/04/29 22:09:48 by alelievr          #+#    #+#             */
-/*   Updated: 2016/05/03 17:33:59 by alelievr         ###   ########.fr       */
+/*   Updated: 2016/05/03 17:50:30 by alelievr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,6 +85,14 @@ bool	GLFW_gui::loadItemTextures(void)
 		 	SOIL_CREATE_NEW_ID,
 		 	SOIL_FLAG_MIPMAPS | SOIL_FLAG_INVERT_Y | SOIL_FLAG_NTSC_SAFE_RGB | SOIL_FLAG_COMPRESS_TO_DXT
 		 	);
+
+	glGenTextures(1, &foodTex);
+
+	int width, height;
+	glBindTexture(GL_TEXTURE_2D, foodTex);
+	unsigned char *image = SOIL_load_image("sample.png", &width, &height, 0, SOIL_LOAD_RGB);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, image);
+	SOIL_free_image_data(image);
 
 	if (foodTex == 0 || (int)foodTex == -1)
 		return (false);

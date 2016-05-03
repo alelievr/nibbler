@@ -46,7 +46,7 @@ INCDIRS		=	sources
 
 #	Libraries
 LIBDIRS		=	
-LDLIBS		=	
+LDLIBS		=	-ldl
 
 #	Output
 NAME		=	nibbler
@@ -205,7 +205,7 @@ SOILINCDIR = SOIL/src
 CPPFLAGS += -I$(GLFWINCDIR) -I$(SDLINCDIR) -I$(SFMLINCDIR) -I$(SOILINCDIR)
 
 #	First target
-all: $(NAME) $(SDLLIB) $(GLFWLIB) $(GLFW_NIBBLER_LIB) $(SOILLIB) # $(SFMLLIB)
+all: $(NAME) $(SDLLIB) $(GLFWLIB) $(SOILLIB) $(GLFW_NIBBLER_LIB) #$(SFMLLIB)
 
 $(SDLDIR_CHECK):
 	@git submodule init
@@ -227,7 +227,7 @@ $(SDLLIB): $(SDLDIR_CHECK)
 	cd SDL2 && ./configure && make
 
 $(SFMLLIB): $(SFMLDIR_CHECK)
-	cd SFML && mkdir -p build && cd build && cmake .. && make
+	cd SFML && cmake . && make
 
 $(GLFWLIB): $(GLFWDIR_CHECK)
 	cd GLFW && cmake . && make
