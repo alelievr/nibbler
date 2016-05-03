@@ -6,7 +6,7 @@
 /*   By: alelievr <alelievr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/04/29 22:09:48 by alelievr          #+#    #+#             */
-/*   Updated: 2016/05/03 03:20:55 by alelievr         ###   ########.fr       */
+/*   Updated: 2016/05/03 16:42:18 by alelievr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -95,7 +95,7 @@ bool	GLFW_gui::loadItemTextures(void)
 	(void)foodTex;
 }
 
-bool	GLFW_gui::open(std::size_t width, std::size_t height, std::size_t mapSize, std::string && name)
+bool	GLFW_gui::open(std::size_t width, std::size_t height, std::string && name)
 {
 	// Initialise GLFW
 	if(!glfwInit()) {
@@ -112,10 +112,9 @@ bool	GLFW_gui::open(std::size_t width, std::size_t height, std::size_t mapSize, 
 
 	this->width = width;
 	this->height = height;
-	this->mapSize = mapSize;
-	this->squareSize.x = width / mapSize;
-	this->squareSize.y = height / mapSize;
-	if (!(this->win = glfwCreateWindow(width, height, name.c_str(), NULL, NULL))) {
+	this->squareSize.x = winSize.x / width;
+	this->squareSize.y = winSize.y / height;
+	if (!(this->win = glfwCreateWindow(winSize.x, winSize.y, name.c_str(), NULL, NULL))) {
 		glfwTerminate();
 		return false;
 	}
@@ -137,10 +136,11 @@ void	GLFW_gui::drawRect(Point const & p, const unsigned int color) const
 {
 	float	bx1, bx2, by1, by2;
 
-	if (p.x > this->mapSize || p.y > this->mapSize)
+	if (p.x > this->width || p.y > this->height)
 		return ;
 	getCasesBounds(p, bx1, by1, bx2, by2);
 
+	std::cout << bx1 << by1 << bx2 << by2 << std::endl;
    	glBegin(GL_QUADS);
 		glColor1u(color);
     	glVertex2f(-1 + bx1, 1 - by1);
@@ -154,17 +154,17 @@ void	GLFW_gui::drawRect(Point const & p, const unsigned int color) const
 }
 
 void	GLFW_gui::getCasesBounds(Point const & p, float & x1, float & y1, float & x2, float & y2) const {
-	x1 = ((float)this->squareSize.x * p.x / this->width) * 2;
-	y1 = ((float)this->squareSize.y * p.y / this->height) * 2;
-	x2 = ((float)this->squareSize.x * (p.x + 1) / this->width) * 2;
-	y2 = ((float)this->squareSize.y * (p.y + 1) / this->height) * 2;
+	x1 = ((float)this->squareSize.x * p.x / winSize.x) * 2;
+	y1 = ((float)this->squareSize.y * p.y / winSize.y) * 2;
+	x2 = ((float)this->squareSize.x * (p.x + 1) / winSize.x) * 2;
+	y2 = ((float)this->squareSize.y * (p.y + 1) / winSize.y) * 2;
 }
 
 void	GLFW_gui::drawItem(Item const & i) const
 {
 	float	bx1, bx2, by1, by2;
 
-	if (i.coo.x > this->mapSize || i.coo.y > this->mapSize)
+	if (i.coo.x > this->width || i.coo.y > this->height)
 		return ;
 	getCasesBounds(i.coo, bx1, by1, bx2, by2);
 
@@ -183,11 +183,11 @@ void	GLFW_gui::render(Points const & snake, Items const & items, bool pause) con
 {
     float	ratio;
 
-	ratio = this->width / (float)this->height;
-	glViewport(0, 0, this->width, this->height);
+	ratio = this->winSize.x / (float)this->winSize.y;
+	glViewport(0, 0, this->winSize.x, this->winSize.y);
 	glClear(GL_COLOR_BUFFER_BIT);
 
-	glViewport(0, 0, this->width, this->height);
+	glViewport(0, 0, this->winSize.x, this->winSize.y);
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 
