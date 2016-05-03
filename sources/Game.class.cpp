@@ -10,10 +10,10 @@ Game::Game(int argc, char **argv) :
 	std::size_t		x(_width / 2);
 	std::size_t		y(_width / 2);
 
-	_snake.push({x, y});
-	_snake.push({x + 1, y});
-	_snake.push({x + 1, y + 1});
-	_snake.push({x, y + 1});
+	_snake.push_back({x, y});
+	_snake.push_back({x + 1, y});
+	_snake.push_back({x + 1, y + 1});
+	_snake.push_back({x, y + 1});
 }
 
 void
@@ -23,9 +23,9 @@ Game::getGUI(std::string const & libname)
 
 	if (not (handler = dlopen(libname.c_str(), RTLD_LAZY | RTLD_LOCAL)))
 		throw Exception(std::string("Cannot load ") + libname);
-	if (not (_create_ui = dlsym(handler, "createGUI")))
+	if (not (_create_gui = (createGUI_f)dlsym(handler, "createGUI")))
 		throw Exception(std::string("Cannot load `createGUI' in ") + libname);
-	if (not (_delete_ui = dlsym(handler, "deleteGUI")))
+	if (not (_delete_gui = (deleteGUI_f)dlsym(handler, "deleteGUI")))
 		throw Exception(std::string("Cannot load `deleteGUI' in ") + libname);
 	_gui = _create_gui();
 }
