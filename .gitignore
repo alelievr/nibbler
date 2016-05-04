@@ -31,3 +31,5 @@ nibbler
 test
 *.so
 *.swp
+*.dSYM
+*.dSYM/

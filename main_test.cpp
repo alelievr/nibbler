@@ -28,6 +28,7 @@ int			main(__attribute__((unused)) int ac, char **av)
 	KEY			ev;
 	ISlave		*gui;
 
+//	setenv("DYLD_FALLBACK_FRAMEWORK_PATH", "SFML/lib:SFML/extlibs/libs-osx/Frameworks/", 1);
 	if (!(handler = dlopen(av[1], RTLD_LAZY | RTLD_LOCAL)))
 		exit(printf("%s\n", dlerror()));
 	if (!(cgui = (createGUI_f)dlsym(handler, "createGUI")))

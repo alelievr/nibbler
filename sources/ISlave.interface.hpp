@@ -6,7 +6,7 @@
 /*   By: fdaudre- <fdaudre-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/04/28 19:58:37 by fdaudre-          #+#    #+#             */
-/*   Updated: 2016/05/04 19:02:17 by alelievr         ###   ########.fr       */
+/*   Updated: 2016/05/05 00:45:13 by alelievr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,11 +21,11 @@ struct Point
 	std::size_t		y;
 };
 
-std::ostream & operator <<(std::ostream & o, Point const & p)
+/*std::ostream & operator <<(std::ostream & o, Point const & p)
 {
 	o << "x = " << p.x << " | " << p.y;
 	return (o);
-}
+}*/
 
 struct Item
 {

@@ -81,7 +81,7 @@ bool	SDL_gui::loadItemTextures(void)
 	return (true);
 }
 
-bool	SDL_gui::open(std::size_t width, std::size_t height, std::string && name)
+bool	SDL_gui::open(std::size_t width, std::size_t height, std::string const & name)
 {
 	if (SDL_Init(SDL_INIT_VIDEO) != 0)
 		return false;

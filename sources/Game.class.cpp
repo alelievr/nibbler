@@ -111,7 +111,7 @@ Game::run(void)
 //			return _gui->close(EVENT::GAMEOVER), 0;
 		_snake.push_back(Point{x, y});
 		//debug
-		std::cout << _snake[0] << std::endl;
+		std::cout << _snake[0].x << " | " << _snake[0].y << std::endl;
 		// manage food && bonus
 	}
 	// never reached

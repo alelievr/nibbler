@@ -247,9 +247,8 @@ $(SDL_NIBBLER_LIB): $(SDLLIB_OBJ)
 		$(LINKER) $(SHAREDLIB_FLAGS) $(SDLLIB) -liconv $(SOILLIB) $(OPTFLAGS)$(DEBUGFLAGS) $(VFRAME) -o $@ $(strip $^))
 
 $(SFML_NIBBLER_LIB): $(SFMLLIB_OBJ)
-	@export PATH=$PATH:./SFML/
 	@$(call color_exec,$(CLINK_T),$(CLINK),"Link of $(SFML_NIBBLER_LIB):",\
-		$(LINKER) $(SHAREDLIB_FLAGS) -framework SFML $(SOILLIB) $(OPTFLAGS)$(DEBUGFLAGS) $(VFRAME) -o $@ $(strip $^))
+		$(LINKER) $(SHAREDLIB_FLAGS) -F SFML/lib/ -framework sfml-graphics -framework sfml-window -framework sfml-system $(SOILLIB) $(OPTFLAGS)$(DEBUGFLAGS) $(VFRAME) -o $@ $(strip $^))
 
 #	Linking
 $(NAME): $(OBJ)
