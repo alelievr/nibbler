@@ -177,6 +177,7 @@ void	GLFW_gui::render(Points const & snake, Items const & items, bool pause) con
     float	ratio;
 
 	ratio = this->winSize.x / (float)this->winSize.y;
+	(void)ratio;
 	glViewport(0, 0, this->winSize.x, this->winSize.y);
 	glClear(GL_COLOR_BUFFER_BIT);
 

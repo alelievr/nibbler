@@ -65,7 +65,7 @@ OPTFLAGS2	=	-pipe -funroll-loops -Ofast
 SHAREDLIB_FLAGS = 	-shared -fPIC
 
 #	Framework
-FRAMEWORK	=	Cocoa OpenGL IOKit CoreVideo Carbon ForceFeedback AudioUnit CoreAudio
+FRAMEWORK		=
 
 #################
 ##  COLORS     ##
@@ -106,6 +106,7 @@ ifneq ($(filter clang,$(CC) $(CXX)),)
 endif
 endif
 ifeq "$(OS)" "Darwin"
+FRAMEWORK	=	Cocoa OpenGL IOKit CoreVideo Carbon ForceFeedback AudioUnit CoreAudio
 endif
 
 #################
