@@ -26,7 +26,7 @@ GLFWLIB_SRC	=	GUI/GLFW_gui.class.cpp	\
 
 SDLLIB_SRC	=	GUI/SDL_gui.class.cpp	\
 
-SFMLLIB_SRC	=	
+SFMLLIB_SRC	=	GUI/SFML_gui.class.cpp	\
 
 SERVOTRON_SRC = servotron/servotron.class.cpp	\
 
@@ -196,7 +196,7 @@ GLFWLIB = GLFW/src/libglfw3.a
 GLFWDIR_CHECK = GLFW/README.md
 GLFWINCDIR = GLFW/include
 GLFW_NIBBLER_LIB = GLFWnibbler.so
-SFMLLIB = SFML/build/libSFFM.a #CHANGE THIS
+SFMLLIB = SFML/SFML.framework
 SFMLDIR_CHECK = SFML/readme.txt
 SFMLINCDIR = SFML/include
 SFML_NIBBLER_LIB = SFMLnibbler.so
@@ -208,7 +208,7 @@ SOILINCDIR = SOIL/src
 CPPFLAGS += -I$(GLFWINCDIR) -I$(SDLINCDIR) -I$(SFMLINCDIR) -I$(SOILINCDIR)
 
 #	First target
-all: $(NAME) $(SDLLIB) $(GLFWLIB) $(SOILLIB) $(GLFW_NIBBLER_LIB) $(SDL_NIBBLER_LIB) $(SFMLLIB)
+all: $(NAME) $(SDLLIB) $(GLFWLIB) $(SOILLIB) $(SFMLLIB) $(GLFW_NIBBLER_LIB) $(SDL_NIBBLER_LIB) $(SFML_NIBBLER_LIB)
 
 $(SDLDIR_CHECK):
 	@git submodule init
@@ -230,7 +230,7 @@ $(SDLLIB): $(SDLDIR_CHECK)
 	cd SDL2 && ./configure && make
 
 $(SFMLLIB): $(SFMLDIR_CHECK)
-	cd SFML && cmake . && make
+	cd SFML && cmake -DCMAKE_BUILD_TYPE=Release -DSFML_BUILD_FRAMEWORKS=true -DSFML_BUILD_EXAMPLES=1 -DCMAKE_OSX_ARCHITECTURES=x86_64 .
 
 $(GLFWLIB): $(GLFWDIR_CHECK)
 	cd GLFW && cmake . && make
@@ -245,6 +245,11 @@ $(GLFW_NIBBLER_LIB): $(GLFWLIB_OBJ)
 $(SDL_NIBBLER_LIB): $(SDLLIB_OBJ)
 	@$(call color_exec,$(CLINK_T),$(CLINK),"Link of $(SDL_NIBBLER_LIB):",\
 		$(LINKER) $(SHAREDLIB_FLAGS) $(SDLLIB) -liconv $(SOILLIB) $(OPTFLAGS)$(DEBUGFLAGS) $(VFRAME) -o $@ $(strip $^))
+
+$(SFML_NIBBLER_LIB): $(SFMLLIB_OBJ)
+	@export PATH=$PATH:./SFML/
+	@$(call color_exec,$(CLINK_T),$(CLINK),"Link of $(SFML_NIBBLER_LIB):",\
+		$(LINKER) $(SHAREDLIB_FLAGS) -framework SFML $(SOILLIB) $(OPTFLAGS)$(DEBUGFLAGS) $(VFRAME) -o $@ $(strip $^))
 
 #	Linking
 $(NAME): $(OBJ)

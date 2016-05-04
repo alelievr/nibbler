@@ -28,4 +28,6 @@
 *.app
 
 nibbler
+test
+*.so
 *.swp
