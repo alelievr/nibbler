@@ -11,10 +11,11 @@ is_in_snake(std::size_t x, std::size_t y, Points & snake)
 	return false;
 }
 
-#include <iostream>
 Game::Game(int argc, char **argv) :
 	Main(argc, argv),
-	_dir(DIRECTION::LEFT)
+	_dir(DIRECTION::LEFT),
+	_title("Olol nibble"),
+	_active_ui(1ul)
 {
 	std::size_t		x(_width / 2);
 	std::size_t		y(_width / 2);
@@ -37,17 +38,16 @@ Game::getGUI(std::string const & libname)
 	if (not (_delete_gui = (deleteGUI_f)dlsym(handler, "deleteGUI")))
 		throw Exception(dlerror());
 	_gui = _create_gui();
+	if (not _gui->open(_width, _height, _title))
+		throw Exception("Cannot open the window");
 }
 
 int
 Game::run(void)
 {
-	KEY		key;
+	KEY					key;
 
 	this->getGUI(_args[3]);
-	if (not _gui->open(_width, _height, "olol"))
-		throw Exception("Cannot open the window");
-	_timer.frame(30);
 	while (42)
 	{
 		if (_timer.frame(30))
@@ -55,6 +55,7 @@ Game::run(void)
 			_gui->render(_snake, _items, false);
 		}
 		_gui->getEvent(key);
+		std::size_t	n;
 		switch (key)
 		{
 			case KEY::LEFT:
@@ -77,13 +78,15 @@ Game::run(void)
 				_gui->render(_snake, _items, true);
 				break ;
 			case KEY::ONE:
-				// TODO
-				break ;
 			case KEY::TWO:
-				// TODO
-				break ;
 			case KEY::THREE:
-				// TODO
+				n = static_cast<std::size_t>(key)
+						- static_cast<std::size_t>(KEY::ONE) + 1;
+				if (_active_ui == n or _args.size() < 3 + n)
+					break ;
+				_gui->close(EVENT::SWITCH);
+				this->getGUI(_args[2 + n]);
+				_active_ui = n;
 				break ;
 			case KEY::ESCAPE:
 				return _gui->close(EVENT::GAMEOVER), 0;
@@ -105,7 +108,6 @@ Game::run(void)
 		}
 		if (x >= _width or y >= _height or is_in_snake(x, y, _snake))
 			return _gui->close(EVENT::GAMEOVER), 0;
-		// check the head (is it inside a wall or inside the snake ?)
 		_snake.push_back(Point{x, y});
 		// manage food && bonus
 	}

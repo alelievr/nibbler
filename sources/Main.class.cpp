@@ -5,15 +5,14 @@ Main::Main(int argc, char **argv) :
 	_args(initArgs(argc, argv)),
 	_width(getDim(1, 10, 100)), _height(getDim(2, 25, 250))
 {
-	(void)_width, (void)_height;
 }
 
 std::vector<std::string>
 Main::initArgs(int argc, char **argv)
 {
-	if (argc < 3/*4*/)
+	if (argc < 4)
 		throw Exception(ERROR::BAD_ARGS_NUMBER);
-	
+
 	std::vector<std::string>	args(static_cast<std::size_t>(argc));
 
 	for (std::size_t i(0), len(static_cast<std::size_t>(argc)) ; i < len ; ++i)

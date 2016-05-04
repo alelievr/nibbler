@@ -23,13 +23,17 @@ class Game : public Main
 		void
 		getGUI(std::string const & libname);
 
-		Points		_snake;
-		Items		_items;
-		DIRECTION	_dir;
-		Timer		_timer;
+		Points				_snake;
+		Items				_items;
+		DIRECTION			_dir;
+		Timer				_timer;
+
+		std::string	const	_title;
 
 		// Dynamic UI
-		createGUI_f	_create_gui;
-		deleteGUI_f	_delete_gui;
-		ISlave		*_gui;
+		createGUI_f			_create_gui;
+		deleteGUI_f			_delete_gui;
+		ISlave				*_gui;
+
+		std::size_t					_active_ui;
 };

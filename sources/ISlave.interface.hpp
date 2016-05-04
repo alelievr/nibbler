@@ -59,7 +59,7 @@ struct ISlave
 	virtual ~ISlave(void) {};
 
 	virtual bool
-	open(std::size_t width, std::size_t height, std::string && name) = 0;
+	open(std::size_t width, std::size_t height, std::string const & name) = 0;
 
 	virtual void
 	getEvent(KEY & key) const = 0;
