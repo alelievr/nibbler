@@ -230,7 +230,7 @@ $(SDLLIB): $(SDLDIR_CHECK)
 	cd SDL2 && ./configure && make
 
 $(SFMLLIB): $(SFMLDIR_CHECK)
-	cd SFML && cmake -DCMAKE_BUILD_TYPE=Release -DSFML_BUILD_FRAMEWORKS=true -DSFML_BUILD_EXAMPLES=1 -DCMAKE_OSX_ARCHITECTURES=x86_64 .
+	cd SFML && ./install.sh
 
 $(GLFWLIB): $(GLFWDIR_CHECK)
 	cd GLFW && cmake . && make
