@@ -28,6 +28,8 @@ SDLLIB_SRC	=	GUI/SDL_gui.class.cpp	\
 
 SFMLLIB_SRC	=	
 
+SERVOTRON_SRC = servotron/servotron.class.cpp	\
+
 #	Objects
 OBJDIR		=	obj
 
@@ -42,7 +44,7 @@ CPPVERSION	=	c++11
 #Example $> make DEBUG=2 will set debuglevel to 2
 
 #	Includes
-INCDIRS		=	sources
+INCDIRS		=	sources sources/servotron
 
 #	Libraries
 LIBDIRS		=	
@@ -206,7 +208,7 @@ SOILINCDIR = SOIL/src
 CPPFLAGS += -I$(GLFWINCDIR) -I$(SDLINCDIR) -I$(SFMLINCDIR) -I$(SOILINCDIR)
 
 #	First target
-all: $(NAME) $(SDLLIB) $(GLFWLIB) $(SOILLIB) $(GLFW_NIBBLER_LIB) $(SDL_NIBBLER_LIB) #$(SFMLLIB)
+all: $(NAME) $(SDLLIB) $(GLFWLIB) $(SOILLIB) $(GLFW_NIBBLER_LIB) $(SDL_NIBBLER_LIB) $(SFMLLIB)
 
 $(SDLDIR_CHECK):
 	@git submodule init
