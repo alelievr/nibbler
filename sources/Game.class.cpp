@@ -2,10 +2,19 @@
 
 #include <dlfcn.h>
 
+static inline bool
+is_in_snake(std::size_t x, std::size_t y, Points & snake)
+{
+	for (auto & p : snake)
+		if (p.x == x and p.y == y)
+			return true;
+	return false;
+}
+
 #include <iostream>
 Game::Game(int argc, char **argv) :
 	Main(argc, argv),
-	_dir(DIRECTION::RIGHT)
+	_dir(DIRECTION::LEFT)
 {
 	std::size_t		x(_width / 2);
 	std::size_t		y(_width / 2);
@@ -22,11 +31,11 @@ Game::getGUI(std::string const & libname)
 	void		*handler;
 
 	if (not (handler = dlopen(libname.c_str(), RTLD_LAZY | RTLD_LOCAL)))
-		throw Exception(std::string("Cannot load ") + libname);
+		throw Exception(dlerror());
 	if (not (_create_gui = (createGUI_f)dlsym(handler, "createGUI")))
-		throw Exception(std::string("Cannot load `createGUI' in ") + libname);
+		throw Exception(dlerror());
 	if (not (_delete_gui = (deleteGUI_f)dlsym(handler, "deleteGUI")))
-		throw Exception(std::string("Cannot load `deleteGUI' in ") + libname);
+		throw Exception(dlerror());
 	_gui = _create_gui();
 }
 
@@ -35,7 +44,7 @@ Game::run(void)
 {
 	KEY		key;
 
-	this->getGUI("GLFWnibbler.so");
+	this->getGUI(_args[3]);
 	if (not _gui->open(_width, _height, "olol"))
 		throw Exception("Cannot open the window");
 	_timer.frame(30);
@@ -80,16 +89,24 @@ Game::run(void)
 				return _gui->close(EVENT::GAMEOVER), 0;
 			case KEY::NONE: break ;
 		}
+		std::size_t		x(_snake.back().x);
+		std::size_t		y(_snake.back().y);
+		_snake.pop_front();
 		switch (_dir)
 		{
-			//move snake
 			case DIRECTION::LEFT:
+				--x; break ;
 			case DIRECTION::RIGHT:
+				++x; break ;
 			case DIRECTION::UP:
+				--y; break ;
 			case DIRECTION::DOWN:
-				break ;
+				++y; break ;
 		}
+		if (x >= _width or y >= _height or is_in_snake(x, y, _snake))
+			return _gui->close(EVENT::GAMEOVER), 0;
 		// check the head (is it inside a wall or inside the snake ?)
+		_snake.push_back(Point{x, y});
 		// manage food && bonus
 	}
 	// never reached

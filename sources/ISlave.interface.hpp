@@ -12,7 +12,6 @@
 
 #pragma once
 
-#include <queue>
 #include <deque>
 
 struct Point
