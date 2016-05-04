@@ -137,7 +137,7 @@ void	GLFW_gui::drawRect(Point const & p, const unsigned int color) const
 		return ;
 	getCasesBounds(p, bx1, by1, bx2, by2);
 
-	std::cout << bx1 << " | "<< by1 << " | "<< bx2 << " | "<< by2 << "\n";
+//	std::cout << bx1 << " | "<< by1 << " | "<< bx2 << " | "<< by2 << "\n";
    	glBegin(GL_QUADS);
 		glColor1u(color);
     	glVertex2f(-1 + bx1, 1 - by1);
@@ -163,6 +163,7 @@ void	GLFW_gui::drawItem(Item const & i) const
 		return ;
 	getCasesBounds(i.coo, bx1, by1, bx2, by2);
 
+//	std::cout << bx1 << " | "<< by1 << " | "<< bx2 << " | "<< by2 << "\n";
 	glColor3f(1, 1, 1);
 	glBindTexture(GL_TEXTURE_2D, this->texMap.at(i.type));
    	glBegin(GL_QUADS);
