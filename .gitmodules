@@ -4,7 +4,7 @@
 	branch = release-2.0.4
 [submodule "SFML"]
 	path = SFML
-	url = https://github.com/SFML/SFML.git
+	url = https://github.com/alelievr/SFML
 	branch = 2.3.x
 [submodule "GLFW"]
 	path = GLFW
