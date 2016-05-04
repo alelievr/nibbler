@@ -2,7 +2,7 @@
 
 #include <dlfcn.h>
 
-static inline bool
+__attribute((unused)) static inline bool
 is_in_snake(std::size_t x, std::size_t y, Points & snake)
 {
 	for (auto & p : snake)
@@ -106,9 +106,12 @@ Game::run(void)
 			case DIRECTION::DOWN:
 				++y; break ;
 		}
-		if (x >= _width or y >= _height or is_in_snake(x, y, _snake))
-			return _gui->close(EVENT::GAMEOVER), 0;
+//		commented because segfault (of _gui->close(...))
+//		if (x >= _width or y >= _height or is_in_snake(x, y, _snake))
+//			return _gui->close(EVENT::GAMEOVER), 0;
 		_snake.push_back(Point{x, y});
+		//debug
+		std::cout << _snake[0] << std::endl;
 		// manage food && bonus
 	}
 	// never reached

@@ -93,7 +93,7 @@ bool	GLFW_gui::loadItemTextures(void)
 	return (true);
 }
 
-bool	GLFW_gui::open(std::size_t width, std::size_t height, std::string && name)
+bool	GLFW_gui::open(std::size_t width, std::size_t height, std::string const & name)
 {
 	// Initialise GLFW
 	if(!glfwInit())
@@ -137,6 +137,7 @@ void	GLFW_gui::drawRect(Point const & p, const unsigned int color) const
 		return ;
 	getCasesBounds(p, bx1, by1, bx2, by2);
 
+	std::cout << bx1 << " | "<< by1 << " | "<< bx2 << " | "<< by2 << "\n";
    	glBegin(GL_QUADS);
 		glColor1u(color);
     	glVertex2f(-1 + bx1, 1 - by1);
@@ -188,8 +189,9 @@ void	GLFW_gui::render(Points const & snake, Items const & items, bool pause) con
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
    	glClear(GL_COLOR_BUFFER_BIT);
 
-	for (auto & s : snake)
+	for (auto & s : snake) {
 		drawRect(s, 0xFF00FF);
+	}
 
 	glDisable(GL_LIGHTING);
 	glEnable(GL_TEXTURE_2D);
