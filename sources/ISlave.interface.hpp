@@ -6,7 +6,7 @@
 /*   By: fdaudre- <fdaudre-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/04/28 19:58:37 by fdaudre-          #+#    #+#             */
-/*   Updated: 2016/05/05 00:45:13 by alelievr         ###   ########.fr       */
+/*   Updated: 2016/05/05 21:02:45 by alelievr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,12 +20,6 @@ struct Point
 	std::size_t		x;
 	std::size_t		y;
 };
-
-/*std::ostream & operator <<(std::ostream & o, Point const & p)
-{
-	o << "x = " << p.x << " | " << p.y;
-	return (o);
-}*/
 
 struct Item
 {
@@ -52,8 +46,16 @@ enum class KEY
 	ONE,
 	TWO,
 	THREE,
-	ESCAPE
+	ESCAPE,
+	FIRST = NONE,
+	LAST = ESCAPE
 };
+
+inline KEY operator++(KEY & x) { return x = (KEY)(std::underlying_type<KEY>::type(x) + 1); }
+inline KEY operator++(KEY & x, int) { return x = (KEY)(std::underlying_type<KEY>::type(x) + 1); }
+KEY operator*(KEY c) { return c; } 
+KEY begin(KEY r) { return KEY::FIRST; (void)r; }
+KEY end(KEY r) { KEY l=KEY::LAST; return l++; (void)r; }
 
 enum class EVENT
 {

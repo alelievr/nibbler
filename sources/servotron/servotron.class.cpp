@@ -1,5 +1,4 @@
 #include "servotron.class.hpp"
-#include "SFML/Network.hpp"
 #include <string>
 #include <unistd.h>
 
@@ -20,30 +19,45 @@ void		Servotron::scanPortThread(void)
 {
 	sf::TcpSocket				socket;
 	std::deque< std::string >	ipList;	
+	std::string					localIP;
 
 	ipList = genE1IPList();
+	localIP = sf::IpAddress::getLocalAddress().toString();
 	while (42)
 	{
 		_onlineClients.empty();
 		if (this->_scanStop)
 			break ;
 		for (std::string ip : ipList) {
-			if (socket.connect(ip, SERVER_PORT) == sf::Socket::Done)
+			if (ip.compare(localIP) && socket.connect(ip, CONNECTION_PORT) == sf::Socket::Done)
 			{
-				_onlineClients.push_back(ClientInfo{ip.c_str(), getClientId(ip.c_str())});
+				_onlineClients.push_back(ClientInfo{const_cast< char *>(ip.c_str()), getClientId(ip.c_str())});
 				std::cout << "connected : " << ip << std::endl;
 			} else {
 				//std::cout << "nope !" << std::endl;
 			}
 		}
+		std::cout << "scanned !\n";
 		usleep(this->_interval * 1000);
 	}
 }
 
-Servotron::Servotron(void) : _scanStop(false), _scanThread(&Servotron::scanPortThread, this), _state(STATE::SERVER)
+Servotron::Servotron(void) :
+	_interval(1000),
+	_scanThread(&Servotron::scanPortThread, this),
+	_scanStop(false),
+	_state(STATE::SERVER),
+	_currentConnectedServer({NULL, 0})
 {
-	std::cout << "Default constructor of Servotron called" << std::endl;
-	this->_interval = 1000;
+	sf::TcpListener listener;
+
+	// lie l'écouteur à un port
+	if (listener.listen(CONNECTION_PORT) != sf::Socket::Done)
+		std::cout << "can't listen to connection port !\n";
+	if (this->_sendingSocket.bind(SENDING_PORT) != sf::Socket::Done)
+		std::cout << "can't bind udp sending socket !\n";
+	if (this->_serverSocket.bind(SERVER_PORT) != sf::Socket::Done)
+		std::cout << "can't bind udp receiver socket !\n";
 }
 
 Servotron::Servotron(Servotron const & src)
@@ -77,22 +91,67 @@ void		Servotron::getClientEvent(Client const & c, KEY & key) const
 
 void		Servotron::startServer(void) const
 {
-	
+	//lol nothing, it's UDP sockets !
 }
 
 void		Servotron::stopServer(void) const
 {
-
+	//nothing is running !
 }
 
 void		Servotron::getState(STATE & s) const
 {
-
+	s = this->_state;
 }
 
-void		Servotron::sendEvent(KEY & k) const
+char		Servotron::keyToChar(const KEY key) const
 {
+	char	ret = '0';
 
+	for (const auto & k : KEY()) {
+		if (k == key)
+			return (ret);
+		ret++;
+	}
+	return (0);
+}
+
+KEY			Servotron::charToKey(const char c) const
+{
+	char	ret = '0';
+
+	for (const auto & k : KEY()) {
+		if (ret == c)
+			return (k);
+		ret++;
+	}
+	return (KEY::NONE);
+}
+
+void		Servotron::sendEvent(KEY & k)
+{
+	char			data[PACKAGE_SIZE];
+	sf::IpAddress	receiver(this->_currentConnectedServer.ip);
+	data[0] = (char)BYTECODE::KEYEVENT;
+	data[1] = keyToChar(k);
+	if (this->_serverSocket.send((void *)data, sizeof(data), receiver, (unsigned short)SERVER_PORT) != sf::Socket::Done)
+		std::cout << "failed to send UDP package\n";
+	(void)k;
+}
+
+void		Servotron::connectServer(const ClientInfo c)
+{
+	this->_currentConnectedServer = c;
+	sf::TcpListener listener;
+
+	listener.listen(CONNECTION_PORT);
+//	this->_serverSocket.bind(SERVER_PORT);
+}
+
+void		Servotron::disconnectServer(void)
+{
+	this->_currentConnectedServer = {NULL, 0};
+//	this->_serverSocket.close();
 }
 
 Servotron &	Servotron::operator=(Servotron const & src)
@@ -128,6 +187,6 @@ extern "C" {
 int			main(void) {
 	Servotron	s;
 
-	usleep(1 * 1000 * 1000);
+	usleep(10 * 1000 * 1000);
 	return (0);
 }

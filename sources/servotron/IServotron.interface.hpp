@@ -6,7 +6,7 @@
 /*   By: alelievr <alelievr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/05/04 19:23:45 by alelievr          #+#    #+#             */
-/*   Updated: 2016/05/05 18:00:34 by alelievr         ###   ########.fr       */
+/*   Updated: 2016/05/05 21:19:59 by alelievr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,9 +15,12 @@
 # include <deque>
 # include <ISlave.interface.hpp>
 
-# define MAX_HOSTNAME   256
-# define SERVER_PORT	10042
-# define IP_SIZE		sizeof("127.127.127.127")
+# define MAX_HOSTNAME		256
+# define SERVER_PORT		10042
+# define SENDING_PORT		10041	
+# define CONNECTION_PORT	10040
+# define PACKAGE_SIZE		4
+# define IP_SIZE			sizeof("127.127.127.127")
 
 typedef int						Client;
 typedef std::deque< Client >	Clients;
@@ -26,8 +29,12 @@ enum class	STATE
 {
 	CLIENT,
 	SERVER,
-	NONE
-}
+};
+
+enum class	BYTECODE
+{
+	KEYEVENT = '1',
+};
 
 class	IServotron
 {
@@ -35,7 +42,7 @@ class	IServotron
 		virtual void		setScanInterval(const int millis) = 0;
 		virtual void		getConnectedClients(Clients & clients) const = 0;
 		virtual void		getClientEvent(Client const & c, KEY & key) const = 0;
-		virtual void		sendEvent(KEY & k) const = 0;
+		virtual void		sendEvent(KEY & k) = 0;
 		virtual void		startServer(void) const = 0;
 		virtual void		stopServer(void) const = 0;
 		virtual void		getState(STATE & s) const = 0;

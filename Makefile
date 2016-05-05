@@ -317,8 +317,11 @@ codesize:
 functions: $(NAME)
 	@nm $(NAME) | grep U
 
-test: all
+t: all
 	g++ -std=c++11 main_test.cpp -I sources -I sources/servotron -o test && ./test $(GLFW_NIBBLER_LIB)
+
+t2: all
+	g++ -std=c++11 sources/servotron/servotron.class.cpp -I sources/servotron -I sources -I SFML/include SFML/lib/libsfml-network-s.a SFML/lib/libsfml-system-s.a && ./a.out
 
 coffee:
 	@clear

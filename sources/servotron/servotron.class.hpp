@@ -5,14 +5,21 @@
 # include <deque>
 # include <thread>
 # include "IServotron.interface.hpp"
+# include "SFML/Network.hpp"
 
 class		Servotron : IServotron
 {
 	private:
 		struct	ClientInfo
 		{
-			const char		*ip;
-			const Client	id;
+			char		*ip;
+			Client		id;
+
+			ClientInfo & operator=(ClientInfo const & c) {
+				this->ip = c.ip;
+				this->id = c.id;
+				return (*this);
+			}
 		};
 
 		int							_interval;
@@ -20,9 +27,13 @@ class		Servotron : IServotron
 		std::thread					_scanThread;
 		bool						_scanStop;
 		sf::UdpSocket				_serverSocket;
+		sf::UdpSocket				_sendingSocket;
 		STATE						_state;
+		ClientInfo					_currentConnectedServer;
 
-		void	scanPortThread(void);
+		void		scanPortThread(void);
+		char		keyToChar(const KEY k) const;
+		KEY			charToKey(const char c) const;
 
 	public:
 		Servotron();
@@ -41,10 +52,10 @@ class		Servotron : IServotron
 		void	setInterval(int tmp);
 
 		void	getState(STATE & s) const;
-		void	sendEvent(KEY & k) const;
+		void	sendEvent(KEY & k);
 
-		void	connectServer(const Client c);
-		void	disconnectClient(void);
+		void	connectServer(const ClientInfo c);
+		void	disconnectServer(void);
 };
 
 std::ostream &	operator<<(std::ostream & o, Servotron const & r);
