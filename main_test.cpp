@@ -6,11 +6,12 @@
 /*   By: alelievr <alelievr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/04/29 17:22:36 by alelievr          #+#    #+#             */
-/*   Updated: 2016/05/03 16:35:20 by alelievr         ###   ########.fr       */
+/*   Updated: 2016/05/05 17:24:05 by alelievr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ISlave.interface.hpp"
+#include "IServotron.interface.hpp"
 #include <dlfcn.h>
 #include <unistd.h>
 #include <stdlib.h>
@@ -28,17 +29,32 @@ int			main(__attribute__((unused)) int ac, char **av)
 	KEY			ev;
 	ISlave		*gui;
 
-//	setenv("DYLD_FALLBACK_FRAMEWORK_PATH", "SFML/lib:SFML/extlibs/libs-osx/Frameworks/", 1);
+	void				*servoHandler;
+	IServotron			*servo;
+	createServotronF	cServo;
+	deleteServotronF	dServo;
+
 	if (!(handler = dlopen(av[1], RTLD_LAZY | RTLD_LOCAL)))
 		exit(printf("%s\n", dlerror()));
 	if (!(cgui = (createGUI_f)dlsym(handler, "createGUI")))
 		exit(printf("%s\n", dlerror()));
 	if (!(dgui = (deleteGUI_f)dlsym(handler, "deleteGUI")))
 		exit(printf("%s\n", dlerror()));
-	
+
+	if (!(servoHandler = dlopen("./servotron.so", RTLD_LAZY | RTLD_LOCAL)))
+		exit(printf("%s\n", dlerror()));
+	if (!(cServo = (createServotronF)dlsym(servoHandler, "createServotron")))
+		exit(printf("%s\n", dlerror()));
+	if (!(dServo = (deleteServotronF)dlsym(servoHandler, "deleteServotron")))
+		exit(printf("%s\n", dlerror()));
+
 	gui = cgui();
 	if (!gui->open(10, 10, "olol"))
 		exit(printf("an error occured during window opening !\n"));
+
+	servo = cServo();
+//	servo->startServer();
+
 	snake.push_front({0, 0});
 	snake.push_front({1, 0});
 	snake.push_front({2, 0});

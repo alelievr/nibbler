@@ -255,7 +255,7 @@ $(SFML_NIBBLER_LIB): $(SFMLLIB_OBJ)
 
 $(SERVOTRONLIB): $(SERVOTRON_OBJ)
 	@$(call color_exec,$(CLINK_T),$(CLINK),"Link of $(SERVOTRONLIB):",\
-		$(LINKER) $(SHAREDLIB_FLAGS) $(OPTFLAGS)$(DEBUGFLAGS) $(VFRAME) -o $@ $(strip $^))
+		$(LINKER) $(SHAREDLIB_FLAGS) SFML/lib/libsfml-network-s.a SFML/lib/libsfml-system-s.a $(OPTFLAGS)$(DEBUGFLAGS) $(VFRAME) -o $@ $(strip $^))
 
 #	Linking
 $(NAME): $(OBJ)
@@ -318,7 +318,7 @@ functions: $(NAME)
 	@nm $(NAME) | grep U
 
 test: all
-	g++ -std=c++11 main_test.cpp -I sources -o test && ./test $(SDL_NIBBLER_LIB)
+	g++ -std=c++11 main_test.cpp -I sources -I sources/servotron -o test && ./test $(GLFW_NIBBLER_LIB)
 
 coffee:
 	@clear

@@ -2,31 +2,56 @@
 # define SERVOTRON_HPP
 # include <iostream>
 # include <string>
+# include <deque>
+# include <thread>
 # include "IServotron.interface.hpp"
 
-class		servotron
+class		Servotron : IServotron
 {
 	private:
-		int	_interval;
+		struct	ClientInfo
+		{
+			const char		*ip;
+			const Client	id;
+		};
 
+		int							_interval;
+		std::deque< ClientInfo >	_onlineClients;
+		std::thread					_scanThread;
+		bool						_scanStop;
+		sf::UdpSocket				_serverSocket;
+		STATE						_state;
+
+		void	scanPortThread(void);
 
 	public:
-		servotron();
-		servotron(const servotron&);
-		virtual ~servotron(void);
+		Servotron();
+		Servotron(const Servotron&);
+		virtual ~Servotron(void);
 
-		servotron &	operator=(servotron const & src);
+		Servotron &	operator=(Servotron const & src);
 
 		void	setScanInterval(const int millis);
-
 		void	getConnectedClients(Clients & clients) const;
-
 		void	getClientEvent(Client const & c, KEY & key) const;
+		void	startServer(void) const;
+		void	stopServer(void) const;
 
-		int	getInterval(void) const;
+		int		getInterval(void) const;
 		void	setInterval(int tmp);
+
+		void	getState(STATE & s) const;
+		void	sendEvent(KEY & k) const;
+
+		void	connectServer(const Client c);
+		void	disconnectClient(void);
 };
 
-std::ostream &	operator<<(std::ostream & o, servotron const & r);
+std::ostream &	operator<<(std::ostream & o, Servotron const & r);
+
+extern "C" {
+	Servotron	*craeteServotron(void);
+	void		deleteServotron(Servotron *s);
+}
 
 #endif
