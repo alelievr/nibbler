@@ -262,7 +262,7 @@ $(NAME): $(OBJ)
 	@$(if $(findstring lft,$(LDLIBS)),$(call color_exec_t,$(CCLEAR),$(CCLEAR),\
 		make -j 4 -C libft))
 	@$(call color_exec,$(CLINK_T),$(CLINK),"Link of $(NAME):",\
-		$(LINKER) $(LDFLAGS) $(LDLIBS) $(OPTFLAGS)$(DEBUGFLAGS)$(LINKDEBUG) -o $@ $(strip $^))
+		$(LINKER) $(LDFLAGS) $(OPTFLAGS)$(DEBUGFLAGS)$(LINKDEBUG) -o $@ $(strip $^) $(LDLIBS))
 
 $(OBJDIR)/%.o: %.cpp $(INCFILES)
 	@mkdir -p $(OBJDIR)
