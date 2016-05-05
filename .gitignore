@@ -33,3 +33,4 @@ test
 *.swp
 *.dSYM
 *.dSYM/
+obj/
