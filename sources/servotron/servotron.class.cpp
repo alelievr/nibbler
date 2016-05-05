@@ -19,7 +19,7 @@ void		Servotron::scanPortThread(void)
 {
 	std::deque< std::string >	ipList;	
 	std::string					localIP;
-	sf::TcpSocket	socket;
+	sf::TcpSocket				socket;
 
 	socket.setBlocking(false);
 	ipList = genE1IPList();
@@ -31,17 +31,19 @@ void		Servotron::scanPortThread(void)
 			break ;
 		for (std::string ip : ipList) {
 			//std::cout << "checked connection for ip: " << ip << std::endl;
-			//std::cout << "[" << ip  << "]" << std::endl;
+			std::cout << "[" << ip  << "]" << std::endl;
 			if (ip.compare(localIP) && socket.connect(ip, CONNECTION_PORT) == sf::Socket::Done)
 			{
 				_onlineClients.push_back(ClientInfo{const_cast< char *>(ip.c_str()), getClientId(ip.c_str())});
 				std::cout << "connected : " << ip << std::endl;
+				socket.disconnect();
 			} else {
 				//std::cout << "nope !" << std::endl;
 			}
-			socket.disconnect();
 		}
 		std::cout << "scanned !\n";
+		for (auto & c : _onlineClients)
+			std::cout << c.ip << std::endl;
 		usleep(this->_interval * 1000);
 	}
 }
@@ -49,13 +51,13 @@ void		Servotron::scanPortThread(void)
 void		Servotron::serverWait(void)
 {
 	sf::TcpListener listener;
+	sf::TcpSocket socket;
 
+	socket.setBlocking(false);
 	listener.setBlocking(false);
 	if (listener.listen(CONNECTION_PORT) != sf::Socket::Done)
 		std::cout << "can't listen to connection port !\n";
 
-	sf::TcpSocket socket;
-	socket.setBlocking(false);
 	while (42) {
 		if (this->_scanStop)
 			break ;
