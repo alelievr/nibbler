@@ -32,7 +32,7 @@ void		Servotron::scanPortThread(void)
 		for (std::string ip : ipList) {
 			//std::cout << "checked connection for ip: " << ip << std::endl;
 			std::cout << "[" << ip  << "]" << std::endl;
-			if (ip.compare(localIP) && socket.connect(ip, CONNECTION_PORT) == sf::Socket::Done)
+			if (/*ip.compare(localIP) && */socket.connect(ip, CONNECTION_PORT) == sf::Socket::Done)
 			{
 				_onlineClients.push_back(ClientInfo{const_cast< char *>(ip.c_str()), getClientId(ip.c_str())});
 				std::cout << "connected : " << ip << std::endl;
