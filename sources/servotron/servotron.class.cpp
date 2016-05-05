@@ -17,10 +17,11 @@ static Client	getClientId(const char *ip) {
 
 void		Servotron::scanPortThread(void)
 {
-	sf::TcpSocket				socket;
 	std::deque< std::string >	ipList;	
 	std::string					localIP;
+	sf::TcpSocket	socket;
 
+	socket.setBlocking(false);
 	ipList = genE1IPList();
 	localIP = sf::IpAddress::getLocalAddress().toString();
 	while (42)
@@ -29,13 +30,16 @@ void		Servotron::scanPortThread(void)
 		if (this->_scanStop)
 			break ;
 		for (std::string ip : ipList) {
-			if (/*ip.compare(localIP) && */socket.connect(ip, CONNECTION_PORT) == sf::Socket::Done)
+			//std::cout << "checked connection for ip: " << ip << std::endl;
+			//std::cout << "[" << ip  << "]" << std::endl;
+			if (ip.compare(localIP) && socket.connect(ip, CONNECTION_PORT) == sf::Socket::Done)
 			{
 				_onlineClients.push_back(ClientInfo{const_cast< char *>(ip.c_str()), getClientId(ip.c_str())});
 				std::cout << "connected : " << ip << std::endl;
 			} else {
 				//std::cout << "nope !" << std::endl;
 			}
+			socket.disconnect();
 		}
 		std::cout << "scanned !\n";
 		usleep(this->_interval * 1000);
