@@ -1,6 +1,5 @@
 #include "servotron.class.hpp"
 
-
 servotron::servotron(void)
 {
 	std::cout << "Default constructor of servotron called" << std::endl;
@@ -25,12 +24,13 @@ void		servotron::setScanInterval(const int millis)
 
 void		servotron::getConnectedClients(Clients & clients) const
 {
-	
+	(void)clients;
 }
 
 void		servotron::getClientEvent(Client const & c, KEY & key) const
 {
-	
+	(void)c;
+	(void)key;
 }
 
 

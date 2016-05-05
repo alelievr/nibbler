@@ -2,6 +2,7 @@
 # define SERVOTRON_HPP
 # include <iostream>
 # include <string>
+# include "IServotron.interface.hpp"
 
 class		servotron
 {

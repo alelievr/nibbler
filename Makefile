@@ -123,11 +123,13 @@ OBJ			=	$(addprefix $(OBJDIR)/,$(notdir $(OBJS)))
 GLFWLIB_OBJ	=	$(addprefix $(OBJDIR)/,$(notdir $(GLFWLIB_SRC:.cpp=.o)))
 SDLLIB_OBJ	=	$(addprefix $(OBJDIR)/,$(notdir $(SDLLIB_SRC:.cpp=.o)))
 SFMLLIB_OBJ	=	$(addprefix $(OBJDIR)/,$(notdir $(SFMLLIB_SRC:.cpp=.o)))
+SERVOTRON_OBJ =	$(addprefix $(OBJDIR)/,$(notdir $(SERVOTRON_SRC:.cpp=.o)))
 NORME		=	**/*.[ch]
 VPATH		+=	$(dir $(addprefix $(SRCDIR)/,$(SRC)))
 VPATH		+=	$(dir $(addprefix $(SRCDIR)/,$(GLFWLIB_SRC)))
 VPATH		+=	$(dir $(addprefix $(SRCDIR)/,$(SDLLIB_SRC)))
 VPATH		+=	$(dir $(addprefix $(SRCDIR)/,$(SFMLLIB_SRC)))
+VPATH		+=	$(dir $(addprefix $(SRCDIR)/,$(SERVOTRON_SRC)))
 VFRAME		=	$(addprefix -framework ,$(FRAMEWORK))
 INCFILES	=	$(foreach inc, $(INCDIRS), $(wildcard $(inc)/*.h))
 CPPFLAGS	=	$(addprefix -I,$(INCDIRS))
@@ -204,11 +206,12 @@ SFML_NIBBLER_LIB = SFMLnibbler.so
 SOILLIB = SOIL/lib/libSOIL.a
 SOILDIR_CHECK = SOIL/README.md
 SOILINCDIR = SOIL/src
+SERVOTRONLIB = servotron.so
 
 CPPFLAGS += -I$(GLFWINCDIR) -I$(SDLINCDIR) -I$(SFMLINCDIR) -I$(SOILINCDIR)
 
 #	First target
-all: $(NAME) $(SDLLIB) $(GLFWLIB) $(SOILLIB) $(SFMLLIB) $(GLFW_NIBBLER_LIB) $(SDL_NIBBLER_LIB) $(SFML_NIBBLER_LIB)
+all: $(NAME) $(SDLLIB) $(GLFWLIB) $(SOILLIB) $(SFMLLIB) $(SERVOTRONLIB) $(GLFW_NIBBLER_LIB) $(SDL_NIBBLER_LIB) $(SFML_NIBBLER_LIB)
 
 $(SDLDIR_CHECK):
 	@git submodule init
@@ -249,6 +252,10 @@ $(SDL_NIBBLER_LIB): $(SDLLIB_OBJ)
 $(SFML_NIBBLER_LIB): $(SFMLLIB_OBJ)
 	@$(call color_exec,$(CLINK_T),$(CLINK),"Link of $(SFML_NIBBLER_LIB):",\
 		$(LINKER) $(SHAREDLIB_FLAGS) $(SFMLLIB) SFML/lib/libsfml-graphics-s.a SFML/lib/libsfml-window-s.a $(SOILLIB) $(OPTFLAGS)$(DEBUGFLAGS) $(VFRAME) -o $@ $(strip $^))
+
+$(SERVOTRONLIB): $(SERVOTRON_OBJ)
+	@$(call color_exec,$(CLINK_T),$(CLINK),"Link of $(SERVOTRONLIB):",\
+		$(LINKER) $(SHAREDLIB_FLAGS) $(OPTFLAGS)$(DEBUGFLAGS) $(VFRAME) -o $@ $(strip $^))
 
 #	Linking
 $(NAME): $(OBJ)
