@@ -108,6 +108,7 @@ ifneq ($(filter clang,$(CC) $(CXX)),)
 endif
 endif
 ifeq "$(OS)" "Darwin"
+LDLIBS		+=	-liconv
 FRAMEWORK	=	Cocoa OpenGL IOKit CoreVideo Carbon ForceFeedback AudioUnit CoreAudio
 endif
 
@@ -120,10 +121,10 @@ OBJS		=	$(patsubst %.c,%.o, $(filter %.c, $(SRC))) \
 				$(patsubst %.cpp,%.o, $(filter %.cpp, $(SRC))) \
 				$(patsubst %.s,%.o, $(filter %.s, $(SRC)))
 OBJ			=	$(addprefix $(OBJDIR)/,$(notdir $(OBJS)))
-GLFWLIB_OBJ	=	$(addprefix $(OBJDIR)/,$(notdir $(GLFWLIB_SRC:.cpp=.o)))
-SDLLIB_OBJ	=	$(addprefix $(OBJDIR)/,$(notdir $(SDLLIB_SRC:.cpp=.o)))
-SFMLLIB_OBJ	=	$(addprefix $(OBJDIR)/,$(notdir $(SFMLLIB_SRC:.cpp=.o)))
-SERVOTRON_OBJ =	$(addprefix $(OBJDIR)/,$(notdir $(SERVOTRON_SRC:.cpp=.o)))
+GLFWLIB_OBJ	=	$(addprefix $(OBJDIR)/,$(notdir $(GLFWLIB_SRC:.cpp=.lo)))
+SDLLIB_OBJ	=	$(addprefix $(OBJDIR)/,$(notdir $(SDLLIB_SRC:.cpp=.lo)))
+SFMLLIB_OBJ	=	$(addprefix $(OBJDIR)/,$(notdir $(SFMLLIB_SRC:.cpp=.lo)))
+SERVOTRON_OBJ =	$(addprefix $(OBJDIR)/,$(notdir $(SERVOTRON_SRC:.cpp=.lo)))
 NORME		=	**/*.[ch]
 VPATH		+=	$(dir $(addprefix $(SRCDIR)/,$(SRC)))
 VPATH		+=	$(dir $(addprefix $(SRCDIR)/,$(GLFWLIB_SRC)))
@@ -247,7 +248,7 @@ $(GLFW_NIBBLER_LIB): $(GLFWLIB_OBJ)
 
 $(SDL_NIBBLER_LIB): $(SDLLIB_OBJ)
 	@$(call color_exec,$(CLINK_T),$(CLINK),"Link of $(SDL_NIBBLER_LIB):",\
-		$(LINKER) $(SHAREDLIB_FLAGS) $(SDLLIB) -liconv $(SOILLIB) $(OPTFLAGS)$(DEBUGFLAGS) $(VFRAME) -o $@ $(strip $^))
+		$(LINKER) $(SHAREDLIB_FLAGS) $(SDLLIB) $(SOILLIB) $(OPTFLAGS)$(DEBUGFLAGS) $(VFRAME) -o $@ $(strip $^) $(LDLIBS))
 
 $(SFML_NIBBLER_LIB): $(SFMLLIB_OBJ)
 	@$(call color_exec,$(CLINK_T),$(CLINK),"Link of $(SFML_NIBBLER_LIB):",\
@@ -268,6 +269,11 @@ $(OBJDIR)/%.o: %.cpp $(INCFILES)
 	@mkdir -p $(OBJDIR)
 	@$(call color_exec,$(COBJ_T),$(COBJ),"Object: $@",\
 		$(CXX) -std=$(CPPVERSION) $(WERROR) $(CFLAGS) $(OPTFLAGS)$(DEBUGFLAGS) $(CPPFLAGS) -o $@ -c $(strip $<))
+
+$(OBJDIR)/%.lo: %.cpp $(INCFILES)
+	@mkdir -p $(OBJDIR)
+	@$(call color_exec,$(COBJ_T),$(COBJ),"Object: $@",\
+		$(CXX) -fPIC -std=$(CPPVERSION) $(WERROR) $(CFLAGS) $(OPTFLAGS)$(DEBUGFLAGS) $(CPPFLAGS) -o $@ -c $(strip $<))
 
 #	Objects compilation
 $(OBJDIR)/%.o: %.c $(INCFILES)
@@ -318,10 +324,10 @@ functions: $(NAME)
 	@nm $(NAME) | grep U
 
 t: all
-	g++ -std=c++11 main_test.cpp -I sources -I sources/servotron -o test && ./test $(GLFW_NIBBLER_LIB)
+	g++ -std=c++11 main_test.cpp -I sources -I sources/servotron -o test -ldl -lpthread && ./test $(GLFW_NIBBLER_LIB)
 
 t2: all
-	g++ -std=c++11 sources/servotron/servotron.class.cpp -I sources/servotron -I sources -I SFML/include SFML/lib/libsfml-network-s.a SFML/lib/libsfml-system-s.a && ./a.out
+	g++ -std=c++11 sources/servotron/servotron.class.cpp -I sources/servotron -I sources -I SFML/include SFML/lib/libsfml-network-s.a SFML/lib/libsfml-system-s.a -lpthread && ./a.out
 
 coffee:
 	@clear
