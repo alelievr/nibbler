@@ -62,7 +62,7 @@ void		Servotron::serverWait(void)
 		if (this->_scanStop)
 			break ;
 		if (listener.accept(socket) == sf::Socket::Done)
-			;
+			{}
 	}
 }
 
