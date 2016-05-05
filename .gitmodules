@@ -5,6 +5,7 @@
 [submodule "SFML"]
 	path = SFML
 	url = https://github.com/alelievr/SFML
+	branch = af3c50e346b60e1316e0e71f3197a903ef8abc1c
 [submodule "GLFW"]
 	path = GLFW
 	url = https://github.com/glfw/glfw.git

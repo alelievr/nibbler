@@ -83,10 +83,10 @@ bool	SFML_gui::loadItemTextures(void)
 
 bool	SFML_gui::open(std::size_t width, std::size_t height, std::string const & name)
 {
-	this->window.create(sf::VideoMode(winSize.x, winSize.y), name);
+//	this->window.create(sf::VideoMode(winSize.x, winSize.y), name);
 
-	if (!this->window.isOpen())
-		return (false);
+//	if (!this->window.isOpen())
+//		return (false);
 
 	this->width = width;
 	this->height = height;
@@ -96,6 +96,7 @@ bool	SFML_gui::open(std::size_t width, std::size_t height, std::string const & n
 	if (!loadItemTextures())
 		return (false);
 	return (true);
+	(void)name;
 }
 
 void	SFML_gui::getEvent(KEY & key) const

@@ -196,7 +196,7 @@ GLFWLIB = GLFW/src/libglfw3.a
 GLFWDIR_CHECK = GLFW/README.md
 GLFWINCDIR = GLFW/include
 GLFW_NIBBLER_LIB = GLFWnibbler.so
-SFMLLIB = SFML/SFML.framework
+SFMLLIB = SFML/lib/libsfml-system-s.a
 SFMLDIR_CHECK = SFML/readme.txt
 SFMLINCDIR = SFML/include
 SFML_NIBBLER_LIB = SFMLnibbler.so
@@ -248,7 +248,7 @@ $(SDL_NIBBLER_LIB): $(SDLLIB_OBJ)
 
 $(SFML_NIBBLER_LIB): $(SFMLLIB_OBJ)
 	@$(call color_exec,$(CLINK_T),$(CLINK),"Link of $(SFML_NIBBLER_LIB):",\
-		$(LINKER) $(SHAREDLIB_FLAGS) -F SFML/lib/ -framework sfml-graphics -framework sfml-window -framework sfml-system $(SOILLIB) $(OPTFLAGS)$(DEBUGFLAGS) $(VFRAME) -o $@ $(strip $^))
+		$(LINKER) $(SHAREDLIB_FLAGS) $(SFMLLIB) SFML/lib/libsfml-graphics-s.a SFML/lib/libsfml-window-s.a $(SOILLIB) $(OPTFLAGS)$(DEBUGFLAGS) $(VFRAME) -o $@ $(strip $^))
 
 #	Linking
 $(NAME): $(OBJ)
