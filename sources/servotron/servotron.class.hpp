@@ -25,6 +25,7 @@ class		Servotron : IServotron
 		int							_interval;
 		std::deque< ClientInfo >	_onlineClients;
 		std::thread					_scanThread;
+		std::thread					_serverThread;
 		bool						_scanStop;
 		sf::UdpSocket				_serverSocket;
 		sf::UdpSocket				_sendingSocket;
@@ -32,6 +33,7 @@ class		Servotron : IServotron
 		ClientInfo					_currentConnectedServer;
 
 		void		scanPortThread(void);
+		void		serverWait(void);
 		char		keyToChar(const KEY k) const;
 		KEY			charToKey(const char c) const;
 

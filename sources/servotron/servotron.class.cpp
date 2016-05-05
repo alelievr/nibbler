@@ -29,7 +29,7 @@ void		Servotron::scanPortThread(void)
 		if (this->_scanStop)
 			break ;
 		for (std::string ip : ipList) {
-			if (ip.compare(localIP) && socket.connect(ip, CONNECTION_PORT) == sf::Socket::Done)
+			if (/*ip.compare(localIP) && */socket.connect(ip, CONNECTION_PORT) == sf::Socket::Done)
 			{
 				_onlineClients.push_back(ClientInfo{const_cast< char *>(ip.c_str()), getClientId(ip.c_str())});
 				std::cout << "connected : " << ip << std::endl;
@@ -42,18 +42,32 @@ void		Servotron::scanPortThread(void)
 	}
 }
 
+void		Servotron::serverWait(void)
+{
+	sf::TcpListener listener;
+
+	listener.setBlocking(false);
+	if (listener.listen(CONNECTION_PORT) != sf::Socket::Done)
+		std::cout << "can't listen to connection port !\n";
+
+	sf::TcpSocket socket;
+	socket.setBlocking(false);
+	while (42) {
+		if (this->_scanStop)
+			break ;
+		if (listener.accept(socket) == sf::Socket::Done)
+			;
+	}
+}
+
 Servotron::Servotron(void) :
 	_interval(1000),
 	_scanThread(&Servotron::scanPortThread, this),
+	_serverThread(&Servotron::serverWait, this),
 	_scanStop(false),
 	_state(STATE::SERVER),
 	_currentConnectedServer({NULL, 0})
 {
-	sf::TcpListener listener;
-
-	// lie l'écouteur à un port
-	if (listener.listen(CONNECTION_PORT) != sf::Socket::Done)
-		std::cout << "can't listen to connection port !\n";
 	if (this->_sendingSocket.bind(SENDING_PORT) != sf::Socket::Done)
 		std::cout << "can't bind udp sending socket !\n";
 	if (this->_serverSocket.bind(SERVER_PORT) != sf::Socket::Done)
@@ -70,6 +84,7 @@ Servotron::~Servotron(void)
 {
 	_scanStop = true;
 	_scanThread.join();
+	_serverThread.join();
 	std::cout << "Destructor of Servotron called" << std::endl;
 }
 
