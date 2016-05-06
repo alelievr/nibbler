@@ -79,7 +79,7 @@ void		Servotron::readData(void)
 		perror("recvfrom");
 
 	if (!strncmp(buff, "IP", 2)) {
-		inet_ntop(AF_INET, buff + 2, str, INET_ADDRSTRLEN);
+		inet_ntop(AF_INET, buff + 3, str, INET_ADDRSTRLEN);
 		ClientInfo	tmp;
 		strcpy(tmp.ip, str);
 		tmp.id = getClientId(tmp.ip);
@@ -99,9 +99,11 @@ void		Servotron::readData(void)
 	}
 	if (!strncmp(buff, "PI", 2)) {
 		inet_ntop(AF_INET, buff + 2, str, INET_ADDRSTRLEN);
-		Client		id = getClientId(str);
+		Client		cid = getClientId(str);
 
-		std::remove_if(_onlineClients.begin(), _onlineClients.end(), [&](ClientInfo c){ return (c.id == id); });
+		//std::remove_if(_onlineClients.begin(), _onlineClients.end(), [&](ClientInfo c){ return (c.id == id); });
+		_onlineClients.erase(std::find_if(_onlineClients.begin(), _onlineClients.end(),
+					[&](ClientInfo c) { return (c.id == cid); }));
 		std::cout << "disconnected : " << str << std::endl;
 	}
 
