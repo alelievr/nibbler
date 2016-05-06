@@ -1,24 +1,16 @@
 #include "servotron.class.hpp"
-#include <string>
-#include <unistd.h>
 #include "SFML/Network.hpp"
+#include <string>
 
-#include <sys/select.h>
-#include <netdb.h>
-#include <sys/socket.h>
-#include <arpa/inet.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <netinet/in.h>
-
-static std::deque< std::string >	genE1IPList(void) {
+static std::deque< std::string >	genE1IPList(std::string const & localIP) {
 	std::deque< std::string >	list;
+	char						ipData[4];
 
+	inet_pton(AF_INET, localIP.c_str(), ipData);
+	std::cout << "scaning for client on floor " << ipData[1] - 10 << std::endl;
 	for (int i = 1; i <= 23; i++)
 		for (int j = 1; j <= 13; j++)
-			list.push_back(std::string("10.11.") + std::to_string(i) + std::string(".") + std::to_string(j));
+			list.push_back(std::string("10.1") + std::to_string(ipData[1] - 10) + "." + std::to_string(i) + std::string(".") + std::to_string(j));
 	return (list);
 }
 
@@ -26,41 +18,90 @@ static Client	getClientId(const char *ip) {
 	return (std::hash<std::string>()(ip));
 }
 
-void		Servotron::sendPokeToE1(void)
+void		Servotron::sendDataToFloor(char *data, std::size_t size)
 {
 	std::deque< std::string >	ipList;	
-	std::string					localIP;
 	struct sockaddr_in			connection;
 
-	ipList = genE1IPList();
-	localIP = sf::IpAddress::getLocalAddress().toString();
+	ipList = genE1IPList(this->_localIP);
 	connection.sin_family = AF_INET;
-	connection.sin_port = SENDING_PORT;
-	//	while (42)
-	//	{
-	//		_onlineClients.empty();
-	//		if (this->_scanStop)
-	//			break ;
+	connection.sin_port = htons(SERVER_PORT);
+
 	for (std::string ip : ipList) {
 		if (!inet_aton(ip.c_str(), &connection.sin_addr))
-			perror("inet_aton");
-		//std::cout << "checked connection for ip: " << ip << std::endl;
-		std::cout << "poke [" << ip  << "]" << std::endl;
-		if (ip.compare(localIP) && sendto(this->_sendDataSocket,
-					(const void *)"POKE",
-					sizeof("POKE"),
-					0,
-					(struct sockaddr *)&connection,
-					sizeof(connection)) < 0) {
-			perror("sendto");
-		} else {
-			_onlineClients.push_back(ClientInfo{const_cast< char *>(ip.c_str()), getClientId(ip.c_str())});
-			std::cout << "connected : " << ip << std::endl;
-		}
+			perror("inet_aton1");
+		std::cout << "poke sended to " << ip  << ":" << SERVER_PORT << std::endl;
+//		if (ip.compare(this->_localIP))
+ 		   sendData(data, size, &connection);
 	}
-	std::cout << "poked !\n";
-	//for (auto & c : _onlineClients)
-	//	std::cout << c.ip << std::endl;
+	readData();
+}
+
+void		Servotron::scanClientsOnFloor(void)
+{
+	char						data[6];
+
+	data[0] = 'I';
+	data[1] = 'P';
+	inet_pton(AF_INET, this->_localIP.c_str(), data + 2);
+	sendDataToFloor(data, sizeof(data));
+}
+
+void		Servotron::sendDisconnection(void)
+{
+	char						data[6];
+
+	data[0] = 'P';
+	data[1] = 'I';
+	inet_pton(AF_INET, this->_localIP.c_str(), data + 2);
+	sendDataToFloor(data, sizeof(data));
+}
+
+void		Servotron::readData(void)
+{
+	struct		sockaddr_in	co;
+	socklen_t				colen;
+	char					buff[0xF0];
+	char					str[INET_ADDRSTRLEN];
+
+	if (recvfrom(this->_receiveDataSocket, buff, sizeof(buff), 0, (struct sockaddr *)&co, &colen) <= 0)
+		perror("recvfrom");
+
+	if (!strncmp(buff, "IP", 2)) {
+		inet_ntop(AF_INET, buff + 2, str, INET_ADDRSTRLEN);
+		ClientInfo	tmp;
+		strcpy(tmp.ip, str);
+		tmp.id = getClientId(tmp.ip);
+		_onlineClients.push_back(tmp);
+		std::cout << "connected : " << str << std::endl;
+	}
+	if (!strncmp(buff, "PI", 2)) {
+		inet_ntop(AF_INET, buff + 2, str, INET_ADDRSTRLEN);
+		Client		id = getClientId(str);
+
+		std::remove_if(_onlineClients.begin(), _onlineClients.end(), [id](ClientInfo c){ return (c.id == id); });
+		std::cout << "disconnected : " << str << std::endl;
+	}
+}
+
+void		Servotron::sendData(char *data, std::size_t size, struct sockaddr_in *co)
+{
+	if (sendto(this->_sendDataSocket, data, size, 0, (struct sockaddr *)co, sizeof(*co)) < 0)
+		perror("sendto");
+}
+
+void		Servotron::sendData(char *data, std::size_t size)
+{
+	struct sockaddr_in			connection;
+
+	connection.sin_family = AF_INET;
+	connection.sin_port = htons(SERVER_PORT);
+	if (!inet_aton(this->_currentConnectedServer.ip, &connection.sin_addr)) {
+		perror("inet_aton");
+		return ;
+	}
+
+	this->sendData(data, size, &connection);
 }
 
 void		Servotron::eventThread(void)
@@ -72,11 +113,13 @@ void		Servotron::eventThread(void)
 	FD_SET(this->_receiveDataSocket, &old_set);
 	while (42) {
 		read_set = old_set;
+		std::cout << "waiting for event on port " << SERVER_PORT << "\n";
 		if (select(FD_SETSIZE, &read_set, NULL, NULL, NULL) < 0)
 			perror("select");
 		for (int i = 0; i < FD_SETSIZE; i++)
 			if (FD_ISSET(i, &read_set)) {
 				if (i == this->_receiveDataSocket) {
+					readData();
 					//to read datas ....
 				} else {
 					//do nothing
@@ -85,7 +128,7 @@ void		Servotron::eventThread(void)
 	}
 }
 
-void		Servotron::createUdpSocket(int & ret, const int port) const
+void		Servotron::createUdpSocket(int & ret, const int port, bool bind_port) const
 {
 	struct sockaddr_in  connection;
 	const int           yes = 1;
@@ -93,11 +136,12 @@ void		Servotron::createUdpSocket(int & ret, const int port) const
 	srand((unsigned int)clock());
 	if ((ret = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP)) == -1)
 		perror("sock"), exit(-1);
+	std::cout << "craeted socket " << ret << std::endl;
 	bzero(&connection, sizeof(connection));
 	connection.sin_family = AF_INET;
 	connection.sin_port = htons(port);
-//	if (bind_port)
-//	{
+	if (bind_port)
+	{
 		if (setsockopt(ret, SOL_SOCKET, SO_REUSEPORT, &yes, sizeof(int)) == -1)
 			perror("setsockopt");
 		if (setsockopt(ret, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(int)) == -1)
@@ -105,7 +149,8 @@ void		Servotron::createUdpSocket(int & ret, const int port) const
 		connection.sin_addr.s_addr = htonl(INADDR_ANY);
 		if (bind(ret, (struct sockaddr *)&connection, sizeof(connection)) == -1)
 			perror("(fatal) bind"), exit(-1);
-//	}
+		std::cout << "binded socket on port" << port << std::endl;
+	}
 }
 
 Servotron::Servotron(void) :
@@ -113,14 +158,14 @@ Servotron::Servotron(void) :
 	_eventThread(&Servotron::eventThread, this),
 	_scanStop(false),
 	_state(STATE::SERVER),
-	_currentConnectedServer({NULL, 0})
+	_currentConnectedServer({{0}, 0})
 {
-	createUdpSocket(this->_sendDataSocket, SENDING_PORT);
-	createUdpSocket(this->_receiveDataSocket, SERVER_PORT);
-//	if (this->_sendingSocket.bind(SENDING_PORT) != sf::Socket::Done)
-//		std::cout << "can't bind udp sending socket !\n";
-//	if (this->_serverSocket.bind(SERVER_PORT) != sf::Socket::Done)
-//		std::cout << "can't bind udp receiver socket !\n";
+	this->_localIP = sf::IpAddress::getLocalAddress().toString();
+
+	createUdpSocket(this->_sendDataSocket, SENDING_PORT, false);
+	createUdpSocket(this->_receiveDataSocket, SERVER_PORT, true);
+
+	scanClientsOnFloor();
 }
 
 Servotron::Servotron(Servotron const & src)
@@ -133,6 +178,8 @@ Servotron::~Servotron(void)
 {
 	_scanStop = true;
 	_eventThread.join();
+
+	this->sendDisconnection();
 	std::cout << "Destructor of Servotron called" << std::endl;
 }
 
@@ -194,18 +241,11 @@ KEY			Servotron::charToKey(const char c) const
 void		Servotron::sendEvent(KEY & k)
 {
 	char			data[PACKAGE_SIZE];
-	struct sockaddr_in			connection;
-
-	connection.sin_family = AF_INET;
-	connection.sin_port = SENDING_PORT;
-	if (!inet_aton(this->_currentConnectedServer.ip, &connection.sin_addr))
-		perror("inet_aton");
 
 	data[0] = (char)BYTECODE::KEYEVENT;
 	data[1] = keyToChar(k);
 
-	if (sendto(this->_sendDataSocket, data, sizeof(data), 0, (struct sockaddr *)&connection, sizeof(connection)) < 0)
-		perror("sendto");
+	this->sendData(data, sizeof(data));
 }
 
 void		Servotron::connectServer(const ClientInfo c)
@@ -215,7 +255,7 @@ void		Servotron::connectServer(const ClientInfo c)
 
 void		Servotron::disconnectServer(void)
 {
-	this->_currentConnectedServer = {NULL, 0};
+	this->_currentConnectedServer = {{0}, 0};
 //	this->_serverSocket.close();
 }
 

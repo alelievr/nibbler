@@ -6,16 +6,25 @@
 # include <thread>
 # include "IServotron.interface.hpp"
 
+# include <netinet/in.h>
+# include <sys/socket.h>
+# include <sys/types.h>
+# include <netdb.h>
+# include <arpa/inet.h>
+# include <sys/select.h>
+# include <stdlib.h>
+# include <unistd.h>
+
 class		Servotron : IServotron
 {
 	private:
 		struct	ClientInfo
 		{
-			char		*ip;
+			char		ip[IP_SIZE + 1];
 			Client		id;
 
 			ClientInfo & operator=(ClientInfo const & c) {
-				this->ip = c.ip;
+				strcpy(this->ip, c.ip);
 				this->id = c.id;
 				return (*this);
 			}
@@ -29,12 +38,18 @@ class		Servotron : IServotron
 		ClientInfo					_currentConnectedServer;
 		int							_sendDataSocket;
 		int							_receiveDataSocket;
+		std::string					_localIP;
 
 		void		eventThread(void);
 		char		keyToChar(const KEY k) const;
 		KEY			charToKey(const char c) const;
-		void		createUdpSocket(int & s, const int port) const;
-		void		sendPokeToE1(void);
+		void		createUdpSocket(int & s, const int port, bool bind_port) const;
+		void		sendDataToFloor(char *data, std::size_t size);
+		void		sendDisconnection(void);
+
+		void		readData(void);
+		void		sendData(char *d, std::size_t size);
+		void		sendData(char *d, std::size_t size, struct sockaddr_in *co);
 
 	public:
 		Servotron();
@@ -57,6 +72,8 @@ class		Servotron : IServotron
 
 		void	connectServer(const ClientInfo c);
 		void	disconnectServer(void);
+
+		void	scanClientsOnFloor(void);
 };
 
 std::ostream &	operator<<(std::ostream & o, Servotron const & r);
