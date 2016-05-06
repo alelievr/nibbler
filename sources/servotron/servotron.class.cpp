@@ -319,12 +319,14 @@ void		Servotron::sendEvent(KEY & k)
 void		Servotron::connectServer(const ClientInfo c)
 {
 	this->_currentConnectedServer = c;
+	this->_state = STATE::CLIENT;
 	(void)c;
 }
 
 void		Servotron::disconnectServer(void)
 {
 	this->_currentConnectedServer = {{0}, 0, KEY::NONE};
+	this->_state = STATE::SERVER;
 }
 
 Servotron &	Servotron::operator=(Servotron const & src)

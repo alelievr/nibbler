@@ -30,6 +30,8 @@ SFMLLIB_SRC	=	GUI/SFML_gui.class.cpp	\
 
 SERVOTRON_SRC = servotron/servotron.class.cpp	\
 
+SOUNDS_SRC	=	sounds/SoundPlayer.class.cpp	\
+
 #	Objects
 OBJDIR		=	obj
 
@@ -44,7 +46,7 @@ CPPVERSION	=	c++11
 #Example $> make DEBUG=2 will set debuglevel to 2
 
 #	Includes
-INCDIRS		=	sources sources/servotron
+INCDIRS		=	sources sources/servotron sources/sounds
 
 #	Libraries
 LIBDIRS		=	
@@ -125,12 +127,14 @@ GLFWLIB_OBJ	=	$(addprefix $(OBJDIR)/,$(notdir $(GLFWLIB_SRC:.cpp=.lo)))
 SDLLIB_OBJ	=	$(addprefix $(OBJDIR)/,$(notdir $(SDLLIB_SRC:.cpp=.lo)))
 SFMLLIB_OBJ	=	$(addprefix $(OBJDIR)/,$(notdir $(SFMLLIB_SRC:.cpp=.lo)))
 SERVOTRON_OBJ =	$(addprefix $(OBJDIR)/,$(notdir $(SERVOTRON_SRC:.cpp=.lo)))
+SOUNDS_OBJ	=	$(addprefix $(OBJDIR)/,$(notdir $(SOUNDS_SRC:.cpp=.lo)))
 NORME		=	**/*.[ch]
 VPATH		+=	$(dir $(addprefix $(SRCDIR)/,$(SRC)))
 VPATH		+=	$(dir $(addprefix $(SRCDIR)/,$(GLFWLIB_SRC)))
 VPATH		+=	$(dir $(addprefix $(SRCDIR)/,$(SDLLIB_SRC)))
 VPATH		+=	$(dir $(addprefix $(SRCDIR)/,$(SFMLLIB_SRC)))
 VPATH		+=	$(dir $(addprefix $(SRCDIR)/,$(SERVOTRON_SRC)))
+VPATH		+=	$(dir $(addprefix $(SRCDIR)/,$(SOUNDS_SRC)))
 VFRAME		=	$(addprefix -framework ,$(FRAMEWORK))
 INCFILES	=	$(foreach inc, $(INCDIRS), $(wildcard $(inc)/*.h))
 CPPFLAGS	=	$(addprefix -I,$(INCDIRS))
@@ -191,28 +195,29 @@ endif
 ##  TARGETS    ##
 #################
 
-SDLLIB = SDL2/build/.libs/libSDL2.a
-SDLINCDIR = SDL2/include
-SDLDIR_CHECK = SDL2/INSTALL.txt
-SDL_NIBBLER_LIB = SDLnibbler.so
-GLFWLIB = GLFW/src/libglfw3.a
-GLFWDIR_CHECK = GLFW/README.md
-GLFWINCDIR = GLFW/include
+SDLLIB			= SDL2/build/.libs/libSDL2.a
+SDLINCDIR		= SDL2/include
+SDLDIR_CHECK	= SDL2/INSTALL.txt
+SDL_NIBBLER_LIB	= SDLnibbler.so
+GLFWLIB			= GLFW/src/libglfw3.a
+GLFWDIR_CHECK	= GLFW/README.md
+GLFWINCDIR		= GLFW/include
 GLFW_NIBBLER_LIB = GLFWnibbler.so
-SFMLLIB = SFML/lib/libsfml-system-s.a
-SFMLDIR_CHECK = SFML/readme.txt
-SFMLINCDIR = SFML/include
+SFMLLIB			= SFML/lib/libsfml-system-s.a
+SFMLDIR_CHECK	= SFML/readme.txt
+SFMLINCDIR		= SFML/include
 SFML_NIBBLER_LIB = SFMLnibbler.so
 
-SOILLIB = SOIL/lib/libSOIL.a
-SOILDIR_CHECK = SOIL/README.md
-SOILINCDIR = SOIL/src
-SERVOTRONLIB = servotron.so
+SOILLIB			= SOIL/lib/libSOIL.a
+SOILDIR_CHECK	= SOIL/README.md
+SOILINCDIR		= SOIL/src
+SERVOTRONLIB	= servotron.so
+SOUNDLIB		= sound.so
 
 CPPFLAGS += -I$(GLFWINCDIR) -I$(SDLINCDIR) -I$(SFMLINCDIR) -I$(SOILINCDIR)
 
 #	First target
-all: $(NAME) $(SDLLIB) $(GLFWLIB) $(SOILLIB) $(SFMLLIB) $(SERVOTRONLIB) $(GLFW_NIBBLER_LIB) $(SDL_NIBBLER_LIB) $(SFML_NIBBLER_LIB)
+all: $(NAME) $(SDLLIB) $(GLFWLIB) $(SOILLIB) $(SFMLLIB) $(SERVOTRONLIB) $(SOUNDLIB) $(GLFW_NIBBLER_LIB) $(SDL_NIBBLER_LIB) $(SFML_NIBBLER_LIB)
 
 $(SDLDIR_CHECK):
 	@git submodule init
@@ -258,6 +263,10 @@ $(SERVOTRONLIB): $(SERVOTRON_OBJ)
 	@$(call color_exec,$(CLINK_T),$(CLINK),"Link of $(SERVOTRONLIB):",\
 		$(LINKER) $(SHAREDLIB_FLAGS) SFML/lib/libsfml-network-s.a SFML/lib/libsfml-system-s.a $(OPTFLAGS)$(DEBUGFLAGS) $(VFRAME) -o $@ $(strip $^))
 
+$(SOUNDLIB): $(SOUNDS_OBJ)
+	@$(call color_exec,$(CLINK_T),$(CLINK),"Link of $(SOUNDLIB):",\
+		$(LINKER) $(SHAREDLIB_FLAGS) SFML/lib/libsfml-audio-s.a SFML/lib/libsfml-system-s.a $(OPTFLAGS)$(DEBUGFLAGS) $(VFRAME) -o $@ $(strip $^))
+
 #	Linking
 $(NAME): $(OBJ)
 	@$(if $(findstring lft,$(LDLIBS)),$(call color_exec_t,$(CCLEAR),$(CCLEAR),\
@@ -296,7 +305,7 @@ clean:
 #	Removing objects and exe
 fclean: clean
 	@$(call color_exec,$(CCLEAN_T),$(CCLEAN),"Fclean:",\
-		$(RM) -f $(NAME) $(GLFW_NIBBLER_LIB) $(SDL_NIBBLER_LIB) $(SFML_NIBBLER_LIB))
+		$(RM) -f $(NAME) $(GLFW_NIBBLER_LIB) $(SDL_NIBBLER_LIB) $(SFML_NIBBLER_LIB) $(SERVOTRONLIB) $(SOUNDLIB) test)
 
 #	All removing then compiling
 re: fclean all
