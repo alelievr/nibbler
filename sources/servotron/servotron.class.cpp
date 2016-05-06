@@ -30,11 +30,10 @@ void		Servotron::sendDataToFloor(char *data, std::size_t size)
 	for (std::string ip : ipList) {
 		if (!inet_aton(ip.c_str(), &connection.sin_addr))
 			perror("inet_aton1");
-		std::cout << "poke sended to " << ip  << ":" << SERVER_PORT << std::endl;
+//		std::cout << "poke sended to " << ip  << ":" << SERVER_PORT << std::endl;
 		if (ip.compare(this->_localIP))
  		   sendData(data, size, &connection);
 	}
-	readData();
 }
 
 void		Servotron::scanClientsOnFloor(void)
@@ -63,6 +62,7 @@ void		Servotron::readData(void)
 	socklen_t				colen;
 	char					buff[0xF0];
 	char					str[INET_ADDRSTRLEN];
+	char					data[6];
 
 	if (recvfrom(this->_receiveDataSocket, buff, sizeof(buff), 0, (struct sockaddr *)&co, &colen) <= 0)
 		perror("recvfrom");
@@ -74,6 +74,10 @@ void		Servotron::readData(void)
 		tmp.id = getClientId(tmp.ip);
 		_onlineClients.push_back(tmp);
 		std::cout << "connected : " << str << std::endl;
+		data[0] = 'P';
+		data[1] = 'I';
+		inet_pton(AF_INET, this->_localIP.c_str(), data + 2);
+		this->sendData(data, sizeof(data), str);
 	}
 	if (!strncmp(buff, "PI", 2)) {
 		inet_ntop(AF_INET, buff + 2, str, INET_ADDRSTRLEN);
@@ -104,17 +108,37 @@ void		Servotron::sendData(char *data, std::size_t size)
 	this->sendData(data, size, &connection);
 }
 
+void		Servotron::sendData(char *data, std::size_t size, std::string const & ip)
+{
+	struct sockaddr_in			connection;
+
+	connection.sin_family = AF_INET;
+	connection.sin_port = htons(SERVER_PORT);
+	if (!inet_aton(ip.c_str(), &connection.sin_addr)) {
+		perror("inet_aton");
+		return ;
+	}
+
+	this->sendData(data, size, &connection);
+}
+
 void		Servotron::eventThread(void)
 {
-	fd_set	read_set;
-	fd_set	old_set;
+	fd_set			read_set;
+	fd_set			old_set;
+	struct timeval	timeout;
 
 	FD_ZERO(&old_set);
+	FD_ZERO(&read_set);
 	FD_SET(this->_receiveDataSocket, &old_set);
+	timeout.tv_sec = 0;
+	timeout.tv_usec = 10 * 1000;
 	while (42) {
 		read_set = old_set;
-		std::cout << "waiting for event on port " << SERVER_PORT << "\n";
-		if (select(FD_SETSIZE, &read_set, NULL, NULL, NULL) < 0)
+		if (this->_threadStop)
+			break ;
+//		std::cout << "waiting for event on port " << SERVER_PORT << "\n";
+		if (select(FD_SETSIZE, &read_set, NULL, NULL, &timeout) < 0)
 			perror("select");
 		for (int i = 0; i < FD_SETSIZE; i++)
 			if (FD_ISSET(i, &read_set)) {
@@ -122,6 +146,9 @@ void		Servotron::eventThread(void)
 					readData();
 					//to read datas ....
 				} else {
+					printf("reading on %i ...\n", i);
+					char	buf[128];
+					read(i, buf, 128);
 					//do nothing
 				}
 			}
@@ -156,7 +183,7 @@ void		Servotron::createUdpSocket(int & ret, const int port, bool bind_port) cons
 Servotron::Servotron(void) :
 	_interval(1000),
 	_eventThread(&Servotron::eventThread, this),
-	_scanStop(false),
+	_threadStop(false),
 	_state(STATE::SERVER),
 	_currentConnectedServer({{0}, 0})
 {
@@ -176,7 +203,7 @@ Servotron::Servotron(Servotron const & src)
 
 Servotron::~Servotron(void)
 {
-	_scanStop = true;
+	_threadStop = true;
 	_eventThread.join();
 
 	this->sendDisconnection();

@@ -33,7 +33,7 @@ class		Servotron : IServotron
 		int							_interval;
 		std::deque< ClientInfo >	_onlineClients;
 		std::thread					_eventThread;
-		bool						_scanStop;
+		bool						_threadStop;
 		STATE						_state;
 		ClientInfo					_currentConnectedServer;
 		int							_sendDataSocket;
@@ -50,6 +50,7 @@ class		Servotron : IServotron
 		void		readData(void);
 		void		sendData(char *d, std::size_t size);
 		void		sendData(char *d, std::size_t size, struct sockaddr_in *co);
+		void		sendData(char *d, std::size_t size, std::string const & ip);
 
 	public:
 		Servotron();
