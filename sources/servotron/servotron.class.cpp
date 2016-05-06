@@ -31,7 +31,7 @@ void		Servotron::sendDataToFloor(char *data, std::size_t size)
 		if (!inet_aton(ip.c_str(), &connection.sin_addr))
 			perror("inet_aton1");
 		std::cout << "poke sended to " << ip  << ":" << SERVER_PORT << std::endl;
-//		if (ip.compare(this->_localIP))
+		if (ip.compare(this->_localIP))
  		   sendData(data, size, &connection);
 	}
 	readData();
