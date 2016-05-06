@@ -7,7 +7,6 @@ static std::deque< std::string >	genE1IPList(std::string const & localIP) {
 	char						ipData[4];
 
 	inet_pton(AF_INET, localIP.c_str(), ipData);
-	std::cout << "scaning for client on floor " << ipData[1] - 10 << std::endl;
 	for (int i = 1; i <= 23; i++)
 		for (int j = 1; j <= 13; j++)
 			list.push_back(std::string("10.1") + std::to_string(ipData[1] - 10) + "." + std::to_string(i) + std::string(".") + std::to_string(j));
@@ -31,7 +30,7 @@ void		Servotron::sendDataToFloor(char *data, std::size_t size)
 		if (!inet_aton(ip.c_str(), &connection.sin_addr))
 			perror("inet_aton1");
 //		std::cout << "poke sended to " << ip  << ":" << SERVER_PORT << std::endl;
-		if (ip.compare(this->_localIP))
+//		if (ip.compare(this->_localIP))
  		   sendData(data, size, &connection);
 	}
 }
@@ -40,6 +39,7 @@ void		Servotron::scanClientsOnFloor(void)
 {
 	char						data[6];
 
+	std::cout << "scaning for client on current floor" << std::endl;
 	data[0] = 'I';
 	data[1] = 'P';
 	inet_pton(AF_INET, this->_localIP.c_str(), data + 2);
@@ -72,12 +72,18 @@ void		Servotron::readData(void)
 		ClientInfo	tmp;
 		strcpy(tmp.ip, str);
 		tmp.id = getClientId(tmp.ip);
-		_onlineClients.push_back(tmp);
-		std::cout << "connected : " << str << std::endl;
+		if (std::find_if(_onlineClients.begin(), _onlineClients.end(),
+					[&](ClientInfo c) { return (c.id == tmp.id); }
+					) != _onlineClients.end() || _onlineClients.size() == 0) {
+			_onlineClients.push_back(tmp);
+			std::cout << "connected : " << str << std::endl;
+		}
+		else
+			std::cout << "already in list !\n";
 		data[0] = 'P';
 		data[1] = 'I';
 		inet_pton(AF_INET, this->_localIP.c_str(), data + 2);
-		this->sendData(data, sizeof(data), str);
+	//	this->sendData(data, sizeof(data), str);
 	}
 	if (!strncmp(buff, "PI", 2)) {
 		inet_ntop(AF_INET, buff + 2, str, INET_ADDRSTRLEN);
@@ -86,6 +92,11 @@ void		Servotron::readData(void)
 		std::remove_if(_onlineClients.begin(), _onlineClients.end(), [id](ClientInfo c){ return (c.id == id); });
 		std::cout << "disconnected : " << str << std::endl;
 	}
+
+	std::cout << "debug [" << buff << "]" << std::endl;
+	std::cout << "client list: " << std::endl;
+	for (auto & c : _onlineClients)
+		std::cout << c.ip << std::endl;
 }
 
 void		Servotron::sendData(char *data, std::size_t size, struct sockaddr_in *co)
@@ -131,6 +142,7 @@ void		Servotron::eventThread(void)
 	FD_ZERO(&old_set);
 	FD_ZERO(&read_set);
 	FD_SET(this->_receiveDataSocket, &old_set);
+	FD_SET(this->_receiveDataSocket, &read_set);
 	timeout.tv_sec = 0;
 	timeout.tv_usec = 10 * 1000;
 	while (42) {
@@ -163,7 +175,6 @@ void		Servotron::createUdpSocket(int & ret, const int port, bool bind_port) cons
 	srand((unsigned int)clock());
 	if ((ret = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP)) == -1)
 		perror("sock"), exit(-1);
-	std::cout << "craeted socket " << ret << std::endl;
 	bzero(&connection, sizeof(connection));
 	connection.sin_family = AF_INET;
 	connection.sin_port = htons(port);
@@ -176,22 +187,22 @@ void		Servotron::createUdpSocket(int & ret, const int port, bool bind_port) cons
 		connection.sin_addr.s_addr = htonl(INADDR_ANY);
 		if (bind(ret, (struct sockaddr *)&connection, sizeof(connection)) == -1)
 			perror("(fatal) bind"), exit(-1);
-		std::cout << "binded socket on port" << port << std::endl;
 	}
 }
 
 Servotron::Servotron(void) :
 	_interval(1000),
-	_eventThread(&Servotron::eventThread, this),
 	_threadStop(false),
 	_state(STATE::SERVER),
 	_currentConnectedServer({{0}, 0})
 {
+	std::cout << "constructed servotron !" << std::endl;
 	this->_localIP = sf::IpAddress::getLocalAddress().toString();
 
 	createUdpSocket(this->_sendDataSocket, SENDING_PORT, false);
 	createUdpSocket(this->_receiveDataSocket, SERVER_PORT, true);
 
+	_eventThread = std::thread(&Servotron::eventThread, this);
 	scanClientsOnFloor();
 }
 
@@ -203,10 +214,10 @@ Servotron::Servotron(Servotron const & src)
 
 Servotron::~Servotron(void)
 {
+	this->sendDisconnection();
+
 	_threadStop = true;
 	_eventThread.join();
-
-	this->sendDisconnection();
 	std::cout << "Destructor of Servotron called" << std::endl;
 }
 
@@ -319,6 +330,6 @@ extern "C" {
 int			main(void) {
 	Servotron	s;
 
-	usleep(10 * 1000 * 1000);
+	usleep(1 * 1000 * 1000);
 	return (0);
 }
