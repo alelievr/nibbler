@@ -52,6 +52,9 @@ class		Servotron : IServotron
 		void		sendData(char *d, std::size_t size, struct sockaddr_in *co);
 		void		sendData(char *d, std::size_t size, std::string const & ip);
 
+		void		makeConnectedPackage(char *data, bool type);
+		void		makeDisconnectedPackage(char *data);
+
 	public:
 		Servotron();
 		Servotron(const Servotron&);

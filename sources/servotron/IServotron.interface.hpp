@@ -6,7 +6,7 @@
 /*   By: alelievr <alelievr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/05/04 19:23:45 by alelievr          #+#    #+#             */
-/*   Updated: 2016/05/06 17:28:23 by alelievr         ###   ########.fr       */
+/*   Updated: 2016/05/06 22:08:43 by alelievr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@
 
 # define MAX_HOSTNAME		256
 # define SERVER_PORT		10042
-# define SENDING_PORT		10041	
+# define SENDING_PORT		10041
 # define PACKAGE_SIZE		4
 # define IP_SIZE			sizeof("127.127.127.127")
 
@@ -33,6 +33,12 @@ enum class	STATE
 enum class	BYTECODE
 {
 	KEYEVENT = '1',
+};
+
+enum	NETWORK_BYTES
+{
+	POKE_BYTE	= '\x1',
+	REPLY_BYTE	= '\x2'
 };
 
 class	IServotron

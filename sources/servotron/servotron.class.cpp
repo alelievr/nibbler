@@ -35,24 +35,36 @@ void		Servotron::sendDataToFloor(char *data, std::size_t size)
 	}
 }
 
-void		Servotron::scanClientsOnFloor(void)
+void		Servotron::makeConnectedPackage(char *data, bool type)
 {
-	char						data[6];
-
-	std::cout << "scaning for client on current floor" << std::endl;
 	data[0] = 'I';
 	data[1] = 'P';
-	inet_pton(AF_INET, this->_localIP.c_str(), data + 2);
+	data[2] = (type) ? POKE_BYTE : REPLY_BYTE;
+	inet_pton(AF_INET, this->_localIP.c_str(), data + 3);
+}
+
+void		Servotron::makeDisconnectedPackage(char *data)
+{
+	data[0] = 'P';
+	data[1] = 'I';
+	data[2] = POKE_BYTE;
+	inet_pton(AF_INET, this->_localIP.c_str(), data + 3);
+}
+
+void		Servotron::scanClientsOnFloor(void)
+{
+	char						data[7];
+
+	makeConnectedPackage(data, true);
+	std::cout << "scaning for client on current floor" << std::endl;
 	sendDataToFloor(data, sizeof(data));
 }
 
 void		Servotron::sendDisconnection(void)
 {
-	char						data[6];
+	char						data[7];
 
-	data[0] = 'P';
-	data[1] = 'I';
-	inet_pton(AF_INET, this->_localIP.c_str(), data + 2);
+	makeDisconnectedPackage(data);
 	sendDataToFloor(data, sizeof(data));
 }
 
@@ -62,7 +74,6 @@ void		Servotron::readData(void)
 	socklen_t				colen;
 	char					buff[0xF0];
 	char					str[INET_ADDRSTRLEN];
-	char					data[6];
 
 	if (recvfrom(this->_receiveDataSocket, buff, sizeof(buff), 0, (struct sockaddr *)&co, &colen) <= 0)
 		perror("recvfrom");
@@ -80,10 +91,11 @@ void		Servotron::readData(void)
 		}
 		else
 			std::cout << "already in list !\n";
-		data[0] = 'I';
-		data[1] = 'P';
-		inet_pton(AF_INET, this->_localIP.c_str(), data + 2);
-		this->sendData(data, sizeof(data), str);
+		if (buff[3] == POKE_BYTE) {
+			char	data[7];
+			makeConnectedPackage(data, false);
+			this->sendData(data, sizeof(data), str);
+		}
 	}
 	if (!strncmp(buff, "PI", 2)) {
 		inet_ntop(AF_INET, buff + 2, str, INET_ADDRSTRLEN);
