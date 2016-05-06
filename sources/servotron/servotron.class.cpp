@@ -92,13 +92,14 @@ void		Servotron::readData(void)
 		else
 			std::cout << "already in list !\n";
 		if (buff[3] == POKE_BYTE) {
+			std::cout << "sending poke reply !\n";
 			char	data[7];
 			makeConnectedPackage(data, false);
 			this->sendData(data, sizeof(data), str);
 		}
 	}
 	if (!strncmp(buff, "PI", 2)) {
-		inet_ntop(AF_INET, buff + 2, str, INET_ADDRSTRLEN);
+		inet_ntop(AF_INET, buff + 3, str, INET_ADDRSTRLEN);
 		Client		cid = getClientId(str);
 
 		//std::remove_if(_onlineClients.begin(), _onlineClients.end(), [&](ClientInfo c){ return (c.id == id); });
