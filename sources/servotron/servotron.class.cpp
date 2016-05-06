@@ -84,14 +84,14 @@ void		Servotron::readData(void)
 		strcpy(tmp.ip, str);
 		tmp.id = getClientId(tmp.ip);
 		if (std::find_if(_onlineClients.begin(), _onlineClients.end(),
-					[&](ClientInfo c) { return (c.id == tmp.id); }
+					[&](ClientInfo & c) { return (c.id == tmp.id); }
 					) == _onlineClients.end()) {
 			_onlineClients.push_back(tmp);
 			std::cout << "connected : " << str << std::endl;
 		}
 		else
 			std::cout << "already in list !\n";
-		if (buff[3] == POKE_BYTE) {
+		if (buff[2] == POKE_BYTE) {
 			std::cout << "sending poke reply !\n";
 			char	data[7];
 			makeConnectedPackage(data, false);
@@ -104,8 +104,16 @@ void		Servotron::readData(void)
 
 		//std::remove_if(_onlineClients.begin(), _onlineClients.end(), [&](ClientInfo c){ return (c.id == id); });
 		_onlineClients.erase(std::find_if(_onlineClients.begin(), _onlineClients.end(),
-					[&](ClientInfo c) { return (c.id == cid); }));
+					[&](ClientInfo & c) { return (c.id == cid); }));
 		std::cout << "disconnected : " << str << std::endl;
+	}
+	if (buff[0] == (char)BYTECODE::KEYEVENT) {
+		inet_ntop(AF_INET, buff + 2, str, INET_ADDRSTRLEN);
+		Client		cid = getClientId(str);
+
+		auto client = std::find_if(_onlineClients.begin(), _onlineClients.end(), [&](ClientInfo & c) { return (c.id == cid); });
+		if (client != _onlineClients.end())
+			client->lastEvent = charToKey(buff[1]);
 	}
 
 	std::cout << "debug [" << buff << "]" << std::endl;
@@ -209,7 +217,7 @@ Servotron::Servotron(void) :
 	_interval(1000),
 	_threadStop(false),
 	_state(STATE::SERVER),
-	_currentConnectedServer({{0}, 0})
+	_currentConnectedServer({{0}, 0, KEY::NONE})
 {
 	std::cout << "constructed servotron !" << std::endl;
 	this->_localIP = sf::IpAddress::getLocalAddress().toString();
@@ -243,13 +251,20 @@ void		Servotron::setScanInterval(const int millis)
 
 void		Servotron::getConnectedClients(Clients & clients) const
 {
-	(void)clients;
+	clients.clear();
+
+	for (ClientInfo const & c : _onlineClients)
+		clients.push_back(c.id);
 }
 
-void		Servotron::getClientEvent(Client const & c, KEY & key) const
+void		Servotron::getClientEvent(Client const & cid, KEY & key) const
 {
-	(void)c;
-	(void)key;
+	key = KEY::NONE;
+
+	const auto client = std::find_if(_onlineClients.begin(), _onlineClients.end(),
+			[cid](ClientInfo const & cl) { return (cl.id == cid); });
+	if (client != _onlineClients.end())
+		key = client->lastEvent;
 }
 
 void		Servotron::startServer(void) const
@@ -293,11 +308,11 @@ KEY			Servotron::charToKey(const char c) const
 
 void		Servotron::sendEvent(KEY & k)
 {
-	char			data[PACKAGE_SIZE];
+	char			data[6];
 
 	data[0] = (char)BYTECODE::KEYEVENT;
 	data[1] = keyToChar(k);
-
+	inet_pton(AF_INET, this->_localIP.c_str(), data + 2);
 	this->sendData(data, sizeof(data));
 }
 
@@ -309,7 +324,7 @@ void		Servotron::connectServer(const ClientInfo c)
 
 void		Servotron::disconnectServer(void)
 {
-	this->_currentConnectedServer = {{0}, 0};
+	this->_currentConnectedServer = {{0}, 0, KEY::NONE};
 }
 
 Servotron &	Servotron::operator=(Servotron const & src)

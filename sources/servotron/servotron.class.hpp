@@ -22,10 +22,12 @@ class		Servotron : IServotron
 		{
 			char		ip[IP_SIZE + 1];
 			Client		id;
+			KEY			lastEvent;
 
 			ClientInfo & operator=(ClientInfo const & c) {
 				strcpy(this->ip, c.ip);
 				this->id = c.id;
+				this->lastEvent = c.lastEvent;
 				return (*this);
 			}
 		};
