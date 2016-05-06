@@ -6,7 +6,7 @@
 /*   By: alelievr <alelievr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/05/04 19:23:45 by alelievr          #+#    #+#             */
-/*   Updated: 2016/05/05 21:19:59 by alelievr         ###   ########.fr       */
+/*   Updated: 2016/05/06 02:09:14 by alelievr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,6 @@
 # define MAX_HOSTNAME		256
 # define SERVER_PORT		10042
 # define SENDING_PORT		10041	
-# define CONNECTION_PORT	10040
 # define PACKAGE_SIZE		4
 # define IP_SIZE			sizeof("127.127.127.127")
 

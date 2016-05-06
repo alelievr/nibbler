@@ -1,6 +1,17 @@
 #include "servotron.class.hpp"
 #include <string>
 #include <unistd.h>
+#include "SFML/Network.hpp"
+
+#include <sys/select.h>
+#include <netdb.h>
+#include <sys/socket.h>
+#include <arpa/inet.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <netinet/in.h>
 
 static std::deque< std::string >	genE1IPList(void) {
 	std::deque< std::string >	list;
@@ -15,69 +26,101 @@ static Client	getClientId(const char *ip) {
 	return (std::hash<std::string>()(ip));
 }
 
-void		Servotron::scanPortThread(void)
+void		Servotron::sendPokeToE1(void)
 {
 	std::deque< std::string >	ipList;	
 	std::string					localIP;
-	sf::TcpSocket				socket;
+	struct sockaddr_in			connection;
 
-	socket.setBlocking(false);
 	ipList = genE1IPList();
 	localIP = sf::IpAddress::getLocalAddress().toString();
-	while (42)
-	{
-		_onlineClients.empty();
-		if (this->_scanStop)
-			break ;
-		for (std::string ip : ipList) {
-			//std::cout << "checked connection for ip: " << ip << std::endl;
-			std::cout << "[" << ip  << "]" << std::endl;
-			if (/*ip.compare(localIP) && */socket.connect(ip, CONNECTION_PORT) == sf::Socket::Done)
-			{
-				_onlineClients.push_back(ClientInfo{const_cast< char *>(ip.c_str()), getClientId(ip.c_str())});
-				std::cout << "connected : " << ip << std::endl;
-				socket.disconnect();
-			} else {
-				//std::cout << "nope !" << std::endl;
-			}
+	connection.sin_family = AF_INET;
+	connection.sin_port = SENDING_PORT;
+	//	while (42)
+	//	{
+	//		_onlineClients.empty();
+	//		if (this->_scanStop)
+	//			break ;
+	for (std::string ip : ipList) {
+		if (!inet_aton(ip.c_str(), &connection.sin_addr))
+			perror("inet_aton");
+		//std::cout << "checked connection for ip: " << ip << std::endl;
+		std::cout << "poke [" << ip  << "]" << std::endl;
+		if (ip.compare(localIP) && sendto(this->_sendDataSocket,
+					(const void *)"POKE",
+					sizeof("POKE"),
+					0,
+					(struct sockaddr *)&connection,
+					sizeof(connection)) < 0) {
+			perror("sendto");
+		} else {
+			_onlineClients.push_back(ClientInfo{const_cast< char *>(ip.c_str()), getClientId(ip.c_str())});
+			std::cout << "connected : " << ip << std::endl;
 		}
-		std::cout << "scanned !\n";
-		for (auto & c : _onlineClients)
-			std::cout << c.ip << std::endl;
-		usleep(this->_interval * 1000);
+	}
+	std::cout << "poked !\n";
+	//for (auto & c : _onlineClients)
+	//	std::cout << c.ip << std::endl;
+}
+
+void		Servotron::eventThread(void)
+{
+	fd_set	read_set;
+	fd_set	old_set;
+
+	FD_ZERO(&old_set);
+	FD_SET(this->_receiveDataSocket, &old_set);
+	while (42) {
+		read_set = old_set;
+		if (select(FD_SETSIZE, &read_set, NULL, NULL, NULL) < 0)
+			perror("select");
+		for (int i = 0; i < FD_SETSIZE; i++)
+			if (FD_ISSET(i, &read_set)) {
+				if (i == this->_receiveDataSocket) {
+					//to read datas ....
+				} else {
+					//do nothing
+				}
+			}
 	}
 }
 
-void		Servotron::serverWait(void)
+void		Servotron::createUdpSocket(int & ret, const int port) const
 {
-	sf::TcpListener listener;
-	sf::TcpSocket socket;
+	struct sockaddr_in  connection;
+	const int           yes = 1;
 
-	socket.setBlocking(false);
-	listener.setBlocking(false);
-	if (listener.listen(CONNECTION_PORT) != sf::Socket::Done)
-		std::cout << "can't listen to connection port !\n";
-
-	while (42) {
-		if (this->_scanStop)
-			break ;
-		if (listener.accept(socket) == sf::Socket::Done)
-			{}
-	}
+	srand((unsigned int)clock());
+	if ((ret = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP)) == -1)
+		perror("sock"), exit(-1);
+	bzero(&connection, sizeof(connection));
+	connection.sin_family = AF_INET;
+	connection.sin_port = htons(port);
+//	if (bind_port)
+//	{
+		if (setsockopt(ret, SOL_SOCKET, SO_REUSEPORT, &yes, sizeof(int)) == -1)
+			perror("setsockopt");
+		if (setsockopt(ret, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(int)) == -1)
+			perror("setsockopt");
+		connection.sin_addr.s_addr = htonl(INADDR_ANY);
+		if (bind(ret, (struct sockaddr *)&connection, sizeof(connection)) == -1)
+			perror("(fatal) bind"), exit(-1);
+//	}
 }
 
 Servotron::Servotron(void) :
 	_interval(1000),
-	_scanThread(&Servotron::scanPortThread, this),
-	_serverThread(&Servotron::serverWait, this),
+	_eventThread(&Servotron::eventThread, this),
 	_scanStop(false),
 	_state(STATE::SERVER),
 	_currentConnectedServer({NULL, 0})
 {
-	if (this->_sendingSocket.bind(SENDING_PORT) != sf::Socket::Done)
-		std::cout << "can't bind udp sending socket !\n";
-	if (this->_serverSocket.bind(SERVER_PORT) != sf::Socket::Done)
-		std::cout << "can't bind udp receiver socket !\n";
+	createUdpSocket(this->_sendDataSocket, SENDING_PORT);
+	createUdpSocket(this->_receiveDataSocket, SERVER_PORT);
+//	if (this->_sendingSocket.bind(SENDING_PORT) != sf::Socket::Done)
+//		std::cout << "can't bind udp sending socket !\n";
+//	if (this->_serverSocket.bind(SERVER_PORT) != sf::Socket::Done)
+//		std::cout << "can't bind udp receiver socket !\n";
 }
 
 Servotron::Servotron(Servotron const & src)
@@ -89,8 +132,7 @@ Servotron::Servotron(Servotron const & src)
 Servotron::~Servotron(void)
 {
 	_scanStop = true;
-	_scanThread.join();
-	_serverThread.join();
+	_eventThread.join();
 	std::cout << "Destructor of Servotron called" << std::endl;
 }
 
@@ -152,21 +194,23 @@ KEY			Servotron::charToKey(const char c) const
 void		Servotron::sendEvent(KEY & k)
 {
 	char			data[PACKAGE_SIZE];
-	sf::IpAddress	receiver(this->_currentConnectedServer.ip);
+	struct sockaddr_in			connection;
+
+	connection.sin_family = AF_INET;
+	connection.sin_port = SENDING_PORT;
+	if (!inet_aton(this->_currentConnectedServer.ip, &connection.sin_addr))
+		perror("inet_aton");
+
 	data[0] = (char)BYTECODE::KEYEVENT;
 	data[1] = keyToChar(k);
-	if (this->_serverSocket.send((void *)data, sizeof(data), receiver, (unsigned short)SERVER_PORT) != sf::Socket::Done)
-		std::cout << "failed to send UDP package\n";
-	(void)k;
+
+	if (sendto(this->_sendDataSocket, data, sizeof(data), 0, (struct sockaddr *)&connection, sizeof(connection)) < 0)
+		perror("sendto");
 }
 
 void		Servotron::connectServer(const ClientInfo c)
 {
-	this->_currentConnectedServer = c;
-	sf::TcpListener listener;
-
-	listener.listen(CONNECTION_PORT);
-//	this->_serverSocket.bind(SERVER_PORT);
+	(void)c;
 }
 
 void		Servotron::disconnectServer(void)
@@ -185,7 +229,7 @@ Servotron &	Servotron::operator=(Servotron const & src)
 	return (*this);
 }
 
-int		Servotron::getInterval(void) const { return (this->_interval); }
+int			Servotron::getInterval(void) const { return (this->_interval); }
 void		Servotron::setInterval(int tmp) { this->_interval = tmp; }
 
 std::ostream &	operator<<(std::ostream & o, Servotron const & r)

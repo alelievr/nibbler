@@ -5,7 +5,6 @@
 # include <deque>
 # include <thread>
 # include "IServotron.interface.hpp"
-# include "SFML/Network.hpp"
 
 class		Servotron : IServotron
 {
@@ -24,18 +23,18 @@ class		Servotron : IServotron
 
 		int							_interval;
 		std::deque< ClientInfo >	_onlineClients;
-		std::thread					_scanThread;
-		std::thread					_serverThread;
+		std::thread					_eventThread;
 		bool						_scanStop;
-		sf::UdpSocket				_serverSocket;
-		sf::UdpSocket				_sendingSocket;
 		STATE						_state;
 		ClientInfo					_currentConnectedServer;
+		int							_sendDataSocket;
+		int							_receiveDataSocket;
 
-		void		scanPortThread(void);
-		void		serverWait(void);
+		void		eventThread(void);
 		char		keyToChar(const KEY k) const;
 		KEY			charToKey(const char c) const;
+		void		createUdpSocket(int & s, const int port) const;
+		void		sendPokeToE1(void);
 
 	public:
 		Servotron();
