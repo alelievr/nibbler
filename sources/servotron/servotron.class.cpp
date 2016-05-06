@@ -30,7 +30,7 @@ void		Servotron::sendDataToFloor(char *data, std::size_t size)
 		if (!inet_aton(ip.c_str(), &connection.sin_addr))
 			perror("inet_aton1");
 //		std::cout << "poke sended to " << ip  << ":" << SERVER_PORT << std::endl;
-//		if (ip.compare(this->_localIP))
+		if (ip.compare(this->_localIP))
  		   sendData(data, size, &connection);
 	}
 }
@@ -74,7 +74,7 @@ void		Servotron::readData(void)
 		tmp.id = getClientId(tmp.ip);
 		if (std::find_if(_onlineClients.begin(), _onlineClients.end(),
 					[&](ClientInfo c) { return (c.id == tmp.id); }
-					) != _onlineClients.end() || _onlineClients.size() == 0) {
+					) == _onlineClients.end()) {
 			_onlineClients.push_back(tmp);
 			std::cout << "connected : " << str << std::endl;
 		}
@@ -83,7 +83,7 @@ void		Servotron::readData(void)
 		data[0] = 'P';
 		data[1] = 'I';
 		inet_pton(AF_INET, this->_localIP.c_str(), data + 2);
-	//	this->sendData(data, sizeof(data), str);
+		this->sendData(data, sizeof(data), str);
 	}
 	if (!strncmp(buff, "PI", 2)) {
 		inet_ntop(AF_INET, buff + 2, str, INET_ADDRSTRLEN);
@@ -330,6 +330,7 @@ extern "C" {
 int			main(void) {
 	Servotron	s;
 
-	usleep(1 * 1000 * 1000);
+	while (42);
+//	usleep(1 * 1000 * 1000);
 	return (0);
 }
