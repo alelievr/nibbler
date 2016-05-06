@@ -80,8 +80,8 @@ void		Servotron::readData(void)
 		}
 		else
 			std::cout << "already in list !\n";
-		data[0] = 'P';
-		data[1] = 'I';
+		data[0] = 'I';
+		data[1] = 'P';
 		inet_pton(AF_INET, this->_localIP.c_str(), data + 2);
 		this->sendData(data, sizeof(data), str);
 	}
@@ -89,7 +89,7 @@ void		Servotron::readData(void)
 		inet_ntop(AF_INET, buff + 2, str, INET_ADDRSTRLEN);
 		Client		id = getClientId(str);
 
-		std::remove_if(_onlineClients.begin(), _onlineClients.end(), [id](ClientInfo c){ return (c.id == id); });
+		std::remove_if(_onlineClients.begin(), _onlineClients.end(), [&](ClientInfo c){ return (c.id == id); });
 		std::cout << "disconnected : " << str << std::endl;
 	}
 
@@ -288,13 +288,13 @@ void		Servotron::sendEvent(KEY & k)
 
 void		Servotron::connectServer(const ClientInfo c)
 {
+	this->_currentConnectedServer = c;
 	(void)c;
 }
 
 void		Servotron::disconnectServer(void)
 {
 	this->_currentConnectedServer = {{0}, 0};
-//	this->_serverSocket.close();
 }
 
 Servotron &	Servotron::operator=(Servotron const & src)
