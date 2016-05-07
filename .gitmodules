@@ -18,6 +18,3 @@
 [submodule "vorbis"]
 	path = vorbis
 	url = https://github.com/xiph/vorbis
-[submodule "assets/flac"]
-	path = flac
-	url = https://github.com/xiph/flac
