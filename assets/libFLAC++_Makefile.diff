@@ -1,0 +1,11 @@
+--- Makefile.save	2016-05-07 19:03:15.000000000 +0200
++++ Makefile	2016-05-07 19:03:20.000000000 +0200
+@@ -294,7 +294,7 @@
+ INSTALL_SCRIPT = ${INSTALL}
+ INSTALL_STRIP_PROGRAM = $(install_sh) -c -s
+ LD = /Library/Developer/CommandLineTools/usr/bin/ld
+-LDFLAGS = 
++LDFLAGS = -lc++
+ LIBICONV = -liconv
+ LIBOBJS = 
+ LIBS = 

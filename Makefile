@@ -216,14 +216,16 @@ SERVOTRONLIB	= servotron.so
 
 SOUNDLIB		= sound.so
 OGGLIB			= ogg/src/.libs/libogg.a
-OGGINCLUDE		= ogg/include
+OGGINCDIC		= ogg/include
 VORBISLIB		= vorbis/lib/libvorbis.a
-VORBISINCLUDE	= vorbis/include
+VORBISINCDIR	= vorbis/include
+FLACLIB			= flac/src/libFLAC/.libs/libFLAC-static.a
+FLACINCDIR		= flac/include
 
-CPPFLAGS += -I$(GLFWINCDIR) -I$(SDLINCDIR) -I$(SFMLINCDIR) -I$(SOILINCDIR) -I$(OGGINCLUDE)
+CPPFLAGS += -I$(GLFWINCDIR) -I$(SDLINCDIR) -I$(SFMLINCDIR) -I$(SOILINCDIR)
 
 #	First target
-all: $(NAME) $(SDLLIB) $(GLFWLIB) $(SOILLIB) $(SFMLLIB) $(SERVOTRONLIB) $(OGGLIB) $(VORBISLIB) $(SOUNDLIB) $(GLFW_NIBBLER_LIB) $(SDL_NIBBLER_LIB) $(SFML_NIBBLER_LIB)
+all: $(NAME) $(SDLLIB) $(GLFWLIB) $(SOILLIB) $(SFMLLIB) $(SERVOTRONLIB) $(OGGLIB) $(VORBISLIB) $(FLACLIB) $(SOUNDLIB) $(GLFW_NIBBLER_LIB) $(SDL_NIBBLER_LIB) $(SFML_NIBBLER_LIB)
 
 $(SDLDIR_CHECK):
 	@git submodule init
@@ -259,6 +261,9 @@ $(OGGLIB):
 $(VORBISLIB):
 	cd vorbis && ./autogen.sh && cmake . -DOGG_INCLUDE_DIRS=../ogg/include -DOGG_LIBRARIES=../ogg/src/.libs/ && make
 
+$(FLACLIB):
+	cd flac && ./autogen.sh && ./configure && patch -i ../assets/libFLAC++_Makefile.diff ./src/libFLAC++/Makefile && make
+
 $(GLFW_NIBBLER_LIB): $(GLFWLIB_OBJ)
 	@$(call color_exec,$(CLINK_T),$(CLINK),"Link of $(GLFW_NIBBLER_LIB):",\
 		$(LINKER) $(SHAREDLIB_FLAGS) $(GLFWLIB) $(SOILLIB) $(OPTFLAGS)$(DEBUGFLAGS) $(VFRAME) -o $@ $(strip $^))
@@ -277,7 +282,7 @@ $(SERVOTRONLIB): $(SERVOTRON_OBJ)
 
 $(SOUNDLIB): $(SOUNDS_OBJ)
 	@$(call color_exec,$(CLINK_T),$(CLINK),"Link of $(SOUNDLIB):",\
-		$(LINKER) $(SHAREDLIB_FLAGS) SFML/lib/libsfml-audio-s.a SFML/lib/libsfml-system-s.a -F SFML/extlibs/libs-osx/Frameworks -framework FLAC -framework ogg -framework OpenAL -framework vorbis -framework vorbisenc -framework vorbisfile $(OPTFLAGS)$(DEBUGFLAGS) $(VFRAME) -o $@ $(strip $^))
+		$(LINKER) $(SHAREDLIB_FLAGS) SFML/lib/libsfml-audio-s.a SFML/lib/libsfml-system-s.a -F SFML/extlibs/libs-osx/Frameworks -I $(VORBISINCDIR) -I $(OGGINCDIC) -framework OpenAL $(VORBISLIB) vorbis/lib/libvorbisfile.a vorbis/lib/libvorbisenc.a ogg/src/.libs/libogg.a $(FLACLIB) $(OPTFLAGS)$(DEBUGFLAGS) $(VFRAME) -o $@ $(strip $^))
 
 #	Linking
 $(NAME): $(OBJ)
