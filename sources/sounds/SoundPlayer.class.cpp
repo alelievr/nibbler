@@ -2,12 +2,12 @@
 
 
 SoundPlayer::SoundPlayer(void) :
-	_eat("sounds/coin.mp3"),
-	_die("sounds/coin.mp3"),
-	_poop("sounds/coin.mp3"),
-	_background("sounds/coin.mp3"),
-	_joinGame("sounds/coin.mp3"),
-	_leftGame("sounds/coin.mp3")
+	_eat("assets/sounds/coin.ogg"),
+	_die("assets/sounds/death.ogg"),
+	_poop("assets/sounds/coin.ogg"),
+	_background("assets/sounds/arcade_loop.ogg"),
+	_joinGame("assets/sounds/door_open.ogg"),
+	_leftGame("assets/sounds/door_close.ogg")
 {
 	std::cout << "Default constructor of SoundPlayer called" << std::endl;
 }
@@ -71,6 +71,8 @@ int			main(void)
 {
 	SoundPlayer	sp;
 
+	sp.playEatSound();
+	sp.playBackgroundSound();
 	while (42);
 	return (0);
 }

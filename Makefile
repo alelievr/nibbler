@@ -282,7 +282,7 @@ $(SERVOTRONLIB): $(SERVOTRON_OBJ)
 
 $(SOUNDLIB): $(SOUNDS_OBJ)
 	@$(call color_exec,$(CLINK_T),$(CLINK),"Link of $(SOUNDLIB):",\
-		$(LINKER) $(SHAREDLIB_FLAGS) SFML/lib/libsfml-audio-s.a SFML/lib/libsfml-system-s.a -F SFML/extlibs/libs-osx/Frameworks -I $(VORBISINCDIR) -I $(OGGINCDIC) -framework OpenAL $(VORBISLIB) vorbis/lib/libvorbisfile.a vorbis/lib/libvorbisenc.a ogg/src/.libs/libogg.a $(FLACLIB) $(OPTFLAGS)$(DEBUGFLAGS) $(VFRAME) -o $@ $(strip $^))
+		$(LINKER) $(SHAREDLIB_FLAGS) SFML/lib/libsfml-audio-s.a SFML/lib/libsfml-system-s.a -I $(VORBISINCDIR) -I $(OGGINCDIC) -framework OpenAL $(VORBISLIB) vorbis/lib/libvorbisfile.a vorbis/lib/libvorbisenc.a ogg/src/.libs/libogg.a $(FLACLIB) $(OPTFLAGS)$(DEBUGFLAGS) $(VFRAME) -o $@ $(strip $^))
 
 #	Linking
 $(NAME): $(OBJ)
@@ -356,7 +356,7 @@ t2: all
 	c++ -std=c++11 sources/servotron/servotron.class.cpp -I sources/servotron -I sources -I SFML/include SFML/lib/libsfml-network-s.a SFML/lib/libsfml-system-s.a -lpthread && ./a.out
 
 t3: all
-	c++ SFML/lib/libsfml-system-s.a SFML/lib/libsfml-graphics-s.a SFML/lib/libsfml-window-s.a SOIL/lib/libSOIL.a -funroll-loops -O2 -framework Cocoa -framework OpenGL -framework IOKit -framework CoreVideo -framework Carbon -framework ForceFeedback -framework AudioUnit -framework CoreAudio $(SOUNDLIB) &&  ./a.out
+	$(LINKER) -std=c++11 SFML/lib/libsfml-audio-s.a SFML/lib/libsfml-system-s.a -I $(SFMLINCDIR) -I $(VORBISINCDIR) -I $(OGGINCDIC) -framework OpenAL $(VORBISLIB) vorbis/lib/libvorbisfile.a vorbis/lib/libvorbisenc.a ogg/src/.libs/libogg.a $(FLACLIB) $(OPTFLAGS)$(DEBUGFLAGS) $(VFRAME) sources/sounds/SoundPlayer.class.cpp && ./a.out
 
 coffee:
 	@clear

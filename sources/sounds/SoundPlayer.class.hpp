@@ -21,9 +21,10 @@ class		SoundPlayer : ISoundPlayer
 					this->_ok = true;
 					if (this->_buff.loadFromFile(filename)) {
 						this->sound.setBuffer(this->_buff);
-						this->sound.setVolume(0.75f);
+						this->sound.setVolume(75);
 						this->sound.setPitch(1.0f);
 						this->sound.setLoop(false);
+						std::cout << "loaded sound " << filename << std::endl;
 					} else
 						this->_ok = false;
 				}
@@ -33,7 +34,7 @@ class		SoundPlayer : ISoundPlayer
 				void	setVolume(float f) { if (this->_ok) this->sound.setVolume(f); }
 				void	setPitch(float f) { if (this->_ok) this->sound.setPitch(f); }
 				void	setLoop(bool b) { if (this->_ok) this->sound.setLoop(b); }
-				void	play(void) { if (this->_ok) this->sound.play(); }
+				void	play(void) { if (this->_ok) { this->sound.play(); std::cout << "playing !\n";} }
 				void	pause(void) { if (this->_ok) this->sound.pause(); }
 		};
 		SimpleSound	_eat;
