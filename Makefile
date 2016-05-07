@@ -350,7 +350,7 @@ functions: $(NAME)
 	@nm $(NAME) | grep U
 
 t: all
-	c++ -std=c++11 main_test.cpp -I sources -I sources/servotron -ldl -lpthread && ./a.out $(GLFW_NIBBLER_LIB)
+	c++ -std=c++11 main_test.cpp -I sources -I sources/servotron -I sources/sounds -ldl -lpthread && ./a.out $(GLFW_NIBBLER_LIB)
 
 t2: all
 	c++ -std=c++11 sources/servotron/servotron.class.cpp -I sources/servotron -I sources -I SFML/include SFML/lib/libsfml-network-s.a SFML/lib/libsfml-system-s.a -lpthread && ./a.out

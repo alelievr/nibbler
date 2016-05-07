@@ -6,7 +6,7 @@
 /*   By: alelievr <alelievr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/04/29 22:09:48 by alelievr          #+#    #+#             */
-/*   Updated: 2016/05/03 19:34:50 by alelievr         ###   ########.fr       */
+/*   Updated: 2016/05/07 20:25:45 by alelievr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,7 +80,7 @@ bool	GLFW_gui::loadItemTextures(void)
 	GLuint	foodTex = 0;
 
 	foodTex = SOIL_load_OGL_texture (
-		 	"./sprites/pizza.png",
+		 	"./assets/sprites/pizza.png",
 		 	SOIL_LOAD_AUTO,
 		 	SOIL_CREATE_NEW_ID,
 		 	SOIL_FLAG_MIPMAPS | SOIL_FLAG_INVERT_Y | SOIL_FLAG_NTSC_SAFE_RGB | SOIL_FLAG_COMPRESS_TO_DXT

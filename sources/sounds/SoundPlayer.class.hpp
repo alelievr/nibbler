@@ -24,7 +24,6 @@ class		SoundPlayer : ISoundPlayer
 						this->sound.setVolume(75);
 						this->sound.setPitch(1.0f);
 						this->sound.setLoop(false);
-						std::cout << "loaded sound " << filename << std::endl;
 					} else
 						this->_ok = false;
 				}
@@ -34,7 +33,7 @@ class		SoundPlayer : ISoundPlayer
 				void	setVolume(float f) { if (this->_ok) this->sound.setVolume(f); }
 				void	setPitch(float f) { if (this->_ok) this->sound.setPitch(f); }
 				void	setLoop(bool b) { if (this->_ok) this->sound.setLoop(b); }
-				void	play(void) { if (this->_ok) { this->sound.play(); std::cout << "playing !\n";} }
+				void	play(void) { if (this->_ok) this->sound.play(); }
 				void	pause(void) { if (this->_ok) this->sound.pause(); }
 		};
 		SimpleSound	_eat;
@@ -44,7 +43,7 @@ class		SoundPlayer : ISoundPlayer
 		SimpleSound	_joinGame;
 		SimpleSound	_leftGame;
 
-		void	payOneShot(sf::Sound const & sound, float pitch = 1.0f, float volume = 0.75f) const;
+		void	payOneShot(sf::Sound const & sound, float pitch = 1.0f, float volume = 75.0f) const;
 
 	public:
 		SoundPlayer();

@@ -6,18 +6,37 @@
 /*   By: alelievr <alelievr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/04/29 17:22:36 by alelievr          #+#    #+#             */
-/*   Updated: 2016/05/05 17:24:05 by alelievr         ###   ########.fr       */
+/*   Updated: 2016/05/07 20:30:48 by alelievr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ISlave.interface.hpp"
 #include "IServotron.interface.hpp"
+#include "ISoundPlayer.interface.hpp"
 #include <dlfcn.h>
 #include <unistd.h>
 #include <stdlib.h>
 #include <iostream>
 #include <queue>
 #include <deque>
+
+void		startSound(void)
+{
+	static ISoundPlayer		*sp;
+	void				*handler;
+	createSoundPlayerF	csp;
+	deleteSoundPlayerF	dsp;
+
+	if (!(handler = dlopen("sound.so", RTLD_LAZY | RTLD_LOCAL)))
+		exit(printf("%s\n", dlerror()));
+	if (!(csp = (createSoundPlayerF)dlsym(handler, "createSoundPlayer")))
+		exit(printf("%s\n", dlerror()));
+	if (!(dsp = (deleteSoundPlayerF)dlsym(handler, "deleteSoundPlayer")))
+		exit(printf("%s\n", dlerror()));
+
+	sp = csp();
+	sp->playBackgroundSound();
+}
 
 int			main(__attribute__((unused)) int ac, char **av)
 {
@@ -54,6 +73,8 @@ int			main(__attribute__((unused)) int ac, char **av)
 
 	servo = cServo();
 //	servo->startServer();
+
+	startSound();
 
 	snake.push_front({0, 0});
 	snake.push_front({1, 0});
