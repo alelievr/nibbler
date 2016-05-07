@@ -211,13 +211,19 @@ SFML_NIBBLER_LIB = SFMLnibbler.so
 SOILLIB			= SOIL/lib/libSOIL.a
 SOILDIR_CHECK	= SOIL/README.md
 SOILINCDIR		= SOIL/src
-SERVOTRONLIB	= servotron.so
-SOUNDLIB		= sound.so
 
-CPPFLAGS += -I$(GLFWINCDIR) -I$(SDLINCDIR) -I$(SFMLINCDIR) -I$(SOILINCDIR)
+SERVOTRONLIB	= servotron.so
+
+SOUNDLIB		= sound.so
+OGGLIB			= ogg/src/.libs/libogg.a
+OGGINCLUDE		= ogg/include
+VORBISLIB		= vorbis/lib/libvorbis.a
+VORBISINCLUDE	= vorbis/include
+
+CPPFLAGS += -I$(GLFWINCDIR) -I$(SDLINCDIR) -I$(SFMLINCDIR) -I$(SOILINCDIR) -I$(OGGINCLUDE)
 
 #	First target
-all: $(NAME) $(SDLLIB) $(GLFWLIB) $(SOILLIB) $(SFMLLIB) $(SERVOTRONLIB) $(SOUNDLIB) $(GLFW_NIBBLER_LIB) $(SDL_NIBBLER_LIB) $(SFML_NIBBLER_LIB)
+all: $(NAME) $(SDLLIB) $(GLFWLIB) $(SOILLIB) $(SFMLLIB) $(SERVOTRONLIB) $(OGGLIB) $(VORBISLIB) $(SOUNDLIB) $(GLFW_NIBBLER_LIB) $(SDL_NIBBLER_LIB) $(SFML_NIBBLER_LIB)
 
 $(SDLDIR_CHECK):
 	@git submodule init
@@ -247,6 +253,12 @@ $(GLFWLIB): $(GLFWDIR_CHECK)
 $(SOILLIB): $(SOILDIR_CHECK)
 	cd SOIL && make
 
+$(OGGLIB):
+	cd ogg && ./autogen.sh && ./configure && make
+
+$(VORBISLIB):
+	cd vorbis && ./autogen.sh && cmake . -DOGG_INCLUDE_DIRS=../ogg/include -DOGG_LIBRARIES=../ogg/src/.libs/ && make
+
 $(GLFW_NIBBLER_LIB): $(GLFWLIB_OBJ)
 	@$(call color_exec,$(CLINK_T),$(CLINK),"Link of $(GLFW_NIBBLER_LIB):",\
 		$(LINKER) $(SHAREDLIB_FLAGS) $(GLFWLIB) $(SOILLIB) $(OPTFLAGS)$(DEBUGFLAGS) $(VFRAME) -o $@ $(strip $^))
@@ -265,7 +277,7 @@ $(SERVOTRONLIB): $(SERVOTRON_OBJ)
 
 $(SOUNDLIB): $(SOUNDS_OBJ)
 	@$(call color_exec,$(CLINK_T),$(CLINK),"Link of $(SOUNDLIB):",\
-		$(LINKER) $(SHAREDLIB_FLAGS) SFML/lib/libsfml-audio-s.a SFML/lib/libsfml-system-s.a $(OPTFLAGS)$(DEBUGFLAGS) $(VFRAME) -o $@ $(strip $^))
+		$(LINKER) $(SHAREDLIB_FLAGS) SFML/lib/libsfml-audio-s.a SFML/lib/libsfml-system-s.a -F SFML/extlibs/libs-osx/Frameworks -framework FLAC -framework ogg -framework OpenAL -framework vorbis -framework vorbisenc -framework vorbisfile $(OPTFLAGS)$(DEBUGFLAGS) $(VFRAME) -o $@ $(strip $^))
 
 #	Linking
 $(NAME): $(OBJ)
@@ -333,10 +345,13 @@ functions: $(NAME)
 	@nm $(NAME) | grep U
 
 t: all
-	g++ -std=c++11 main_test.cpp -I sources -I sources/servotron -o test -ldl -lpthread && ./test $(GLFW_NIBBLER_LIB)
+	c++ -std=c++11 main_test.cpp -I sources -I sources/servotron -ldl -lpthread && ./a.out $(GLFW_NIBBLER_LIB)
 
 t2: all
-	g++ -std=c++11 sources/servotron/servotron.class.cpp -I sources/servotron -I sources -I SFML/include SFML/lib/libsfml-network-s.a SFML/lib/libsfml-system-s.a -lpthread && ./a.out
+	c++ -std=c++11 sources/servotron/servotron.class.cpp -I sources/servotron -I sources -I SFML/include SFML/lib/libsfml-network-s.a SFML/lib/libsfml-system-s.a -lpthread && ./a.out
+
+t3: all
+	c++ SFML/lib/libsfml-system-s.a SFML/lib/libsfml-graphics-s.a SFML/lib/libsfml-window-s.a SOIL/lib/libSOIL.a -funroll-loops -O2 -framework Cocoa -framework OpenGL -framework IOKit -framework CoreVideo -framework Carbon -framework ForceFeedback -framework AudioUnit -framework CoreAudio $(SOUNDLIB) &&  ./a.out
 
 coffee:
 	@clear

@@ -12,3 +12,9 @@
 [submodule "SOIL"]
 	path = SOIL
 	url = https://github.com/kbranigan/Simple-OpenGL-Image-Library.git
+[submodule "ogg"]
+	path = ogg
+	url = https://github.com/soundcloud/ogg
+[submodule "vorbis"]
+	path = vorbis
+	url = https://github.com/xiph/vorbis
