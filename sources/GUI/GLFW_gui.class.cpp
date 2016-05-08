@@ -6,7 +6,7 @@
 /*   By: alelievr <alelievr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/04/29 22:09:48 by alelievr          #+#    #+#             */
-/*   Updated: 2016/05/07 20:25:45 by alelievr         ###   ########.fr       */
+/*   Updated: 2016/05/08 02:02:27 by alelievr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,7 @@ std::map<int, std::pair< char, KEY > > keyMap = {
 	{GLFW_KEY_0, {6, KEY::ONE}},
 	{GLFW_KEY_1, {7, KEY::TWO}},
 	{GLFW_KEY_2, {8, KEY::THREE}},
+	{GLFW_KEY_ENTER, {9, KEY::ENTER}},
 };
 
 static void error_callback(int error, const char* description)
@@ -174,7 +175,7 @@ void	GLFW_gui::drawItem(Item const & i) const
    	glEnd();
 }
 
-void	GLFW_gui::render(Points const & snake, Items const & items, bool pause) const
+void	GLFW_gui::render(Points const & snake, Items const & items, bool pause, bool started) const
 {
     float	ratio;
 
@@ -205,6 +206,7 @@ void	GLFW_gui::render(Points const & snake, Items const & items, bool pause) con
 	glfwSwapBuffers(this->win);
 	glfwPollEvents();
 	(void)pause;
+	(void)started;
 }
 
 void	GLFW_gui::close(EVENT event)

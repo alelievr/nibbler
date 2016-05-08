@@ -34,7 +34,7 @@ class		SDL_gui : ISlave
 
 		bool open(std::size_t width, std::size_t height, std::string const & name);
 		void getEvent(KEY & key) const;
-		void render(Points const & snake, Items const & items, bool pause) const;
+		void render(Points const & snake, Items const & items, bool pause, bool started) const;
 		void close(EVENT event);
 };
 

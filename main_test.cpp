@@ -6,7 +6,7 @@
 /*   By: alelievr <alelievr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/04/29 17:22:36 by alelievr          #+#    #+#             */
-/*   Updated: 2016/05/07 20:30:48 by alelievr         ###   ########.fr       */
+/*   Updated: 2016/05/08 01:37:16 by alelievr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,6 +38,24 @@ void		startSound(void)
 	sp->playBackgroundSound();
 }
 
+void		startServotron(void)
+{
+	static IServotron	*servo;
+	void				*servoHandler;
+	createServotronF	cServo;
+	deleteServotronF	dServo;
+
+	if (!(servoHandler = dlopen("./servotron.so", RTLD_LAZY | RTLD_LOCAL)))
+		exit(printf("%s\n", dlerror()));
+	if (!(cServo = (createServotronF)dlsym(servoHandler, "createServotron")))
+		exit(printf("%s\n", dlerror()));
+	if (!(dServo = (deleteServotronF)dlsym(servoHandler, "deleteServotron")))
+		exit(printf("%s\n", dlerror()));
+
+	servo = cServo();
+//	servo->startServer();
+}
+
 int			main(__attribute__((unused)) int ac, char **av)
 {
 	void		*handler;
@@ -48,11 +66,6 @@ int			main(__attribute__((unused)) int ac, char **av)
 	KEY			ev;
 	ISlave		*gui;
 
-	void				*servoHandler;
-	IServotron			*servo;
-	createServotronF	cServo;
-	deleteServotronF	dServo;
-
 	if (!(handler = dlopen(av[1], RTLD_LAZY | RTLD_LOCAL)))
 		exit(printf("%s\n", dlerror()));
 	if (!(cgui = (createGUI_f)dlsym(handler, "createGUI")))
@@ -60,21 +73,12 @@ int			main(__attribute__((unused)) int ac, char **av)
 	if (!(dgui = (deleteGUI_f)dlsym(handler, "deleteGUI")))
 		exit(printf("%s\n", dlerror()));
 
-	if (!(servoHandler = dlopen("./servotron.so", RTLD_LAZY | RTLD_LOCAL)))
-		exit(printf("%s\n", dlerror()));
-	if (!(cServo = (createServotronF)dlsym(servoHandler, "createServotron")))
-		exit(printf("%s\n", dlerror()));
-	if (!(dServo = (deleteServotronF)dlsym(servoHandler, "deleteServotron")))
-		exit(printf("%s\n", dlerror()));
-
 	gui = cgui();
 	if (!gui->open(10, 10, "olol"))
 		exit(printf("an error occured during window opening !\n"));
 
-	servo = cServo();
-//	servo->startServer();
-
 	startSound();
+	startServotron();
 
 	snake.push_front({0, 0});
 	snake.push_front({1, 0});
@@ -86,6 +90,8 @@ int			main(__attribute__((unused)) int ac, char **av)
 		gui->getEvent(ev);
 		if (ev == KEY::ESCAPE)
 			exit(0);
+		if (ev == KEY::LEFT)
+			std::cout << "left\n";
 		usleep(1000);
 	}
 	dgui(gui);

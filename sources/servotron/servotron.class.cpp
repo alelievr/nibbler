@@ -92,7 +92,6 @@ void		Servotron::readData(void)
 		else
 			std::cout << "already in list !\n";
 		if (buff[2] == POKE_BYTE) {
-			std::cout << "sending poke reply !\n";
 			char	data[7];
 			makeConnectedPackage(data, false);
 			this->sendData(data, sizeof(data), str);
@@ -101,8 +100,6 @@ void		Servotron::readData(void)
 	if (!strncmp(buff, "PI", 2)) {
 		inet_ntop(AF_INET, buff + 3, str, INET_ADDRSTRLEN);
 		Client		cid = getClientId(str);
-
-		//std::remove_if(_onlineClients.begin(), _onlineClients.end(), [&](ClientInfo c){ return (c.id == id); });
 		_onlineClients.erase(std::find_if(_onlineClients.begin(), _onlineClients.end(),
 					[&](ClientInfo & c) { return (c.id == cid); }));
 		std::cout << "disconnected : " << str << std::endl;
@@ -114,6 +111,7 @@ void		Servotron::readData(void)
 		auto client = std::find_if(_onlineClients.begin(), _onlineClients.end(), [&](ClientInfo & c) { return (c.id == cid); });
 		if (client != _onlineClients.end())
 			client->lastEvent = charToKey(buff[1]);
+
 	}
 
 	std::cout << "debug [" << buff << "]" << std::endl;

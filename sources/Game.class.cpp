@@ -1,6 +1,7 @@
 #include "Game.class.hpp"
 
 #include <dlfcn.h>
+#include <unistd.h>
 
 __attribute((unused)) static inline bool
 is_in_snake(std::size_t x, std::size_t y, Points & snake)
@@ -14,6 +15,7 @@ is_in_snake(std::size_t x, std::size_t y, Points & snake)
 Game::Game(int argc, char **argv) :
 	Main(argc, argv),
 	_dir(DIRECTION::LEFT),
+	_started(false),
 	_title("Olol nibble"),
 	_active_ui(1ul)
 {
@@ -50,9 +52,10 @@ Game::run(void)
 	this->getGUI(_args[3]);
 	while (42)
 	{
-		if (_timer.frame(30))
+		//timer causing input lag if > 0, wtf ?
+		if (_timer.frame(0))
 		{
-			_gui->render(_snake, _items, false);
+			_gui->render(_snake, _items, false, true);
 		}
 		_gui->getEvent(key);
 		std::size_t	n;
@@ -75,7 +78,7 @@ Game::run(void)
 					_dir = DIRECTION::DOWN;
 				break ;
 			case KEY::PAUSE:
-				_gui->render(_snake, _items, true);
+				_gui->render(_snake, _items, true, false);
 				break ;
 			case KEY::ONE:
 			case KEY::TWO:
@@ -90,28 +93,31 @@ Game::run(void)
 				break ;
 			case KEY::ESCAPE:
 				return _gui->close(EVENT::GAMEOVER), 0;
+			case KEY::ENTER:
+				_started = true;
+				break ;
 			case KEY::NONE: break ;
 		}
-		std::size_t		x(_snake.back().x);
-		std::size_t		y(_snake.back().y);
-		_snake.pop_front();
-		switch (_dir)
+		if (_started)
 		{
-			case DIRECTION::LEFT:
-				--x; break ;
-			case DIRECTION::RIGHT:
-				++x; break ;
-			case DIRECTION::UP:
-				--y; break ;
-			case DIRECTION::DOWN:
-				++y; break ;
+			std::size_t		x(_snake.back().x);
+			std::size_t		y(_snake.back().y);
+			_snake.pop_front();
+			switch (_dir)
+			{
+				case DIRECTION::LEFT:
+					--x; break ;
+				case DIRECTION::RIGHT:
+					++x; break ;
+				case DIRECTION::UP:
+					--y; break ;
+				case DIRECTION::DOWN:
+					++y; break ;
+			}
+			//		if (x >= _width or y >= _height or is_in_snake(x, y, _snake))
+			//			return _gui->close(EVENT::GAMEOVER), 0;
+			_snake.push_back(Point{x, y});
 		}
-//		commented because segfault (of _gui->close(...))
-//		if (x >= _width or y >= _height or is_in_snake(x, y, _snake))
-//			return _gui->close(EVENT::GAMEOVER), 0;
-		_snake.push_back(Point{x, y});
-		//debug
-		std::cout << _snake[0].x << " | " << _snake[0].y << std::endl;
 		// manage food && bonus
 	}
 	// never reached

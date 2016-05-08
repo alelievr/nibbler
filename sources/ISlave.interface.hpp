@@ -6,7 +6,7 @@
 /*   By: fdaudre- <fdaudre-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/04/28 19:58:37 by fdaudre-          #+#    #+#             */
-/*   Updated: 2016/05/05 21:35:36 by alelievr         ###   ########.fr       */
+/*   Updated: 2016/05/08 02:00:04 by alelievr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,6 +46,7 @@ enum class KEY
 	ONE,
 	TWO,
 	THREE,
+	ENTER,
 	ESCAPE,
 	FIRST = NONE,
 	LAST = ESCAPE
@@ -74,7 +75,7 @@ struct ISlave
 	getEvent(KEY & key) const = 0;
 
 	virtual void
-	render(Points const & snake, Items const & items, bool pause) const = 0;
+	render(Points const & snake, Items const & items, bool pause, bool start) const = 0;
 
 	virtual void
 	close(EVENT event) = 0;
