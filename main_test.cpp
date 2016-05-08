@@ -6,7 +6,7 @@
 /*   By: alelievr <alelievr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/04/29 17:22:36 by alelievr          #+#    #+#             */
-/*   Updated: 2016/05/08 01:37:16 by alelievr         ###   ########.fr       */
+/*   Updated: 2016/05/08 17:50:27 by alelievr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,7 @@ void		startSound(void)
 		exit(printf("%s\n", dlerror()));
 
 	sp = csp();
-	sp->playBackgroundSound();
+	sp->playBackground();
 }
 
 void		startServotron(void)
@@ -86,7 +86,7 @@ int			main(__attribute__((unused)) int ac, char **av)
 	items.push_front({{2, 2}, Item::TYPE::FOOD});
 	while (42)
 	{
-		gui->render(snake, items, false);
+		gui->render(snake, items, false, true);
 		gui->getEvent(ev);
 		if (ev == KEY::ESCAPE)
 			exit(0);

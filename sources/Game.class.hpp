@@ -28,6 +28,7 @@ class Game : public Main
 		DIRECTION			_dir;
 		Timer				_timer;
 		bool				_started;
+		bool				_paused;
 
 		std::string	const	_title;
 

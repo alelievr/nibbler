@@ -1,13 +1,25 @@
-#include "SoundPlayer.class.hpp"
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   SoundPlayer.class.cpp                              :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: alelievr <alelievr@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2016/05/08 17:27:04 by alelievr          #+#    #+#             */
+/*   Updated: 2016/05/08 18:13:00 by alelievr         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
+#include "SoundPlayer.class.hpp"
+#include <unistd.h>
 
 SoundPlayer::SoundPlayer(void) :
-	_eat("assets/sounds/coin.ogg"),
-	_die("assets/sounds/death.ogg"),
-	_poop("assets/sounds/coin.ogg"),
-	_background("assets/sounds/arcade_loop.ogg"),
-	_joinGame("assets/sounds/door_open.ogg"),
-	_leftGame("assets/sounds/door_close.ogg")
+/*	_soundList[0]("assets/sounds/coin.ogg"),
+	_soundList[1]("assets/sounds/death.ogg"),
+	_soundList[2]("assets/sounds/coin.ogg"),
+	_soundList[3]("assets/sounds/door_open.ogg"),
+	_soundList[4]("assets/sounds/door_close.ogg"),*/
+	_background("assets/sounds/arcade_loop.ogg")
 {
 	std::cout << "Default constructor of SoundPlayer called" << std::endl;
 }
@@ -17,35 +29,30 @@ SoundPlayer::~SoundPlayer(void)
 	std::cout << "Destructor of SoundPlayer called" << std::endl;
 }
 
-void			SoundPlayer::playSound(char *filename)
+void			SoundPlayer::playSound(const char *filename)
 {
-	SimpleSound	ss(filename);
+	for (int i = 0; i < 32; i++)
+		if (!_soundList[i].isPlaying())
+		{
+			_soundList[i](filename);
+			_soundList[i].play();
+			break ;
+		}
 
-	ss.play();
 }
 
-void			SoundPlayer::playEatSound(void)
+void			SoundPlayer::playSound(const SOUND & s)
 {
-	_eat.play();
+	this->playSound(soundMap[s].c_str());
 }
 
-void			SoundPlayer::playDieSound(void)
-{
-	_die.play();
-}
-
-void			SoundPlayer::playPoopSound(void)
-{
-	_poop.play();
-}
-
-void			SoundPlayer::playBackgroundSound(void)
+void			SoundPlayer::playBackground(void)
 {
 	_background.setLoop(true);
 	_background.play();
 }
 
-void			SoundPlayer::stopBackgroundSound(void)
+void			SoundPlayer::stopBackground(void)
 {
 	_background.pause();
 }
@@ -71,8 +78,8 @@ int			main(void)
 {
 	SoundPlayer	sp;
 
-	sp.playEatSound();
-	sp.playBackgroundSound();
+	sp.playSound(SOUND::FOOD);
+	sp.playBackground();
 	while (42);
 	return (0);
 }

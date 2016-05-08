@@ -16,6 +16,7 @@ Game::Game(int argc, char **argv) :
 	Main(argc, argv),
 	_dir(DIRECTION::LEFT),
 	_started(false),
+	_paused(false),
 	_title("Olol nibble"),
 	_active_ui(1ul)
 {
@@ -55,7 +56,7 @@ Game::run(void)
 		//timer causing input lag if > 0, wtf ?
 		if (_timer.frame(0))
 		{
-			_gui->render(_snake, _items, false, true);
+			_gui->render(_snake, _items, _paused, _started);
 		}
 		_gui->getEvent(key);
 		std::size_t	n;
@@ -78,7 +79,7 @@ Game::run(void)
 					_dir = DIRECTION::DOWN;
 				break ;
 			case KEY::PAUSE:
-				_gui->render(_snake, _items, true, false);
+				_paused = !_paused;
 				break ;
 			case KEY::ONE:
 			case KEY::TWO:
@@ -98,7 +99,7 @@ Game::run(void)
 				break ;
 			case KEY::NONE: break ;
 		}
-		if (_started)
+		if (_started && !_paused)
 		{
 			std::size_t		x(_snake.back().x);
 			std::size_t		y(_snake.back().y);

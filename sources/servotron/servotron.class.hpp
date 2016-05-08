@@ -53,6 +53,8 @@ class		Servotron : IServotron
 		void		sendData(char *d, std::size_t size);
 		void		sendData(char *d, std::size_t size, struct sockaddr_in *co);
 		void		sendData(char *d, std::size_t size, std::string const & ip);
+		void		sendEvent(KEY & k);
+		void		sendEvent(KEY & k, std::string const & ip);
 
 		void		makeConnectedPackage(char *data, bool type);
 		void		makeDisconnectedPackage(char *data);
@@ -74,7 +76,6 @@ class		Servotron : IServotron
 		void	setInterval(int tmp);
 
 		void	getState(STATE & s) const;
-		void	sendEvent(KEY & k);
 
 		void	connectServer(const ClientInfo c);
 		void	disconnectServer(void);

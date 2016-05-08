@@ -1,47 +1,38 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   SoundPlayer.class.hpp                              :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: alelievr <alelievr@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2016/05/08 17:26:59 by alelievr          #+#    #+#             */
+/*   Updated: 2016/05/08 17:47:52 by alelievr         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #ifndef SOUNDPLAYER_HPP
 # define SOUNDPLAYER_HPP
 # include <iostream>
 # include <string>
+# include <map>
 # include "ISoundPlayer.interface.hpp"
 # include "SFML/Audio.hpp"
+# include "SimpleSound.class.hpp"
+
+std::map< SOUND, std::string > soundMap = {
+	{SOUND::FOOD, "assets/sounds/coin.ogg"},
+	{SOUND::POOP, "assets/sounds/coin.ogg"}, //TODO: change this sound
+	{SOUND::JOIN, "assets/sounds/door_open.ogg"},
+	{SOUND::LEFT, "assets/sounds/door_close.ogg"},
+	{SOUND::GAMEOVER, "assets/sounds/coin.ogg"}, //TODO change also
+	{SOUND::DEATH, "assets/sounds/death.ogg"},
+};
 
 class		SoundPlayer : ISoundPlayer
 {
 	private:
-		class		SimpleSound
-		{
-			private:
-				sf::SoundBuffer	_buff;
-				bool			_ok;
-
-			public:
-				sf::Sound		sound;
-
-				SimpleSound(const char * filename) {
-					this->_ok = true;
-					if (this->_buff.loadFromFile(filename)) {
-						this->sound.setBuffer(this->_buff);
-						this->sound.setVolume(75);
-						this->sound.setPitch(1.0f);
-						this->sound.setLoop(false);
-					} else
-						this->_ok = false;
-				}
-
-				SimpleSound(std::string const & filename) : SimpleSound(filename.c_str()) {}
-
-				void	setVolume(float f) { if (this->_ok) this->sound.setVolume(f); }
-				void	setPitch(float f) { if (this->_ok) this->sound.setPitch(f); }
-				void	setLoop(bool b) { if (this->_ok) this->sound.setLoop(b); }
-				void	play(void) { if (this->_ok) this->sound.play(); }
-				void	pause(void) { if (this->_ok) this->sound.pause(); }
-		};
-		SimpleSound	_eat;
-		SimpleSound	_die;
-		SimpleSound	_poop;
+		SimpleSound	_soundList[32];
 		SimpleSound	_background;
-		SimpleSound	_joinGame;
-		SimpleSound	_leftGame;
 
 		void	payOneShot(sf::Sound const & sound, float pitch = 1.0f, float volume = 75.0f) const;
 
@@ -50,12 +41,10 @@ class		SoundPlayer : ISoundPlayer
 		SoundPlayer(const SoundPlayer &) = delete;
 		virtual ~SoundPlayer(void);
 
-		void	playSound(char *filename);
-		void	playEatSound(void);
-		void	playDieSound(void);
-		void	playPoopSound(void);
-		void	playBackgroundSound(void);
-		void	stopBackgroundSound(void);
+		void	playSound(const char *filename);
+		void	playSound(const SOUND & s);
+		void	playBackground(void);
+		void	stopBackground(void);
 
 		SoundPlayer &	operator=(SoundPlayer const & src) = delete;
 };

@@ -31,6 +31,7 @@ SFMLLIB_SRC	=	GUI/SFML_gui.class.cpp	\
 SERVOTRON_SRC = servotron/servotron.class.cpp	\
 
 SOUNDS_SRC	=	sounds/SoundPlayer.class.cpp	\
+				sounds/SimpleSound.class.cpp	\
 
 #	Objects
 OBJDIR		=	obj
@@ -356,7 +357,7 @@ t2: all
 	c++ -std=c++11 sources/servotron/servotron.class.cpp -I sources/servotron -I sources -I SFML/include SFML/lib/libsfml-network-s.a SFML/lib/libsfml-system-s.a -lpthread && ./a.out
 
 t3: all
-	$(LINKER) -std=c++11 SFML/lib/libsfml-audio-s.a SFML/lib/libsfml-system-s.a -I $(SFMLINCDIR) -I $(VORBISINCDIR) -I $(OGGINCDIC) -framework OpenAL $(VORBISLIB) vorbis/lib/libvorbisfile.a vorbis/lib/libvorbisenc.a ogg/src/.libs/libogg.a $(FLACLIB) $(OPTFLAGS)$(DEBUGFLAGS) $(VFRAME) sources/sounds/SoundPlayer.class.cpp && ./a.out
+	$(LINKER) -std=c++11 SFML/lib/libsfml-audio-s.a SFML/lib/libsfml-system-s.a -I $(SFMLINCDIR) -I $(VORBISINCDIR) -I $(OGGINCDIC) -framework OpenAL $(VORBISLIB) vorbis/lib/libvorbisfile.a vorbis/lib/libvorbisenc.a ogg/src/.libs/libogg.a $(FLACLIB) $(OPTFLAGS)$(DEBUGFLAGS) $(VFRAME) $(addprefix sources/,$(SOUNDS_SRC)) && ./a.out
 
 coffee:
 	@clear

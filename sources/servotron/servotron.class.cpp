@@ -110,8 +110,19 @@ void		Servotron::readData(void)
 
 		auto client = std::find_if(_onlineClients.begin(), _onlineClients.end(), [&](ClientInfo & c) { return (c.id == cid); });
 		if (client != _onlineClients.end())
+		{
 			client->lastEvent = charToKey(buff[1]);
 
+			if (this->_state == STATE::SERVER)
+			{
+				std::cout << "sending key to every connected clients" << std::endl;
+				for (auto & c : _onlineClients)
+					if (c.id != cid)
+						sendEvent(client->lastEvent, std::string(c.ip));
+			}
+			else
+				std::cout << "TODO: client gesture" << std::endl;
+		}
 	}
 
 	std::cout << "debug [" << buff << "]" << std::endl;
@@ -312,6 +323,16 @@ void		Servotron::sendEvent(KEY & k)
 	data[1] = keyToChar(k);
 	inet_pton(AF_INET, this->_localIP.c_str(), data + 2);
 	this->sendData(data, sizeof(data));
+}
+
+void		Servotron::sendEvent(KEY & k, std::string const & ip)
+{
+	char			data[6];
+
+	data[0] = (char)BYTECODE::KEYEVENT;
+	data[1] = keyToChar(k);
+	inet_pton(AF_INET, this->_localIP.c_str(), data + 2);
+	this->sendData(data, sizeof(data), ip);
 }
 
 void		Servotron::connectServer(const ClientInfo c)

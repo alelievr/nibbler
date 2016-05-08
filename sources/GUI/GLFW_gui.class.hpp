@@ -15,27 +15,30 @@ class		GLFW_gui : ISlave
 		std::size_t						width;
 		std::size_t						height;
 		Point							squareSize;
-		std::map<Item::TYPE, GLuint>	texMap;
+		std::map< TEXTURE, GLuint >		texMap;
 		const Point						winSize = {WIN_W, WIN_H};
 
-		void drawRect(Point const & p, const unsigned int color) const;
-		void drawItem(Item const & i) const;
-		void getCasesBounds(Point const & p, float & x1, float & y1, float & x2, float & y2) const;
-		bool loadItemTextures();
+		void	drawRect(Point const & p, const unsigned int color) const;
+		void	drawItem(Item const & i) const;
+		void	drawPauseScreen(void) const;
+		void	drawStartScreen(void) const;
+		void	getCasesBounds(Point const & p, float & x1, float & y1, float & x2, float & y2) const;
+		bool	loadItemTextures();
+		TEXTURE & itemToTexture(Item::TYPE const & i) const;
 
 	public:
-		static int		pressedKey;
+		static KEY		pressedKey;
 
 		GLFW_gui();
 		GLFW_gui(const GLFW_gui&);
-		virtual ~GLFW_gui(void);
+		virtual	~GLFW_gui(void);
 
 		GLFW_gui &	operator=(GLFW_gui const & src);
 
-		bool open(std::size_t width, std::size_t height, std::string const & name);
-		void getEvent(KEY & key) const;
-		void render(Points const & snake, Items const & items, bool pause, bool started) const;
-		void close(EVENT event);
+		bool	open(std::size_t width, std::size_t height, std::string const & name);
+		void	getEvent(KEY & key) const;
+		void	render(Points const & snake, Items const & items, bool pause, bool started) const;
+		void	close(EVENT event);
 };
 
 std::ostream &	operator<<(std::ostream & o, GLFW_gui const & r);

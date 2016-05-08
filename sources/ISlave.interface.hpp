@@ -6,7 +6,7 @@
 /*   By: fdaudre- <fdaudre-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/04/28 19:58:37 by fdaudre-          #+#    #+#             */
-/*   Updated: 2016/05/08 02:00:04 by alelievr         ###   ########.fr       */
+/*   Updated: 2016/05/08 18:28:33 by alelievr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,8 @@ struct Item
 	enum class TYPE
 	{
 		FOOD,
-		POOP
+		POOP,
+		WALL
 	};
 	Point			coo;
 	TYPE			type;
