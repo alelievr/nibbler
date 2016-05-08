@@ -114,8 +114,8 @@ Game::run(void)
 				case DIRECTION::DOWN:
 					++y; break ;
 			}
-			//		if (x >= _width or y >= _height or is_in_snake(x, y, _snake))
-			//			return _gui->close(EVENT::GAMEOVER), 0;
+			if (x >= _width or y >= _height or is_in_snake(x, y, _snake))
+				return _gui->close(EVENT::GAMEOVER), 0;
 			_snake.push_back(Point{x, y});
 		}
 		// manage food && bonus
