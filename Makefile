@@ -29,6 +29,7 @@ SDLLIB_SRC	=	GUI/SDL_gui.class.cpp	\
 SFMLLIB_SRC	=	GUI/SFML_gui.class.cpp	\
 
 SERVOTRON_SRC = servotron/servotron.class.cpp	\
+				servotron/ServotronUI.class.cpp	\
 
 SOUNDS_SRC	=	sounds/SoundPlayer.class.cpp	\
 				sounds/SimpleSound.class.cpp	\

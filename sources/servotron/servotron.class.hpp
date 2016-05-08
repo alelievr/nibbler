@@ -5,6 +5,7 @@
 # include <deque>
 # include <thread>
 # include "IServotron.interface.hpp"
+# include "ServotronUI.class.hpp"
 
 # include <netinet/in.h>
 # include <sys/socket.h>
@@ -35,6 +36,7 @@ class		Servotron : IServotron
 		int							_interval;
 		std::deque< ClientInfo >	_onlineClients;
 		std::thread					_eventThread;
+		std::thread					_graphicThread;
 		bool						_threadStop;
 		STATE						_state;
 		ClientInfo					_currentConnectedServer;

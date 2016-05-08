@@ -235,6 +235,7 @@ Servotron::Servotron(void) :
 	createUdpSocket(this->_receiveDataSocket, SERVER_PORT, true);
 
 	_eventThread = std::thread(&Servotron::eventThread, this);
+	_graphicThread = std::thread([this](){ ServotronUI sui(this); });
 	scanClientsOnFloor();
 }
 
@@ -250,6 +251,7 @@ Servotron::~Servotron(void)
 
 	_threadStop = true;
 	_eventThread.join();
+	_graphicThread.join();
 	std::cout << "Destructor of Servotron called" << std::endl;
 }
 
