@@ -5,9 +5,10 @@
 # include <map>
 # include "ISlave.interface.hpp"
 # include "constant.h"
-# include <SFML/Window.hpp>
+# include "SFML/Graphics.hpp"
+//# include "GUI.class.hpp"
 
-class		SFML_gui : ISlave
+class		SFML_gui : public ISlave//, public GUI
 {
 	private:
 		sf::Window								window;

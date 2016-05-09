@@ -23,10 +23,13 @@ SRC			=	main.cpp			\
 				Timer.class.cpp		\
 
 GLFWLIB_SRC	=	GUI/GLFW_gui.class.cpp	\
+				GUI/GUI.class.cpp		\
 
 SDLLIB_SRC	=	GUI/SDL_gui.class.cpp	\
+				GUI/GUI.class.cpp		\
 
 SFMLLIB_SRC	=	GUI/SFML_gui.class.cpp	\
+				#GUI/GUI.class.cpp		\
 
 SERVOTRON_SRC = servotron/servotron.class.cpp	\
 				servotron/ServotronUI.class.cpp	\

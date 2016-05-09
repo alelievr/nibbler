@@ -6,8 +6,9 @@
 # include "SDL.h"
 # include "ISlave.interface.hpp"
 # include "constant.h"
+# include "GUI.class.hpp"
 
-class		SDL_gui : ISlave
+class		SDL_gui : public ISlave, public GUI
 {
 	private:
 		SDL_Window								*window;

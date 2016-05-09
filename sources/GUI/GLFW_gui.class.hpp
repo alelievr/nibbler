@@ -6,16 +6,13 @@
 # include "GLFW/glfw3.h"
 # include "ISlave.interface.hpp"
 # include "constant.h"
+# include "GUI.class.hpp"
 
-class		GLFW_gui : ISlave
+class		GLFW_gui : public ISlave, public GUI
 {
 	private:
 		GLFWwindow						*win;
 		bool							init;
-		std::size_t						width;
-		std::size_t						height;
-		Point							squareSize;
-		std::map< TEXTURE, GLuint >		texMap;
 		const Point						winSize = {WIN_W, WIN_H};
 
 		void	drawRect(Point const & p, const unsigned int color) const;
@@ -23,7 +20,6 @@ class		GLFW_gui : ISlave
 		void	drawPauseScreen(void) const;
 		void	drawStartScreen(void) const;
 		void	getCasesBounds(Point const & p, float & x1, float & y1, float & x2, float & y2) const;
-		bool	loadItemTextures();
 		TEXTURE & itemToTexture(Item::TYPE const & i) const;
 
 	public:

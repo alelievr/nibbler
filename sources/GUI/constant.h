@@ -6,7 +6,7 @@
 /*   By: alelievr <alelievr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/05/03 22:42:41 by alelievr          #+#    #+#             */
-/*   Updated: 2016/05/08 18:31:20 by alelievr         ###   ########.fr       */
+/*   Updated: 2016/05/09 01:27:00 by alelievr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,18 +24,4 @@ enum class TEXTURE
 	WALL,
 	START,
 	GAMEOVER,
-};
-
-std::map< TEXTURE, std::string > textureMap = {
-	{TEXTURE::FOOD, "assets/sprites/pizza.png"},
-	{TEXTURE::POOP, "assets/sprites/pizza.png"}, //TODO change
-	{TEXTURE::WALL, "assets/sprites/pizza.png"}, //TODO change
-	{TEXTURE::START, "assets/sprites/start.png"},
-	{TEXTURE::GAMEOVER, "assets/sprites/gameover.png"},
-};
-
-std::map< Item::TYPE, TEXTURE > itemTexMap= {
-	{Item::TYPE::FOOD, TEXTURE::FOOD},
-	{Item::TYPE::POOP, TEXTURE::POOP},
-	{Item::TYPE::WALL, TEXTURE::WALL},
 };
