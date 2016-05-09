@@ -226,7 +226,8 @@ Servotron::Servotron(void) :
 	_interval(1000),
 	_threadStop(false),
 	_state(STATE::SERVER),
-	_currentConnectedServer({{0}, 0, KEY::NONE})
+	_currentConnectedServer({{0}, 0, KEY::NONE}),
+	_servoUI(this)
 {
 	std::cout << "constructed servotron !" << std::endl;
 	this->_localIP = sf::IpAddress::getLocalAddress().toString();
@@ -235,14 +236,7 @@ Servotron::Servotron(void) :
 	createUdpSocket(this->_receiveDataSocket, SERVER_PORT, true);
 
 	_eventThread = std::thread(&Servotron::eventThread, this);
-	_graphicThread = std::thread([this](){ ServotronUI sui(this); });
 	scanClientsOnFloor();
-}
-
-Servotron::Servotron(Servotron const & src)
-{
-	*this = src;
-	std::cout << "Copy constructor called" << std::endl;
 }
 
 Servotron::~Servotron(void)
@@ -251,7 +245,6 @@ Servotron::~Servotron(void)
 
 	_threadStop = true;
 	_eventThread.join();
-	_graphicThread.join();
 	std::cout << "Destructor of Servotron called" << std::endl;
 }
 
@@ -350,18 +343,19 @@ void		Servotron::disconnectServer(void)
 	this->_state = STATE::SERVER;
 }
 
-Servotron &	Servotron::operator=(Servotron const & src)
+void		Servotron::updateGUI(void)
 {
-	std::cout << "Assignment operator called" << std::endl;
-
-	if (this != &src) {
-		this->_interval = src.getInterval();
-	}
-	return (*this);
+	_servoUI.render();
 }
 
 int			Servotron::getInterval(void) const { return (this->_interval); }
 void		Servotron::setInterval(int tmp) { this->_interval = tmp; }
+void		Servotron::getOnlineIpList(std::deque< std::string > & clist) const
+{
+	clist.empty();
+	for (auto const & c : _onlineClients)
+		clist.push_back(c.ip);
+}
 
 std::ostream &	operator<<(std::ostream & o, Servotron const & r)
 {
@@ -383,7 +377,8 @@ extern "C" {
 int			main(void) {
 	Servotron	s;
 
-	while (42);
+	while (42)
+		s.updateGUI();
 //	usleep(1 * 1000 * 1000);
 	return (0);
 }

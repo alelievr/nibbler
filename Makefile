@@ -283,7 +283,7 @@ $(SFML_NIBBLER_LIB): $(SFMLLIB_OBJ)
 
 $(SERVOTRONLIB): $(SERVOTRON_OBJ)
 	@$(call color_exec,$(CLINK_T),$(CLINK),"Link of $(SERVOTRONLIB):",\
-		$(LINKER) $(SHAREDLIB_FLAGS) SFML/lib/libsfml-graphics-s.a SFML/lib/libsfml-window-s.a SFML/lib/libsfml-network-s.a SFML/lib/libsfml-system-s.a $(OPTFLAGS)$(DEBUGFLAGS) $(VFRAME) -o $@ $(strip $^))
+		$(LINKER) $(SHAREDLIB_FLAGS) $(GLFWLIB) SFML/lib/libsfml-graphics-s.a SFML/lib/libsfml-window-s.a SFML/lib/libsfml-network-s.a SFML/lib/libsfml-system-s.a $(OPTFLAGS)$(DEBUGFLAGS) $(VFRAME) -o $@ $(strip $^))
 
 $(SOUNDLIB): $(SOUNDS_OBJ)
 	@$(call color_exec,$(CLINK_T),$(CLINK),"Link of $(SOUNDLIB):",\
@@ -358,7 +358,7 @@ t: all
 	c++ -std=c++11 main_test.cpp -I sources -I sources/servotron -I sources/sounds -ldl -lpthread && ./a.out $(GLFW_NIBBLER_LIB)
 
 t2: all
-	c++ -std=c++11 $(addprefix sources/,$(SERVOTRON_SRC)) -I sources/servotron -I sources -I SFML/include SFML/lib/libsfml-network-s.a SFML/lib/libsfml-graphics-s.a SFML/lib/libsfml-window-s.a $(VFRAME) SFML/lib/libsfml-system-s.a -lpthread && ./a.out
+	c++ -std=c++11 $(addprefix sources/,$(SERVOTRON_SRC)) $(CPPFLAGS) $(GLFWLIB) SFML/lib/libsfml-network-s.a SFML/lib/libsfml-graphics-s.a SFML/lib/libsfml-window-s.a $(VFRAME) SFML/lib/libsfml-system-s.a -lpthread && ./a.out
 
 t3: all
 	$(LINKER) -std=c++11 SFML/lib/libsfml-audio-s.a SFML/lib/libsfml-system-s.a -I $(SFMLINCDIR) -I $(VORBISINCDIR) -I $(OGGINCDIC) -framework OpenAL $(VORBISLIB) vorbis/lib/libvorbisfile.a vorbis/lib/libvorbisenc.a ogg/src/.libs/libogg.a $(FLACLIB) $(OPTFLAGS)$(DEBUGFLAGS) $(VFRAME) $(addprefix sources/,$(SOUNDS_SRC)) && ./a.out

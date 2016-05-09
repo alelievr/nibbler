@@ -6,7 +6,7 @@
 /*   By: alelievr <alelievr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/05/04 19:23:45 by alelievr          #+#    #+#             */
-/*   Updated: 2016/05/06 22:08:43 by alelievr         ###   ########.fr       */
+/*   Updated: 2016/05/09 16:39:57 by alelievr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,13 +44,13 @@ enum	NETWORK_BYTES
 class	IServotron
 {
 	public:
-		virtual void		setScanInterval(const int millis) = 0;
 		virtual void		getConnectedClients(Clients & clients) const = 0;
 		virtual void		getClientEvent(Client const & c, KEY & key) const = 0;
 		virtual void		sendEvent(KEY & k) = 0;
 		virtual void		startServer(void) const = 0;
 		virtual void		stopServer(void) const = 0;
 		virtual void		getState(STATE & s) const = 0;
+		virtual void		updateGUI(void) = 0;
 };
 
 typedef IServotron	*(*createServotronF)(void);

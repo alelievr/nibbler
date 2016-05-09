@@ -36,13 +36,13 @@ class		Servotron : IServotron
 		int							_interval;
 		std::deque< ClientInfo >	_onlineClients;
 		std::thread					_eventThread;
-		std::thread					_graphicThread;
 		bool						_threadStop;
 		STATE						_state;
 		ClientInfo					_currentConnectedServer;
 		int							_sendDataSocket;
 		int							_receiveDataSocket;
 		std::string					_localIP;
+		ServotronUI					_servoUI;
 
 		void		eventThread(void);
 		char		keyToChar(const KEY k) const;
@@ -63,19 +63,21 @@ class		Servotron : IServotron
 
 	public:
 		Servotron();
-		Servotron(const Servotron&);
+		Servotron(const Servotron&) = delete;
 		virtual ~Servotron(void);
 
-		Servotron &	operator=(Servotron const & src);
+		Servotron &	operator=(Servotron const & src) = delete;
 
 		void	setScanInterval(const int millis);
 		void	getConnectedClients(Clients & clients) const;
 		void	getClientEvent(Client const & c, KEY & key) const;
 		void	startServer(void) const;
 		void	stopServer(void) const;
+		void	updateGUI(void);
 
 		int		getInterval(void) const;
 		void	setInterval(int tmp);
+		void	getOnlineIpList(std::deque< std::string > & clist) const;
 
 		void	getState(STATE & s) const;
 

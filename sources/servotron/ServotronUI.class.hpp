@@ -2,20 +2,31 @@
 # define SERVOTRONUI_HPP
 # include <iostream>
 # include <string>
+# include <thread>
+# include <deque>
 # include "SFML/Graphics.hpp"
+# include "GLFW/glfw3.h"
 
 class		Servotron;
 
 class		ServotronUI
 {
 	private:
-		Servotron	*_servo;
+		Servotron					*_servo;
+		GLFWwindow					*_win;
+		//sf::Window				_win;
+		std::deque< std::string >	_ipList;
+
+		void		onClick(sf::Vector2i const & pos);
+		void		renderClientList(void);
 
 	public:
 		ServotronUI(void) = delete;
 		ServotronUI(Servotron *s);
-		ServotronUI(const ServotronUI&);
+		ServotronUI(const ServotronUI &);
 		virtual ~ServotronUI(void);
+
+		void		render(void);
 
 		ServotronUI &	operator=(ServotronUI const & src);
 };
