@@ -2,6 +2,7 @@
 # define SERVOTRONUI_HPP
 # include <iostream>
 # include <string>
+# include "SFML/Graphics.hpp"
 
 class		Servotron;
 
