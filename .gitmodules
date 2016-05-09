@@ -21,3 +21,6 @@
 [submodule "flac"]
 	path = flac
 	url = https://github.com/xiph/flac
+[submodule "freetype"]
+	path = freetype
+	url = https://github.com/winlibs/freetype

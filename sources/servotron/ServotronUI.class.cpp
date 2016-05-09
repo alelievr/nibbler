@@ -1,4 +1,5 @@
 #include "ServotronUI.class.hpp"
+#include "servotron.class.hpp"
 
 static void error_callback(int error, const char* description)
 {
@@ -42,10 +43,13 @@ void		ServotronUI::onClick(sf::Vector2i const & pos)
 
 void		ServotronUI::renderClientList(void)
 {
-	//_servo->getOnlineIpList(_ipList);
+	_servo->getOnlineIpList(_ipList);
 
-//	for (auto const & ip : _ipList)
-//		;
+	for (auto const & ip : _ipList)
+	{
+		//display each ip
+		(void)ip;
+	}
 }
 
 void		ServotronUI::render(void)

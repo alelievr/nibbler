@@ -217,6 +217,9 @@ SOILLIB			= SOIL/lib/libSOIL.a
 SOILDIR_CHECK	= SOIL/README.md
 SOILINCDIR		= SOIL/src
 
+FREETYPELIB		= freetype/objs/.libs/libfreetype.a
+FREETYPEINCDIR	= freetype/include
+
 SERVOTRONLIB	= servotron.so
 
 SOUNDLIB		= sound.so
@@ -230,7 +233,7 @@ FLACINCDIR		= flac/include
 CPPFLAGS += -I$(GLFWINCDIR) -I$(SDLINCDIR) -I$(SFMLINCDIR) -I$(SOILINCDIR)
 
 #	First target
-all: $(NAME) $(SDLLIB) $(GLFWLIB) $(SOILLIB) $(SFMLLIB) $(SERVOTRONLIB) $(OGGLIB) $(VORBISLIB) $(FLACLIB) $(SOUNDLIB) $(GLFW_NIBBLER_LIB) $(SDL_NIBBLER_LIB) $(SFML_NIBBLER_LIB)
+all: $(NAME) $(SDLLIB) $(GLFWLIB) $(SOILLIB) $(SFMLLIB) $(FREETYPELIB) $(SERVOTRONLIB) $(OGGLIB) $(VORBISLIB) $(FLACLIB) $(SOUNDLIB) $(GLFW_NIBBLER_LIB) $(SDL_NIBBLER_LIB) $(SFML_NIBBLER_LIB)
 
 $(SDLDIR_CHECK):
 	@git submodule init
@@ -259,6 +262,9 @@ $(GLFWLIB): $(GLFWDIR_CHECK)
 
 $(SOILLIB): $(SOILDIR_CHECK)
 	cd SOIL && make
+
+$(FREETYPELIB):
+	cd freetype && sh autogen.sh && ./configure || chmod +x builds/unix/configure && ./configure
 
 $(OGGLIB):
 	cd ogg && ./autogen.sh && ./configure && make
