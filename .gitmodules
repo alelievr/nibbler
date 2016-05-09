@@ -21,9 +21,3 @@
 [submodule "flac"]
 	path = flac
 	url = https://github.com/xiph/flac
-[submodule "bx"]
-	path = bx
-	url = https://github.com/bkaradzic/bx
-[submodule "bgfx"]
-	path = bgfx
-	url = https://github.com/bkaradzic/bgfx
