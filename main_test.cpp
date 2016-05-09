@@ -6,7 +6,7 @@
 /*   By: alelievr <alelievr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/04/29 17:22:36 by alelievr          #+#    #+#             */
-/*   Updated: 2016/05/08 17:50:27 by alelievr         ###   ########.fr       */
+/*   Updated: 2016/05/09 18:52:54 by alelievr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,9 +20,9 @@
 #include <queue>
 #include <deque>
 
-void		startSound(void)
+ISoundPlayer 	*startSound(void)
 {
-	static ISoundPlayer		*sp;
+	ISoundPlayer		*sp;
 	void				*handler;
 	createSoundPlayerF	csp;
 	deleteSoundPlayerF	dsp;
@@ -36,11 +36,12 @@ void		startSound(void)
 
 	sp = csp();
 	sp->playBackground();
+	return (sp);
 }
 
-void		startServotron(void)
+IServotron		*startServotron(void)
 {
-	static IServotron	*servo;
+	IServotron			*servo;
 	void				*servoHandler;
 	createServotronF	cServo;
 	deleteServotronF	dServo;
@@ -54,19 +55,17 @@ void		startServotron(void)
 
 	servo = cServo();
 //	servo->startServer();
+	return (servo);
 }
 
-int			main(__attribute__((unused)) int ac, char **av)
+ISlave		*startGUI(char *lib)
 {
 	void		*handler;
 	createGUI_f	cgui;
 	deleteGUI_f	dgui;
-	Points		snake;
-	Items		items;
-	KEY			ev;
 	ISlave		*gui;
 
-	if (!(handler = dlopen(av[1], RTLD_LAZY | RTLD_LOCAL)))
+	if (!(handler = dlopen(lib, RTLD_LAZY | RTLD_LOCAL)))
 		exit(printf("%s\n", dlerror()));
 	if (!(cgui = (createGUI_f)dlsym(handler, "createGUI")))
 		exit(printf("%s\n", dlerror()));
@@ -74,11 +73,20 @@ int			main(__attribute__((unused)) int ac, char **av)
 		exit(printf("%s\n", dlerror()));
 
 	gui = cgui();
+	return (gui);
+}
+
+int			main(__attribute__((unused)) int ac, char **av)
+{
+	Points			snake;
+	Items			items;
+	KEY				ev;
+	ISlave			*gui = startGUI(av[1]);
+	IServotron		*servo = startServotron();
+	ISoundPlayer	*sp = startSound();
+
 	if (!gui->open(10, 10, "olol"))
 		exit(printf("an error occured during window opening !\n"));
-
-	startSound();
-	startServotron();
 
 	snake.push_front({0, 0});
 	snake.push_front({1, 0});
@@ -88,12 +96,12 @@ int			main(__attribute__((unused)) int ac, char **av)
 	{
 		gui->render(snake, items, false, true);
 		gui->getEvent(ev);
+		servo->updateGUI();
 		if (ev == KEY::ESCAPE)
 			exit(0);
 		if (ev == KEY::LEFT)
 			std::cout << "left\n";
 		usleep(1000);
 	}
-	dgui(gui);
 	return (0);
 }

@@ -58,6 +58,7 @@ void		ServotronUI::render(void)
 	float ratio;
 	int width, height;
 
+	std::cout << "olol\n";
 	glfwGetFramebufferSize(_win, &width, &height);
 	ratio = width / (float) height;
 	glViewport(0, 0, width, height);

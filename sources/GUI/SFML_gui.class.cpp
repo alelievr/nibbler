@@ -6,7 +6,7 @@
 /*   By: alelievr <alelievr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/04/29 22:09:48 by alelievr          #+#    #+#             */
-/*   Updated: 2016/05/08 02:04:08 by alelievr         ###   ########.fr       */
+/*   Updated: 2016/05/09 19:34:31 by alelievr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,10 +83,10 @@ bool	SFML_gui::loadItemTextures(void)
 
 bool	SFML_gui::open(std::size_t width, std::size_t height, std::string const & name)
 {
-//	this->window.create(sf::VideoMode(winSize.x, winSize.y), name);
+	this->window.create(sf::VideoMode(winSize.x, winSize.y), name);
 
-//	if (!this->window.isOpen())
-//		return (false);
+	if (!this->window.isOpen())
+		return (false);
 
 	this->width = width;
 	this->height = height;
@@ -138,6 +138,19 @@ void	SFML_gui::drawItem(Item const & i) const
 
 void	SFML_gui::render(Points const & snake, Items const & items, bool pause, bool started) const
 {
+	if (window.isOpen())
+    {
+        // on inspecte tous les évènements de la fenêtre qui ont été émis depuis la précédente itération
+   /*     sf::Event event;
+        while (window.pollEvent(event))
+        {
+            // évènement "fermeture demandée" : on ferme la fenêtre
+            if (event.type == sf::Event::Closed)
+                window.close();
+        }*/
+    //    window.display();
+    }
+
 	(void)snake;
 	(void)items;
 	(void)pause;
