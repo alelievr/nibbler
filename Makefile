@@ -24,15 +24,19 @@ SRC			=	main.cpp			\
 
 GLFWLIB_SRC	=	GUI/GLFW_gui.class.cpp	\
 				GUI/GUI.class.cpp		\
+				Freetype.class.cpp	\
 
 SDLLIB_SRC	=	GUI/SDL_gui.class.cpp	\
 				GUI/GUI.class.cpp		\
+				Freetype.class.cpp	\
 
 SFMLLIB_SRC	=	GUI/SFML_gui.class.cpp	\
+				Freetype.class.cpp	\
 				#GUI/GUI.class.cpp		\
 
 SERVOTRON_SRC = servotron/servotron.class.cpp	\
 				servotron/ServotronUI.class.cpp	\
+				Freetype.class.cpp	\
 
 SOUNDS_SRC	=	sounds/SoundPlayer.class.cpp	\
 				sounds/SimpleSound.class.cpp	\
@@ -219,6 +223,7 @@ SOILINCDIR		= SOIL/src
 
 FREETYPELIB		= freetype/objs/.libs/libfreetype.a
 FREETYPEINCDIR	= freetype/include
+FREETYPEDEPEND	= SFML/extlibs/libs-osx/lib/libjpeg.a
 
 SERVOTRONLIB	= servotron.so
 
@@ -230,7 +235,7 @@ VORBISINCDIR	= vorbis/include
 FLACLIB			= flac/src/libFLAC/.libs/libFLAC-static.a
 FLACINCDIR		= flac/include
 
-CPPFLAGS += -I$(GLFWINCDIR) -I$(SDLINCDIR) -I$(SFMLINCDIR) -I$(SOILINCDIR)
+CPPFLAGS += -I$(GLFWINCDIR) -I$(SDLINCDIR) -I$(SFMLINCDIR) -I$(SOILINCDIR) -I$(FREETYPEINCDIR)
 
 #	First target
 all: $(NAME) $(SDLLIB) $(GLFWLIB) $(SOILLIB) $(SFMLLIB) $(FREETYPELIB) $(SERVOTRONLIB) $(OGGLIB) $(VORBISLIB) $(FLACLIB) $(SOUNDLIB) $(GLFW_NIBBLER_LIB) $(SDL_NIBBLER_LIB) $(SFML_NIBBLER_LIB)
@@ -264,7 +269,7 @@ $(SOILLIB): $(SOILDIR_CHECK)
 	cd SOIL && make
 
 $(FREETYPELIB):
-	cd freetype && sh autogen.sh && ./configure || chmod +x builds/unix/configure && ./configure
+	cd freetype && sh autogen.sh && ./configure || chmod +x builds/unix/configure && ./configure && make
 
 $(OGGLIB):
 	cd ogg && ./autogen.sh && ./configure && make
@@ -273,23 +278,23 @@ $(VORBISLIB):
 	cd vorbis && ./autogen.sh && cmake . -DOGG_INCLUDE_DIRS=../ogg/include -DOGG_LIBRARIES=../ogg/src/.libs/ && make
 
 $(FLACLIB):
-	cd flac && ./autogen.sh && ./configure && patch -i ../assets/libFLAC++_Makefile.diff ./src/libFLAC++/Makefile && make
+	cd flac && ./autogen.sh && ./configure && patch -i ../assets/libFLAC++_Makefile.diff ./src/libFLAC++/Makefile || echo && make
 
 $(GLFW_NIBBLER_LIB): $(GLFWLIB_OBJ)
 	@$(call color_exec,$(CLINK_T),$(CLINK),"Link of $(GLFW_NIBBLER_LIB):",\
-		$(LINKER) $(SHAREDLIB_FLAGS) $(GLFWLIB) $(SOILLIB) $(OPTFLAGS)$(DEBUGFLAGS) $(VFRAME) -o $@ $(strip $^))
+		$(LINKER) $(SHAREDLIB_FLAGS) $(GLFWLIB) $(FREETYPELIB) $(FREETYPEDEPEND) $(SOILLIB) $(OPTFLAGS)$(DEBUGFLAGS) $(VFRAME) -o $@ $(strip $^))
 
 $(SDL_NIBBLER_LIB): $(SDLLIB_OBJ)
 	@$(call color_exec,$(CLINK_T),$(CLINK),"Link of $(SDL_NIBBLER_LIB):",\
-		$(LINKER) $(SHAREDLIB_FLAGS) $(SDLLIB) $(SOILLIB) $(OPTFLAGS)$(DEBUGFLAGS) $(VFRAME) -o $@ $(strip $^) $(LDLIBS))
+		$(LINKER) $(SHAREDLIB_FLAGS) $(SDLLIB) $(FREETYPELIB) $(FREETYPEDEPEND) $(SOILLIB) $(OPTFLAGS)$(DEBUGFLAGS) $(VFRAME) -o $@ $(strip $^) $(LDLIBS))
 
 $(SFML_NIBBLER_LIB): $(SFMLLIB_OBJ)
 	@$(call color_exec,$(CLINK_T),$(CLINK),"Link of $(SFML_NIBBLER_LIB):",\
-		$(LINKER) $(SHAREDLIB_FLAGS) $(SFMLLIB) SFML/lib/libsfml-graphics-s.a SFML/lib/libsfml-window-s.a $(SOILLIB) $(OPTFLAGS)$(DEBUGFLAGS) $(VFRAME) -o $@ $(strip $^))
+		$(LINKER) $(SHAREDLIB_FLAGS) $(SFMLLIB) $(FREETYPELIB) $(FREETYPEDEPEND) SFML/lib/libsfml-graphics-s.a SFML/lib/libsfml-window-s.a $(SOILLIB) $(OPTFLAGS)$(DEBUGFLAGS) $(VFRAME) -o $@ $(strip $^))
 
 $(SERVOTRONLIB): $(SERVOTRON_OBJ)
 	@$(call color_exec,$(CLINK_T),$(CLINK),"Link of $(SERVOTRONLIB):",\
-		$(LINKER) $(SHAREDLIB_FLAGS) $(GLFWLIB) SFML/lib/libsfml-graphics-s.a SFML/lib/libsfml-window-s.a SFML/lib/libsfml-network-s.a SFML/lib/libsfml-system-s.a $(OPTFLAGS)$(DEBUGFLAGS) $(VFRAME) -o $@ $(strip $^))
+		$(LINKER) $(SHAREDLIB_FLAGS) $(GLFWLIB) $(FREETYPELIB) $(FREETYPEDEPEND) SFML/lib/libsfml-network-s.a SFML/lib/libsfml-system-s.a $(OPTFLAGS)$(DEBUGFLAGS) $(VFRAME) -o $@ $(strip $^))
 
 $(SOUNDLIB): $(SOUNDS_OBJ)
 	@$(call color_exec,$(CLINK_T),$(CLINK),"Link of $(SOUNDLIB):",\

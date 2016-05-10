@@ -1,12 +1,7 @@
 #include "Freetype.class.hpp"
 
-
 Freetype::Freetype(void)
 {
-	std::cout << "Default constructor of Freetype called" << std::endl;
-	this->_library = ;
-	this->_face = ;
-	this->_slot = ;
 }
 
 Freetype::Freetype(Freetype const & src)
@@ -22,22 +17,71 @@ Freetype::~Freetype(void)
 
 bool		Freetype::loadFontFile(const char *ftf)
 {
-	
+	if (FT_Init_FreeType(&_library)) {
+		std::cout << "failed to initialize the lib !\n";
+		return (false);
+	}
+	if (FT_New_Face(_library, ftf, 0, &_face)) {
+		std::cout << "failed to initialize the font\n";
+		return (false);
+	}
+	FT_Set_Pixel_Sizes(_face, 0, 48);
+	_slot = _face->glyph;
+	return (true);
 }
 
 void		Freetype::setCharSize(const long charWidth, const long charHeight, const unsigned int Hresolution, const unsigned int Vresolution)
 {
-	
+	(void)charWidth;
+	(void)charHeight;
+	(void)Hresolution;
+	(void)Vresolution;
 }
 
-void		Freetype::drawText(const char *txt, const unsigned int x, const unsigned int y)
+void		Freetype::drawText(const char *txt, unsigned int x, unsigned int y, float sx, float sy)
 {
-	
+	txt--;
+	while (*++txt) {
+		if (FT_Load_Char(_face, *txt, FT_LOAD_RENDER))
+			continue ;
+
+		glTexImage2D(
+				GL_TEXTURE_2D,
+				0,
+				GL_RED,
+				_slot->bitmap.width,
+				_slot->bitmap.rows,
+				0,
+				GL_RED,
+				GL_UNSIGNED_BYTE,
+				_slot->bitmap.buffer
+				);
+
+		float x2 = x + _slot->bitmap_left * sx;
+		float y2 = -y - _slot->bitmap_top * sy;
+		float w = _slot->bitmap.width * sx;
+		float h = _slot->bitmap.rows * sy;
+
+		GLfloat box[4][4] = {
+			{x2,     -y2    , 0, 0},
+			{x2 + w, -y2    , 1, 0},
+			{x2,     -y2 - h, 0, 1},
+			{x2 + w, -y2 - h, 1, 1},
+		};
+
+		glBufferData(GL_ARRAY_BUFFER, sizeof box, box, GL_DYNAMIC_DRAW);
+		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+
+		x += (_slot->advance.x/64) * sx;
+		y += (_slot->advance.y/64) * sy;
+
+	}
 }
 
-void		Freetype::setFontTransform(FT_Matrix & matix, FT_Vector & pen)
+void		Freetype::setFontTransform(FT_Matrix & matrix, FT_Vector & pen)
 {
-	
+	(void)matrix;
+	(void)pen;
 }
 
 
