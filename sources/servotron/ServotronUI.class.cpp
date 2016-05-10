@@ -10,6 +10,7 @@ static void error_callback(int error, const char* description)
 ServotronUI::ServotronUI(Servotron *s) : _servo(s)
 {
 	std::cout << "Default constructor of ServotronUI called" << std::endl;
+	_basicFont.loadFontFile("assets/fonts/SourceSansPro-Black.otf");
 
 //	_win.create(sf::VideoMode(800, 600), "SFML window");
 //	_win.setFramerateLimit(60);
@@ -45,8 +46,10 @@ void		ServotronUI::renderClientList(void)
 {
 	_servo->getOnlineIpList(_ipList);
 
+	_basicFont.drawText("Localhost", 10, 10);
 	for (auto const & ip : _ipList)
 	{
+
 		//display each ip
 		(void)ip;
 	}

@@ -6,6 +6,7 @@
 # include <deque>
 # include "SFML/Graphics.hpp"
 # include "GLFW/glfw3.h"
+# include "Freetype.class.hpp"
 
 class		Servotron;
 
@@ -16,6 +17,7 @@ class		ServotronUI
 		GLFWwindow					*_win;
 		//sf::Window				_win;
 		std::deque< std::string >	_ipList;
+		Freetype					_basicFont;
 
 		void		onClick(sf::Vector2i const & pos);
 		void		renderClientList(void);

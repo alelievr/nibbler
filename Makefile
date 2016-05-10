@@ -223,7 +223,6 @@ SOILINCDIR		= SOIL/src
 
 FREETYPELIB		= freetype/objs/.libs/libfreetype.a
 FREETYPEINCDIR	= freetype/include
-FREETYPEDEPEND	= SFML/extlibs/libs-osx/lib/libjpeg.a
 
 SERVOTRONLIB	= servotron.so
 
@@ -269,7 +268,7 @@ $(SOILLIB): $(SOILDIR_CHECK)
 	cd SOIL && make
 
 $(FREETYPELIB):
-	cd freetype && sh autogen.sh && ./configure || chmod +x builds/unix/configure && ./configure && make
+	cd freetype && sh autogen.sh && ./configure --without-zlib --without-bzip2 --without-png || chmod +x builds/unix/configure && ./configure --without-zlib --without-bzip2 --without-png && make
 
 $(OGGLIB):
 	cd ogg && ./autogen.sh && ./configure && make
@@ -282,19 +281,19 @@ $(FLACLIB):
 
 $(GLFW_NIBBLER_LIB): $(GLFWLIB_OBJ)
 	@$(call color_exec,$(CLINK_T),$(CLINK),"Link of $(GLFW_NIBBLER_LIB):",\
-		$(LINKER) $(SHAREDLIB_FLAGS) $(GLFWLIB) $(FREETYPELIB) $(FREETYPEDEPEND) $(SOILLIB) $(OPTFLAGS)$(DEBUGFLAGS) $(VFRAME) -o $@ $(strip $^))
+		$(LINKER) $(SHAREDLIB_FLAGS) $(GLFWLIB) $(FREETYPELIB) $(SOILLIB) $(OPTFLAGS)$(DEBUGFLAGS) $(VFRAME) -o $@ $(strip $^))
 
 $(SDL_NIBBLER_LIB): $(SDLLIB_OBJ)
 	@$(call color_exec,$(CLINK_T),$(CLINK),"Link of $(SDL_NIBBLER_LIB):",\
-		$(LINKER) $(SHAREDLIB_FLAGS) $(SDLLIB) $(FREETYPELIB) $(FREETYPEDEPEND) $(SOILLIB) $(OPTFLAGS)$(DEBUGFLAGS) $(VFRAME) -o $@ $(strip $^) $(LDLIBS))
+		$(LINKER) $(SHAREDLIB_FLAGS) $(SDLLIB) $(FREETYPELIB) $(SOILLIB) $(OPTFLAGS)$(DEBUGFLAGS) $(VFRAME) -o $@ $(strip $^) $(LDLIBS))
 
 $(SFML_NIBBLER_LIB): $(SFMLLIB_OBJ)
 	@$(call color_exec,$(CLINK_T),$(CLINK),"Link of $(SFML_NIBBLER_LIB):",\
-		$(LINKER) $(SHAREDLIB_FLAGS) $(SFMLLIB) $(FREETYPELIB) $(FREETYPEDEPEND) SFML/lib/libsfml-graphics-s.a SFML/lib/libsfml-window-s.a $(SOILLIB) $(OPTFLAGS)$(DEBUGFLAGS) $(VFRAME) -o $@ $(strip $^))
+		$(LINKER) $(SHAREDLIB_FLAGS) $(SFMLLIB) $(FREETYPELIB) SFML/lib/libsfml-graphics-s.a SFML/lib/libsfml-window-s.a $(SOILLIB) $(OPTFLAGS)$(DEBUGFLAGS) $(VFRAME) -o $@ $(strip $^))
 
 $(SERVOTRONLIB): $(SERVOTRON_OBJ)
 	@$(call color_exec,$(CLINK_T),$(CLINK),"Link of $(SERVOTRONLIB):",\
-		$(LINKER) $(SHAREDLIB_FLAGS) $(GLFWLIB) $(FREETYPELIB) $(FREETYPEDEPEND) SFML/lib/libsfml-network-s.a SFML/lib/libsfml-system-s.a $(OPTFLAGS)$(DEBUGFLAGS) $(VFRAME) -o $@ $(strip $^))
+		$(LINKER) $(SHAREDLIB_FLAGS) $(GLFWLIB) $(FREETYPELIB) SFML/lib/libsfml-network-s.a SFML/lib/libsfml-system-s.a $(OPTFLAGS)$(DEBUGFLAGS) $(VFRAME) -o $@ $(strip $^))
 
 $(SOUNDLIB): $(SOUNDS_OBJ)
 	@$(call color_exec,$(CLINK_T),$(CLINK),"Link of $(SOUNDLIB):",\
@@ -369,7 +368,7 @@ t: all
 	c++ -std=c++11 main_test.cpp -I sources -I sources/servotron -I sources/sounds -ldl -lpthread && ./a.out $(GLFW_NIBBLER_LIB)
 
 t2: all
-	c++ -std=c++11 $(addprefix sources/,$(SERVOTRON_SRC)) $(CPPFLAGS) $(GLFWLIB) SFML/lib/libsfml-network-s.a SFML/lib/libsfml-graphics-s.a SFML/lib/libsfml-window-s.a $(VFRAME) SFML/lib/libsfml-system-s.a -lpthread && ./a.out
+	c++ -std=c++11 $(addprefix sources/,$(SERVOTRON_SRC)) $(CPPFLAGS) $(GLFWLIB) $(FREETYPELIB) SFML/lib/libsfml-network-s.a SFML/lib/libsfml-graphics-s.a SFML/lib/libsfml-window-s.a $(VFRAME) SFML/lib/libsfml-system-s.a -lpthread && ./a.out
 
 t3: all
 	$(LINKER) -std=c++11 SFML/lib/libsfml-audio-s.a SFML/lib/libsfml-system-s.a -I $(SFMLINCDIR) -I $(VORBISINCDIR) -I $(OGGINCDIC) -framework OpenAL $(VORBISLIB) vorbis/lib/libvorbisfile.a vorbis/lib/libvorbisenc.a ogg/src/.libs/libogg.a $(FLACLIB) $(OPTFLAGS)$(DEBUGFLAGS) $(VFRAME) $(addprefix sources/,$(SOUNDS_SRC)) && ./a.out
