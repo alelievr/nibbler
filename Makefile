@@ -268,7 +268,7 @@ $(SOILLIB): $(SOILDIR_CHECK)
 	cd SOIL && make
 
 $(FREETYPELIB):
-	cd freetype && sh autogen.sh && ./configure --without-zlib --without-bzip2 --without-png || chmod +x builds/unix/configure && ./configure --without-zlib --without-bzip2 --without-png && make
+	cd freetype && chmod +x ./configure builds/unix/configure && sh autogen.sh && ./configure --without-zlib --without-bzip2 --without-png && make
 
 $(OGGLIB):
 	cd ogg && ./autogen.sh && ./configure && make
