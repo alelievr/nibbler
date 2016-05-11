@@ -46,7 +46,7 @@ void		ServotronUI::renderClientList(void)
 {
 	_servo->getOnlineIpList(_ipList);
 
-	_basicFont.drawText("Localhost", 10, 10);
+	_basicFont.drawText("A", 0, 0);
 	for (auto const & ip : _ipList)
 	{
 
