@@ -6,7 +6,7 @@
 /*   By: alelievr <alelievr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/05/10 23:36:18 by alelievr          #+#    #+#             */
-/*   Updated: 2016/05/11 02:54:49 by alelievr         ###   ########.fr       */
+/*   Updated: 2016/05/11 17:23:29 by alelievr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,121 +38,92 @@ bool		Freetype::loadFontFile(const char *ftf)
 		std::cout << "failed to initialize the font\n";
 		return (false);
 	}
-	FT_Set_Char_Size(_face, 0, 16 * 64, 400, 1000);
-	FT_Set_Pixel_Sizes(_face, 0, 16);
+	_size = 48;
+	FT_Set_Char_Size(_face, 0, 48 * 64, 400, 1000);
+	FT_Set_Pixel_Sizes(_face, 0, 48);
 	_slot = _face->glyph;
 	std::cout << "inialized font !\n";
 	return (true);
 }
 
-void		Freetype::setCharSize(const long charWidth, const long charHeight, const unsigned int Hresolution, const unsigned int Vresolution)
+void		Freetype::setSize(const int size)
 {
-	(void)charWidth;
-	(void)charHeight;
-	(void)Hresolution;
-	(void)Vresolution;
+	if (size <= 0)
+		return ;
+	_size = size;
+	FT_Set_Char_Size(_face, 0, size * 64, 400, 1000);
+	FT_Set_Pixel_Sizes(_face, 0, size);
 }
 
-static void	my_draw_bitmap(FT_Bitmap *b, int _x, int _y, FT_GlyphSlot _slot)
+#include <unistd.h>
+static void	my_draw_bitmap(FT_Bitmap *b, int _x, int _y, FT_GlyphSlot _slot, int _size)
 {
-//	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-//	glPixelTransferi(GL_MAP_COLOR, GL_TRUE);
-
 	GLubyte		*bytes = new GLubyte[b->width * b->rows * 4];
-	glPixelTransferi(GL_UNPACK_ALIGNMENT, 4);
-	glPixelTransferi(GL_INDEX_OFFSET, 1);
 
-	for(unsigned y = 0; y < b->rows; y++){
-		for(unsigned x = 0; x < b->width; x++){
-			for(int i = 0; i < 4; i++){
+	for(unsigned y = 0; y < b->rows; y++) {
+		for(unsigned x = 0; x < b->width; x++) {
+			for(int i = 0; i < 4; i++) {
 				bytes[(x + y * b->width) * 4 + i] = _slot->bitmap.buffer[x + b->width * y];
 			}
 		}
 	}
 
-	GLuint		tex;
+	static GLuint		tex = 0;
 
-	glGenTextures(1, &tex);
-	glBindTexture(GL_TEXTURE_2D, tex);
+	if (tex == 0)
+		glGenTextures(1, &tex);
+
 	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-	glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_TRUE);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, _slot->bitmap.width, _slot->bitmap.rows, 0, GL_RGBA, GL_UNSIGNED_BYTE, bytes);
+	glBindTexture(GL_TEXTURE_2D, tex);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, b->width, b->rows, 0, GL_RGBA, GL_UNSIGNED_BYTE, bytes);
 
 	glDisable(GL_LIGHTING);
 	glEnable(GL_TEXTURE_2D);
-	glBegin(GL_TRIANGLES);
-	glBindTexture(GL_TEXTURE_2D, tex);
-	glVertex3f(-0.4f, -0.6f, 0.f);
-	glVertex3f(0.4f, -0.6f, 0.f);
-	glVertex3f(0.f, 0.4f, 0.f);
+	glPushMatrix();
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+	glOrtho(0.0f, 400, 1000, 0.0f, 0.0f, 1.0f);
+	glBegin(GL_QUADS);
+	glTexCoord2d(0.0,0.0); glVertex2d(_x + -00, _y + -00 + _size);
+	glTexCoord2d(1.0,0.0); glVertex2d(_x +  b->width, _y + -00 + _size);
+	glTexCoord2d(1.0,1.0); glVertex2d(_x +  b->width, _y +  b->rows + _size);
+	glTexCoord2d(0.0,1.0); glVertex2d(_x + -00, _y +  b->rows + _size);
 	glEnd();
 	glDisable(GL_TEXTURE_2D);
-
+	glPopMatrix();
 	(void)_y;
 	(void)_x;
-/*	GLubyte rasters[24] = {
-		0xc0, 0x00, 0xc0, 0x00, 0xc0, 0x00, 0xc0, 0x00, 
-		0xc0, 0x00, 0xff, 0x00, 0xff, 0x00, 0xc0, 0x00, 
-		0xc0, 0x00, 0xc0, 0x00, 0xff, 0xc0, 0xff, 0xc0};
-	glClear(GL_COLOR_BUFFER_BIT);
-	glColor3f(1.0, 1.0, 1.0);
-	glBitmap(10, 12, 0.0, 0.0, 0.0, 0.0, rasters);*/
-//	glRasterPos2f(0, 0);
-//	glBitmap(b->width, b->rows, 0.0, 0.0, 0.0, 0.0, b->buffer);
-//	glFlush();
-/*	(void)x;
-	(void)y;
-	(void)b;
-//	(void)rasters;
-//	std::cout << "x = " << x << " | y = " << y << std::endl;
-//	glColor3f(1.0, 1.0, 1.0);
-//	glBitmap(b->width, b->rows, -10, -10, 0, 0, b->buffer);
-	glFlush();
-	for (unsigned i = 0; i < b->rows; i++)
-	{
-		for (unsigned j = 0; j < b->width; j++)
-		{
-			printf("\033[48;5;%im ", b->buffer[i * b->rows + j]);
-		}
-		std::cout << "\033[0m" << std::endl;
-	}*/
-//	(void)x;
-//	(void)y;
 }
 
-void		Freetype::drawText(const char *txt, unsigned int x, unsigned int y, float sx, float sy)
+void		Freetype::drawText(const char *txt, unsigned int x, unsigned int y)
 {
 	int	error;
 
 	txt--;
 	while (*++txt) {
+		if (*txt == ' ') {
+			x += _slot->advance.x >> 6;
+			y += _slot->advance.y >> 6;
+			continue ;
+		}
 		FT_UInt  glyph_index;
 
-		/* retrieve glyph index from character code */
-		glyph_index = FT_Get_Char_Index( _face, *txt );
+		glyph_index = FT_Get_Char_Index(_face, *txt);
 
-		/* load glyph image into the slot (erase previous one) */
-		error = FT_Load_Glyph( _face, glyph_index, FT_LOAD_DEFAULT );
-		if ( error )
-			continue;  /* ignore errors */
-
-		/* convert to an anti-aliased bitmap */
-		error = FT_Render_Glyph( _face->glyph, FT_RENDER_MODE_NORMAL );
-		if ( error )
+		if ((error = FT_Load_Glyph(_face, glyph_index, FT_LOAD_DEFAULT)))
 			continue;
 
-		/* now, draw to our target surface */
-		my_draw_bitmap( &_slot->bitmap,
-				x + _slot->bitmap_left,
-				y - _slot->bitmap_top, _slot);
+		if ((error = FT_Render_Glyph(_face->glyph, FT_RENDER_MODE_NORMAL)))
+			continue;
 
-		/* increment pen position */
+		my_draw_bitmap(&_slot->bitmap,
+				x + _slot->bitmap_left,
+				y - _slot->bitmap_top, _slot, _size);
+
 		x += _slot->advance.x >> 6;
-		y += _slot->advance.y >> 6; /* not useful for now */
-		(void)sx;
-		(void)sy;
+		y += _slot->advance.y >> 6;
 	}
 }
 

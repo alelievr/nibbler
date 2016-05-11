@@ -15,12 +15,12 @@ class		ServotronUI
 	private:
 		Servotron					*_servo;
 		GLFWwindow					*_win;
-		//sf::Window				_win;
 		std::deque< std::string >	_ipList;
 		Freetype					_basicFont;
 
 		void		onClick(sf::Vector2i const & pos);
 		void		renderClientList(void);
+		void		renderClientCase(const char *name, const char *ip, int & y);
 
 	public:
 		ServotronUI(void) = delete;
