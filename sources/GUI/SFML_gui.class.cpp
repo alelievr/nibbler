@@ -6,7 +6,7 @@
 /*   By: alelievr <alelievr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/04/29 22:09:48 by alelievr          #+#    #+#             */
-/*   Updated: 2016/05/09 19:34:31 by alelievr         ###   ########.fr       */
+/*   Updated: 2016/05/11 18:18:03 by alelievr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -136,7 +136,7 @@ void	SFML_gui::drawItem(Item const & i) const
    	glEnd();
 }*/
 
-void	SFML_gui::render(Points const & snake, Items const & items, bool pause, bool started) const
+void	SFML_gui::render(Points const & snake, Items const & items, bool pause, bool started)
 {
 	if (window.isOpen())
     {

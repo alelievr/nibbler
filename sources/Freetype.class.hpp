@@ -13,6 +13,7 @@ class		Freetype
 		FT_Face			_face;
 		FT_GlyphSlot	_slot;
 		int				_size;
+		int				_padding;
 
 	public:
 		Freetype();
@@ -22,12 +23,10 @@ class		Freetype
 		Freetype &	operator=(Freetype const & src);
 
 		bool	loadFontFile(const char *ftf);
-
 		void	setSize(const int pix);
-
 		void	drawText(const char *txt, unsigned int x, unsigned int y);
-
 		void	setFontTransform(FT_Matrix & matix, FT_Vector & pen);
+		void	setPadding(int padd);
 
 		FT_Library	getLibrary(void) const;
 		void	setLibrary(FT_Library tmp);

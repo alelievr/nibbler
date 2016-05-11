@@ -6,14 +6,14 @@
 /*   By: alelievr <alelievr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/05/10 23:36:18 by alelievr          #+#    #+#             */
-/*   Updated: 2016/05/11 17:23:29 by alelievr         ###   ########.fr       */
+/*   Updated: 2016/05/11 18:53:48 by alelievr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Freetype.class.hpp"
 #include <algorithm>
 
-Freetype::Freetype(void)
+Freetype::Freetype(void) : _padding(0)
 {
 }
 
@@ -101,13 +101,7 @@ void		Freetype::drawText(const char *txt, unsigned int x, unsigned int y)
 {
 	int	error;
 
-	txt--;
-	while (*++txt) {
-		if (*txt == ' ') {
-			x += _slot->advance.x >> 6;
-			y += _slot->advance.y >> 6;
-			continue ;
-		}
+	while (*txt) {
 		FT_UInt  glyph_index;
 
 		glyph_index = FT_Get_Char_Index(_face, *txt);
@@ -124,6 +118,9 @@ void		Freetype::drawText(const char *txt, unsigned int x, unsigned int y)
 
 		x += _slot->advance.x >> 6;
 		y += _slot->advance.y >> 6;
+
+		x += _padding;
+		txt++;
 	}
 }
 
@@ -146,14 +143,16 @@ Freetype &	Freetype::operator=(Freetype const & src)
 	return (*this);
 }
 
+void			Freetype::setPadding(int pad) { this->_padding = pad; }
+
 FT_Library		Freetype::getLibrary(void) const { return (this->_library); }
-void		Freetype::setLibrary(FT_Library tmp) { this->_library = tmp; }
+void			Freetype::setLibrary(FT_Library tmp) { this->_library = tmp; }
 
-FT_Face		Freetype::getFace(void) const { return (this->_face); }
-void		Freetype::setFace(FT_Face tmp) { this->_face = tmp; }
+FT_Face			Freetype::getFace(void) const { return (this->_face); }
+void			Freetype::setFace(FT_Face tmp) { this->_face = tmp; }
 
-FT_GlyphSlot		Freetype::getSlot(void) const { return (this->_slot); }
-void		Freetype::setSlot(FT_GlyphSlot tmp) { this->_slot = tmp; }
+FT_GlyphSlot	Freetype::getSlot(void) const { return (this->_slot); }
+void			Freetype::setSlot(FT_GlyphSlot tmp) { this->_slot = tmp; }
 
 std::ostream &	operator<<(std::ostream & o, Freetype const & r)
 {

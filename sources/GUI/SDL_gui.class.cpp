@@ -6,7 +6,7 @@
 /*   By: alelievr <alelievr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/04/29 22:09:48 by alelievr          #+#    #+#             */
-/*   Updated: 2016/05/08 02:03:19 by alelievr         ###   ########.fr       */
+/*   Updated: 2016/05/11 18:17:43 by alelievr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -154,7 +154,7 @@ void	SDL_gui::getCasesBounds(Point const & p, SDL_Rect & r) const {
    	glEnd();
 }*/
 
-void	SDL_gui::render(Points const & snake, Items const & items, bool pause, bool started) const
+void	SDL_gui::render(Points const & snake, Items const & items, bool pause, bool started)
 {
 	SDL_SetRenderDrawColor(this->renderer, 0, 0, 0, 255);
 	SDL_RenderClear(this->renderer);

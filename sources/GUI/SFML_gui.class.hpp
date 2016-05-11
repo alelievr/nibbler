@@ -33,7 +33,7 @@ class		SFML_gui : public ISlave//, public GUI
 
 		bool open(std::size_t width, std::size_t height, std::string const & name);
 		void getEvent(KEY & key) const;
-		void render(Points const & snake, Items const & items, bool pause, bool started) const;
+		void render(Points const & snake, Items const & items, bool pause, bool started);
 		void close(EVENT event);
 };
 

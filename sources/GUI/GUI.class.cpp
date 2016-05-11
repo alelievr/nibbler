@@ -6,7 +6,7 @@
 /*   By: alelievr <alelievr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/05/08 23:24:05 by alelievr          #+#    #+#             */
-/*   Updated: 2016/05/09 02:06:35 by alelievr         ###   ########.fr       */
+/*   Updated: 2016/05/11 18:53:02 by alelievr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,6 +34,7 @@ std::map< Item::TYPE, TEXTURE > itemTexMaps = {
 
 GUI::GUI(void)
 {
+	_pixelFont.loadFontFile("assets/fonts/slkscr.ttf");
 	std::cout << "Default constructor of GUI called" << std::endl;
 }
 
@@ -123,12 +124,7 @@ void		GUI::drawItem(Item const & i) const
    	glEnd();
 }
 
-void		GUI::drawPauseScreen(void) const
-{
-	
-}
-
-void		GUI::drawStartScreen(void) const
+void		GUI::drawPauseScreen(void)
 {
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -137,10 +133,30 @@ void		GUI::drawStartScreen(void) const
 
 	SCREEN_OVERLAY(glColor4f(1, 1, 1, 0.5F));
 
+	_pixelFont.setSize(41);
+	_pixelFont.setPadding(-6);
+	_pixelFont.drawText("PRESS P TO UNPAUSE", 0, _winSize.y - 300);
+
 	glClear(GL_DEPTH_BUFFER_BIT);
 }
 
-void		GUI::render(Points const & snake, Items const & items, bool paused, bool started) const
+void		GUI::drawStartScreen(void)
+{
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glDisable(GL_TEXTURE_2D);
+	glEnable(GL_COLOR);
+
+	SCREEN_OVERLAY(glColor4f(1, 1, 1, 0.5F));
+
+	_pixelFont.setSize(41);
+	_pixelFont.setPadding(-8);
+	_pixelFont.drawText("PRESS ENTER TO START", 0, _winSize.y - 300);
+
+	glClear(GL_DEPTH_BUFFER_BIT);
+}
+
+void		GUI::render(Points const & snake, Items const & items, bool paused, bool started)
 {
     float	ratio;
 
@@ -181,6 +197,29 @@ void	GUI::open(std::size_t w, std::size_t h, Point const & ws)
 	_squareSize.y = _winSize.y / _height;
 
 	loadTextures();
+}
+
+//TODO: change this sleep !
+#include <unistd.h>
+void	GUI::close(EVENT e)
+{
+	if (e == EVENT::GAMEOVER)
+	{
+		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		glDisable(GL_TEXTURE_2D);
+		glEnable(GL_COLOR);
+
+		SCREEN_OVERLAY(glColor4f(1, 1, 1, 0.5F));
+
+		_pixelFont.setSize(48);
+		_pixelFont.setPadding(-5);
+		_pixelFont.drawText("GAME OVER", 0, _winSize.y - 300);
+
+		glClear(GL_DEPTH_BUFFER_BIT);
+	}
 }
 
 GUI &	GUI::operator=(GUI const & src)

@@ -7,6 +7,7 @@
 # include "ISlave.interface.hpp"
 # include "constant.h"
 # include "SOIL.h"
+# include "Freetype.class.hpp"
 
 class		GUI
 {
@@ -16,6 +17,7 @@ class		GUI
 		Point						_winSize;
 		Point						_squareSize;
 		std::map< TEXTURE, GLuint >	_texMap;
+		Freetype					_pixelFont;
 		void	getCasesBounds(Point const & p, float & x1, float & y1, float & x2, float & y2) const;
 
 	public:
@@ -28,10 +30,11 @@ class		GUI
 		bool		loadTextures(void);
 		void		drawRect(Point const & p, unsigned int const color) const;
 		void		drawItem(Item const & i) const;
-		void		drawPauseScreen(void) const;
-		void		drawStartScreen(void) const;
-		void		render(Points const & snake, Items const & items, bool paused, bool stared) const;
+		void		drawPauseScreen(void);
+		void		drawStartScreen(void);
+		void		render(Points const & snake, Items const & items, bool paused, bool stared);
 		void		open(std::size_t width, std::size_t height, Point const & winSize);
+		void		close(EVENT e);
 		TEXTURE &	itemToTexture(Item::TYPE const & i) const;
 };
 
