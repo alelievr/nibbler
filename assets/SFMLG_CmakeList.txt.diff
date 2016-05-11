@@ -1,0 +1,11 @@
+--- CMakeLists.txt	2016-05-11 21:56:01.000000000 +0200
++++ CMakeLists.txt.fixed	2016-05-11 22:04:40.000000000 +0200
+@@ -87,7 +87,7 @@
+ source_group("render texture" FILES ${RENDER_TEXTURE_SRC})
+ 
+ # stb_image sources
+-include_directories("${PROJECT_SOURCE_DIR}/extlibs/headers/stb_image")
++include_directories("${PROJECT_SOURCE_DIR}/extlibs/headers/stb_image" "${PROJECT_SOURCE_DIR}/../freetype/include")
+ 
+ # let CMake know about our additional graphics libraries paths
+ if(SFML_OS_WINDOWS)

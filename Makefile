@@ -259,7 +259,7 @@ $(SDLLIB): $(SDLDIR_CHECK)
 	cd SDL2 && ./configure && make
 
 $(SFMLLIB): $(SFMLDIR_CHECK)
-	cd SFML && ./install.sh
+	cd SFML patch -fi src/SFML/Graphics/CMakeLists.txt ../assets/SFMLG_CmakeList.txt.diff || echo && ./install.sh
 
 $(GLFWLIB): $(GLFWDIR_CHECK)
 	cd GLFW && cmake . && make
@@ -277,7 +277,7 @@ $(VORBISLIB):
 	cd vorbis && ./autogen.sh && cmake . -DOGG_INCLUDE_DIRS=../ogg/include -DOGG_LIBRARIES=../ogg/src/.libs/ && make
 
 $(FLACLIB):
-	cd flac && ./autogen.sh && ./configure && patch -i ../assets/libFLAC++_Makefile.diff ./src/libFLAC++/Makefile || echo && make
+	cd flac && ./autogen.sh && ./configure && patch -fi ../assets/libFLAC++_Makefile.diff ./src/libFLAC++/Makefile || echo && make
 
 $(GLFW_NIBBLER_LIB): $(GLFWLIB_OBJ)
 	@$(call color_exec,$(CLINK_T),$(CLINK),"Link of $(GLFW_NIBBLER_LIB):",\
