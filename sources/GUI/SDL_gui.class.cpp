@@ -6,7 +6,7 @@
 /*   By: alelievr <alelievr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/04/29 22:09:48 by alelievr          #+#    #+#             */
-/*   Updated: 2016/05/11 18:17:43 by alelievr         ###   ########.fr       */
+/*   Updated: 2016/05/12 03:59:28 by alelievr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,106 +63,70 @@ SDL_gui &	SDL_gui::operator=(SDL_gui const & src)
 	return (*this);
 }
 
-bool	SDL_gui::loadItemTextures(void)
-{
-/*	GLuint	foodTex = 0;
-
-	foodTex = SOIL_load_OGL_texture (
-		 	"./sprites/pizza.png",
-		 	SOIL_LOAD_AUTO,
-		 	SOIL_CREATE_NEW_ID,
-		 	SOIL_FLAG_MIPMAPS | SOIL_FLAG_INVERT_Y | SOIL_FLAG_NTSC_SAFE_RGB | SOIL_FLAG_COMPRESS_TO_DXT
-		 	);
-
-	if (foodTex == 0 || (int)foodTex == -1)
-		return (false);
-
-	this->texMap.insert(std::pair< Item::TYPE, GLuint >(Item::TYPE::FOOD, foodTex));*/
-	return (true);
-}
-
 bool	SDL_gui::open(std::size_t width, std::size_t height, std::string const & name)
 {
-	if (SDL_Init(SDL_INIT_VIDEO) != 0)
+	if(SDL_Init(SDL_INIT_VIDEO) < 0)
+	{
+		std::cout << "Error while initializing opengl: " << SDL_GetError() << std::endl;
+		SDL_Quit();
+
 		return false;
+	}
 
-	this->width = width;
-	this->height = height;
-	this->squareSize.x = winSize.x / width;
-	this->squareSize.y = winSize.y / height;
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
 
-	this->window = SDL_CreateWindow(name.c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, this->winSize.x, this->winSize.y, SDL_WINDOW_SHOWN);
-	if (!this->window)
-		return (false);
-	this->renderer = SDL_CreateRenderer(this->window, -1, SDL_RENDERER_ACCELERATED);
+    SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
+    SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
 
-	if (!loadItemTextures())
-		return (false);
+    window = SDL_CreateWindow(name.c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, winSize.x, winSize.y, SDL_WINDOW_SHOWN | SDL_WINDOW_OPENGL);
+    if(window == 0) {
+        std::cout << "Error while creating window " << SDL_GetError() << std::endl;
+        SDL_Quit();
+
+        return false;
+    }
+
+    glContext = SDL_GL_CreateContext(window);
+    if(glContext == 0)
+    {
+        std::cout << SDL_GetError() << std::endl;
+        SDL_DestroyWindow(window);
+        SDL_Quit();
+
+        return false;
+    }
+
+	GUI::open(width, height, winSize);
 	return (true);
 }
 
 void	SDL_gui::getEvent(KEY & key) const
 {
-	SDL_Event		e;
+	SDL_Event		e = {0};
 
-	if (SDL_PollEvent(&e))
+	SDL_WaitEvent(&e);
+	if (e.type == SDL_QUIT)
+		key = KEY::ESCAPE;
+	if (e.type == SDL_KEYDOWN)
 	{
-		if (e.type == SDL_QUIT)
-			key = KEY::ESCAPE;
-		if (e.type == SDL_KEYDOWN)
-		{
-		}
 	}
+	key = KEY::NONE;
 }
 
-/*#define glColor1u(x) glColor3ub((char)(x >> 16), (char)(x >> 8), (char)x)*/
-void	SDL_gui::drawRect(Point const & p, const unsigned int color) const
+void	SDL_gui::render(Points const & snake, Items const & items, bool pause, bool started, std::deque< std::string > const & ipList)
 {
-	SDL_Rect	r;
 
-	if (p.x > this->width || p.y > this->height)
-		return ;
-	getCasesBounds(p, r);
 
-	SDL_SetRenderDrawColor(this->renderer, 0, 255, 0, 255);
-	SDL_RenderFillRect(this->renderer, &r);
-	(void)color;
-}
-
-void	SDL_gui::getCasesBounds(Point const & p, SDL_Rect & r) const {
-	r.x = p.x * this->squareSize.x;
-	r.y = p.y * this->squareSize.y;
-	r.w = this->squareSize.x;
-	r.h = this->squareSize.y;
-}
-
-/*void	SDL_gui::drawItem(Item const & i) const
-{
-	float	bx1, bx2, by1, by2;
-
-	if (i.coo.x > this->width || i.coo.y > this->height)
-		return ;
-	getCasesBounds(i.coo, bx1, by1, bx2, by2);
-
-	glColor3f(1, 1, 1);
-	glBindTexture(GL_TEXTURE_2D, this->texMap.at(i.type));
-   	glBegin(GL_QUADS);
-    	glTexCoord2f(0, 0); glVertex2f(-1 + bx1, 1 - by1);
-    	glTexCoord2f(0, 1); glVertex2f(-1 + bx2, 1 - by1);
-    	glTexCoord2f(1, 1); glVertex2f(-1 + bx2, 1 - by2);
-    	glTexCoord2f(1, 0); glVertex2f(-1 + bx1, 1 - by2);
-   	glEnd();
-}*/
-
-void	SDL_gui::render(Points const & snake, Items const & items, bool pause, bool started)
-{
-	SDL_SetRenderDrawColor(this->renderer, 0, 0, 0, 255);
+	GUI::renderServotron(ipList);
+	GUI::render(snake, items, pause, started);
+/*	SDL_SetRenderDrawColor(this->renderer, 0, 0, 0, 255);
 	SDL_RenderClear(this->renderer);
 	SDL_RenderPresent(this->renderer);
 	//	SDL_RenderCopy(renderer, texture, NULL, &texture_rect); 
 
 	for (auto & s : snake)
-		drawRect(s, 0xFF00FF);
+		drawRect(s, 0xFF00FF);*/
 
 	//	SDL_UpdateWindowSurface(this->window);
 	(void)snake;
@@ -170,7 +134,7 @@ void	SDL_gui::render(Points const & snake, Items const & items, bool pause, bool
 	(void)pause;
 	(void)started;
 
-	SDL_RenderPresent(renderer);
+	SDL_GL_SwapWindow(window);
 }
 
 void	SDL_gui::close(EVENT event)

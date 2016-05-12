@@ -6,7 +6,7 @@
 /*   By: alelievr <alelievr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/04/29 22:09:48 by alelievr          #+#    #+#             */
-/*   Updated: 2016/05/11 18:18:03 by alelievr         ###   ########.fr       */
+/*   Updated: 2016/05/12 04:01:33 by alelievr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -136,8 +136,9 @@ void	SFML_gui::drawItem(Item const & i) const
    	glEnd();
 }*/
 
-void	SFML_gui::render(Points const & snake, Items const & items, bool pause, bool started)
+void	SFML_gui::render(Points const & snake, Items const & items, bool pause, bool started, std::deque< std::string > const & ipList)
 {
+//	GUI::renderServotron(ipList);
 	if (window.isOpen())
     {
         // on inspecte tous les évènements de la fenêtre qui ont été émis depuis la précédente itération
@@ -151,6 +152,7 @@ void	SFML_gui::render(Points const & snake, Items const & items, bool pause, boo
     //    window.display();
     }
 
+	(void)ipList;
 	(void)snake;
 	(void)items;
 	(void)pause;

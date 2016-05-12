@@ -226,8 +226,7 @@ Servotron::Servotron(void) :
 	_interval(1000),
 	_threadStop(false),
 	_state(STATE::SERVER),
-	_currentConnectedServer({{0}, 0, KEY::NONE}),
-	_servoUI(this)
+	_currentConnectedServer({{0}, 0, KEY::NONE})
 {
 	std::cout << "constructed servotron !" << std::endl;
 	this->_localIP = sf::IpAddress::getLocalAddress().toString();
@@ -330,22 +329,21 @@ void		Servotron::sendEvent(KEY & k, std::string const & ip)
 	this->sendData(data, sizeof(data), ip);
 }
 
-void		Servotron::connectServer(const ClientInfo c)
+void		Servotron::connectToServer(Client const & c)
 {
-	this->_currentConnectedServer = c;
-	this->_state = STATE::CLIENT;
-	(void)c;
+	for (auto const & tmpc : _onlineClients)
+		if (tmpc.id == c)
+		{
+			this->_currentConnectedServer = tmpc;
+			this->_state = STATE::CLIENT;
+			break ;
+		}
 }
 
 void		Servotron::disconnectServer(void)
 {
 	this->_currentConnectedServer = {{0}, 0, KEY::NONE};
 	this->_state = STATE::SERVER;
-}
-
-void		Servotron::updateGUI(void)
-{
-	_servoUI.render();
 }
 
 int			Servotron::getInterval(void) const { return (this->_interval); }
@@ -378,7 +376,7 @@ int			main(void) {
 	Servotron	s;
 
 	while (42)
-		s.updateGUI();
+		;
 //	usleep(1 * 1000 * 1000);
 	return (0);
 }

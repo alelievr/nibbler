@@ -6,7 +6,7 @@
 /*   By: alelievr <alelievr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/04/29 17:22:36 by alelievr          #+#    #+#             */
-/*   Updated: 2016/05/09 18:52:54 by alelievr         ###   ########.fr       */
+/*   Updated: 2016/05/12 04:10:00 by alelievr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,12 +78,13 @@ ISlave		*startGUI(char *lib)
 
 int			main(__attribute__((unused)) int ac, char **av)
 {
-	Points			snake;
-	Items			items;
-	KEY				ev;
-	ISlave			*gui = startGUI(av[1]);
-	IServotron		*servo = startServotron();
-	ISoundPlayer	*sp = startSound();
+	Points						snake;
+	Items						items;
+	KEY							ev;
+	ISlave						*gui = startGUI(av[1]);
+	IServotron					*servo = startServotron();
+	ISoundPlayer				*sp = startSound();
+	std::deque< std::string >	ipList;
 
 	if (!gui->open(10, 10, "olol"))
 		exit(printf("an error occured during window opening !\n"));
@@ -94,9 +95,9 @@ int			main(__attribute__((unused)) int ac, char **av)
 	items.push_front({{2, 2}, Item::TYPE::FOOD});
 	while (42)
 	{
-		gui->render(snake, items, false, true);
 		gui->getEvent(ev);
-		servo->updateGUI();
+		servo->getOnlineIpList(ipList);
+		gui->render(snake, items, false, true, ipList);
 		if (ev == KEY::ESCAPE)
 			exit(0);
 		if (ev == KEY::LEFT)

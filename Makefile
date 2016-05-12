@@ -25,17 +25,19 @@ SRC			=	main.cpp			\
 GLFWLIB_SRC	=	GUI/GLFW_gui.class.cpp	\
 				GUI/GUI.class.cpp		\
 				Freetype.class.cpp	\
+				servotron/ServotronUI.class.cpp	\
 
 SDLLIB_SRC	=	GUI/SDL_gui.class.cpp	\
 				GUI/GUI.class.cpp		\
 				Freetype.class.cpp	\
+				servotron/ServotronUI.class.cpp	\
 
 SFMLLIB_SRC	=	GUI/SFML_gui.class.cpp	\
 				Freetype.class.cpp	\
+				servotron/ServotronUI.class.cpp	\
 				#GUI/GUI.class.cpp		\
 
 SERVOTRON_SRC = servotron/servotron.class.cpp	\
-				servotron/ServotronUI.class.cpp	\
 				Freetype.class.cpp	\
 
 SOUNDS_SRC	=	sounds/SoundPlayer.class.cpp	\

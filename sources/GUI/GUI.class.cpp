@@ -6,7 +6,7 @@
 /*   By: alelievr <alelievr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/05/08 23:24:05 by alelievr          #+#    #+#             */
-/*   Updated: 2016/05/11 18:53:02 by alelievr         ###   ########.fr       */
+/*   Updated: 2016/05/12 03:49:02 by alelievr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -188,6 +188,16 @@ void		GUI::render(Points const & snake, Items const & items, bool paused, bool s
    	glFlush();
 }
 
+void	GUI::renderServotron(std::deque< std::string > const & ipList)
+{
+	_servoUI.render(ipList);
+}
+
+std::string	GUI::onMouseClick(Point const & p)
+{
+	return (_servoUI.onMouseClick(p));
+}
+
 void	GUI::open(std::size_t w, std::size_t h, Point const & ws)
 {
 	_winSize = ws;
@@ -196,10 +206,10 @@ void	GUI::open(std::size_t w, std::size_t h, Point const & ws)
 	_squareSize.x = _winSize.x / _width;
 	_squareSize.y = _winSize.y / _height;
 
+	_servoUI.setWinSize((const int)w, (const int)h);
 	loadTextures();
 }
 
-//TODO: change this sleep !
 #include <unistd.h>
 void	GUI::close(EVENT e)
 {

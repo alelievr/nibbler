@@ -6,7 +6,7 @@
 /*   By: alelievr <alelievr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/05/03 22:42:41 by alelievr          #+#    #+#             */
-/*   Updated: 2016/05/09 01:27:00 by alelievr         ###   ########.fr       */
+/*   Updated: 2016/05/12 01:23:38 by alelievr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,8 @@
 
 #include <map>
 
-# define WIN_W	1000
+//added 400 w for servotron ui
+# define WIN_W	1400
 # define WIN_H	1000
 
 enum class TEXTURE

@@ -3,11 +3,13 @@
 # include <iostream>
 # include <string>
 # include <map>
+# include <deque>
 # include <OpenGL/gl.h>
 # include "ISlave.interface.hpp"
 # include "constant.h"
 # include "SOIL.h"
 # include "Freetype.class.hpp"
+# include "ServotronUI.class.hpp"
 
 class		GUI
 {
@@ -18,7 +20,8 @@ class		GUI
 		Point						_squareSize;
 		std::map< TEXTURE, GLuint >	_texMap;
 		Freetype					_pixelFont;
-		void	getCasesBounds(Point const & p, float & x1, float & y1, float & x2, float & y2) const;
+		ServotronUI					_servoUI;
+		void		getCasesBounds(Point const & p, float & x1, float & y1, float & x2, float & y2) const;
 
 	public:
 		GUI(void);
@@ -33,6 +36,8 @@ class		GUI
 		void		drawPauseScreen(void);
 		void		drawStartScreen(void);
 		void		render(Points const & snake, Items const & items, bool paused, bool stared);
+		void		renderServotron(std::deque< std::string > const & ipList);
+		std::string	onMouseClick(Point const & position);
 		void		open(std::size_t width, std::size_t height, Point const & winSize);
 		void		close(EVENT e);
 		TEXTURE &	itemToTexture(Item::TYPE const & i) const;

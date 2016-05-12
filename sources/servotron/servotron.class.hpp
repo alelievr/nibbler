@@ -5,7 +5,6 @@
 # include <deque>
 # include <thread>
 # include "IServotron.interface.hpp"
-# include "ServotronUI.class.hpp"
 
 # include <netinet/in.h>
 # include <sys/socket.h>
@@ -42,7 +41,6 @@ class		Servotron : IServotron
 		int							_sendDataSocket;
 		int							_receiveDataSocket;
 		std::string					_localIP;
-		ServotronUI					_servoUI;
 
 		void		eventThread(void);
 		char		keyToChar(const KEY k) const;
@@ -73,7 +71,6 @@ class		Servotron : IServotron
 		void	getClientEvent(Client const & c, KEY & key) const;
 		void	startServer(void) const;
 		void	stopServer(void) const;
-		void	updateGUI(void);
 
 		int		getInterval(void) const;
 		void	setInterval(int tmp);
@@ -81,7 +78,7 @@ class		Servotron : IServotron
 
 		void	getState(STATE & s) const;
 
-		void	connectServer(const ClientInfo c);
+		void	connectToServer(const Client & c);
 		void	disconnectServer(void);
 
 		void	scanClientsOnFloor(void);

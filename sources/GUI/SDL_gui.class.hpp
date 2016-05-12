@@ -3,6 +3,7 @@
 # include <iostream>
 # include <string>
 # include <map>
+# include <deque>
 # include "SDL.h"
 # include "ISlave.interface.hpp"
 # include "constant.h"
@@ -12,17 +13,8 @@ class		SDL_gui : public ISlave, public GUI
 {
 	private:
 		SDL_Window								*window;
-		SDL_Renderer							*renderer;
-		std::size_t								width;
-		std::size_t								height;
-		Point									squareSize;
-		std::map< Item::TYPE, SDL_Texture* >	texMap;
+		SDL_GLContext							glContext;
 		const Point								winSize = {WIN_W, WIN_H};
-
-		void drawRect(Point const & p, const unsigned int color) const;
-//		void drawItem(Item const & i) const;
-		void getCasesBounds(Point const & p, SDL_Rect & r) const;
-		bool loadItemTextures();
 
 	public:
 		static int		pressedKey;
@@ -35,7 +27,7 @@ class		SDL_gui : public ISlave, public GUI
 
 		bool open(std::size_t width, std::size_t height, std::string const & name);
 		void getEvent(KEY & key) const;
-		void render(Points const & snake, Items const & items, bool pause, bool started);
+		void render(Points const & snake, Items const & items, bool pause, bool started, std::deque< std::string > const & ipList);
 		void close(EVENT event);
 };
 

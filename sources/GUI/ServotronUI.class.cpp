@@ -2,34 +2,10 @@
 #include "servotron.class.hpp"
 #include <sstream>
 
-static void error_callback(int error, const char* description)
-{
-	(void)error;
-	fputs(description, stderr);
-}
-
-ServotronUI::ServotronUI(Servotron *s) : _servo(s)
+ServotronUI::ServotronUI(void)
 {
 	std::cout << "Default constructor of ServotronUI called" << std::endl;
 	_basicFont.loadFontFile("assets/fonts/SourceSansPro-Semibold.otf");
-
-//	_win.create(sf::VideoMode(800, 600), "SFML window");
-//	_win.setFramerateLimit(60);
-	if(!glfwInit())
-		;
-	glfwSetErrorCallback(error_callback);
-	glfwWindowHint(GLFW_SAMPLES, 4);
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 2);
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
-	glfwWindowHint(GLFW_RESIZABLE, 0);
-
-	if (!(this->_win = glfwCreateWindow(400, 1000, "Host list", NULL, NULL))) {
-		std::cout << "failed to create window !\n" << std::endl;
-		glfwTerminate();
-	}
-	glClearColor(0.0, 0.0, 0.0, 0.0);
-	glfwMakeContextCurrent(_win);
-	glfwSwapInterval(1);
 }
 
 ServotronUI::ServotronUI(ServotronUI const & src)
@@ -41,7 +17,6 @@ ServotronUI::ServotronUI(ServotronUI const & src)
 void		ServotronUI::onClick(sf::Vector2i const & pos)
 {
 	(void)pos;
-	(void)_servo;
 }
 
 static const char * ipToMacNumber(const char *ip) {
@@ -51,7 +26,7 @@ static const char * ipToMacNumber(const char *ip) {
 	int						byte;
 
 	s >> byte >> dot >> byte;
-	macNumber = "e" + std::to_string(byte);
+	macNumber = "e" + std::to_string(byte - 10);
 	s >> dot >> byte;
 	macNumber += "r" + std::to_string(byte);
 	s >> dot >> byte;
@@ -68,29 +43,25 @@ void		ServotronUI::renderClientCase(const char *name, const char *ip, int & y)
 	y += 60;
 }
 
-void		ServotronUI::renderClientList(void)
+void		ServotronUI::renderClientList(std::deque< std::string > const & ipList)
 {
 	int		y = 20;
-	_servo->getOnlineIpList(_ipList);
 
 	glColor4f(1, 1, 1, 0.8);
 	renderClientCase("Local game", "localhost", y);
-	for (auto const & ip : _ipList)
-	{
+	for (auto const & ip : ipList)
 		renderClientCase(ipToMacNumber(ip.c_str()), ip.c_str(), y);
-	}
 }
 
-void		ServotronUI::render(void)
+void		ServotronUI::render(std::deque< std::string > const & ipList)
 {
+	float ratio;
+
+	_ipList = ipList;
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glEnable(GL_BLEND);
-	float ratio;
-	int width, height;
-
-	glfwGetFramebufferSize(_win, &width, &height);
-	ratio = width / (float) height;
-	glViewport(0, 0, width, height);
+	ratio = _width / (float)_height;
+	glViewport(0, 0, _width, _height);
 	glClear(GL_COLOR_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
@@ -98,7 +69,6 @@ void		ServotronUI::render(void)
 	glMatrixMode(GL_MODELVIEW);
 	glPushMatrix();
 	glLoadIdentity();
-	glRotatef((float) glfwGetTime() * 50.f, 0.f, 0.f, 1.f);
 	glBegin(GL_TRIANGLES);
 	glColor3f(1.f, 0.f, 0.f);
 	glVertex3f(-2.4f, -1.6f, 0.f);
@@ -109,16 +79,25 @@ void		ServotronUI::render(void)
 	glEnd();
 	glPopMatrix();
 
-	renderClientList();
+	renderClientList(ipList);
+}
 
-	glfwSwapBuffers(_win);
-	glfwPollEvents();
+std::string	ServotronUI::onMouseClick(Point const & p)
+{
+	if (p.x == 0 && p.y == 0)
+		return ("");
+	else
+		return ("127.0.0.1");
+}
+
+void		ServotronUI::setWinSize(const int w, const int h)
+{
+	_width = w;
+	_height = h;
 }
 
 ServotronUI::~ServotronUI(void)
 {
-//	glfwDestroyWindow(_win);
-//	glfwTerminate();
 	std::cout << "Destructor of ServotronUI called" << std::endl;
 }
 

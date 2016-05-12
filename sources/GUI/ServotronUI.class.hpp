@@ -7,28 +7,30 @@
 # include "SFML/Graphics.hpp"
 # include "GLFW/glfw3.h"
 # include "Freetype.class.hpp"
+# include "ISlave.interface.hpp"
 
 class		Servotron;
 
 class		ServotronUI
 {
 	private:
-		Servotron					*_servo;
-		GLFWwindow					*_win;
-		std::deque< std::string >	_ipList;
 		Freetype					_basicFont;
+		std::deque< std::string >	_ipList;
+		int							_width;
+		int							_height;
 
 		void		onClick(sf::Vector2i const & pos);
-		void		renderClientList(void);
+		void		renderClientList(std::deque< std::string > const & ipList);
 		void		renderClientCase(const char *name, const char *ip, int & y);
 
 	public:
-		ServotronUI(void) = delete;
-		ServotronUI(Servotron *s);
+		ServotronUI(void);
 		ServotronUI(const ServotronUI &);
 		virtual ~ServotronUI(void);
 
-		void		render(void);
+		void		setWinSize(const int w, const int h);
+		void		render(std::deque< std::string > const & ipList);
+		std::string	onMouseClick(Point const & pos);
 
 		ServotronUI &	operator=(ServotronUI const & src);
 };
