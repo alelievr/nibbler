@@ -14,17 +14,19 @@ class		Servotron;
 class		ServotronUI
 {
 	private:
-		Freetype					_basicFont;
-		std::deque< std::string >	_ipList;
-		int							_width;
-		int							_height;
-		std::string					_clickedIP;
+		Freetype			_basicFont;
+		int					_width;
+		int					_height;
+		std::string			_clickedIP;
 
 		void		onClick(sf::Vector2i const & pos);
 		void		renderClientList(std::deque< std::string > const & ipList);
 		void		renderClientCase(const char *name, const char *ip, int & y);
 
 	public:
+		int							clickBoxSize;
+		std::deque< std::string >	ipList;
+
 		ServotronUI(void);
 		ServotronUI(const ServotronUI &);
 		virtual ~ServotronUI(void);
@@ -32,6 +34,7 @@ class		ServotronUI
 		void		setWinSize(const int w, const int h);
 		void		render(std::deque< std::string > const & ipList);
 		std::string	getLastClickedIp(void) const;
+		void		setClickedIp(std::string const & ip);
 
 		ServotronUI &	operator=(ServotronUI const & src);
 

@@ -5,7 +5,7 @@
 
 ServotronUI	*ServotronUI::self = NULL;
 
-ServotronUI::ServotronUI(void)
+ServotronUI::ServotronUI(void) : clickBoxSize(45)
 {
 	ServotronUI::self = this;
 	std::cout << "Default constructor of ServotronUI called" << std::endl;
@@ -44,7 +44,7 @@ void		ServotronUI::renderClientCase(const char *name, const char *ip, int & y)
 	_basicFont.drawText(name, 20, y);
 	_basicFont.setSize(20);
 	_basicFont.drawText((std::string("(") + ip + std::string(")")).c_str(), 220, y + 10);
-	y += 40;
+	y += clickBoxSize;
 }
 
 void		ServotronUI::renderClientList(std::deque< std::string > const & ipList)
@@ -59,16 +59,10 @@ void		ServotronUI::renderClientList(std::deque< std::string > const & ipList)
 
 void		ServotronUI::render(std::deque< std::string > const & ipList)
 {
-	_ipList = ipList;
+	this->ipList = ipList;
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glEnable(GL_BLEND);
-//	ratio = _width / (float)_height;
 	glViewport(1000, 0, 400, _height);
-//	glClear(GL_COLOR_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-//	glMatrixMode(GL_PROJECTION);
-//	glLoadIdentity();
-//	glOrtho(-ratio, ratio, -1.f, 1.f, 1.f, -1.f);
-//	glMatrixMode(GL_MODELVIEW);
 	glPushMatrix();
 	glLoadIdentity();
 	glRotatef(clock() / 5000, 0, 0, 1);
@@ -87,16 +81,30 @@ void		ServotronUI::render(std::deque< std::string > const & ipList)
 
 void		ServotronUI::onMouseClick(Point const & p)
 {
-	std::cout << "clicked servo entered\n";
-	if (p.x == 0 && p.y == 0)
-		ServotronUI::self->_clickedIP = "";
-	else
-		ServotronUI::self->_clickedIP = "127.0.0.1";
+	if (!ServotronUI::self)
+		return ;
+	int				pos;
+	int				clickBox = ServotronUI::self->clickBoxSize;
+
+	if (p.x >= 1000)
+	{
+		pos = (p.y - (20 + clickBox)) / clickBox;
+		std::cout << "pos = " << pos << std::endl;
+		if ((int)p.y >= 20 && (int)p.y < 20 + clickBox)
+			ServotronUI::self->setClickedIp("127.0.0.1");
+		else if ((int)ServotronUI::self->ipList.size() > pos)
+			ServotronUI::self->setClickedIp(ServotronUI::self->ipList[pos]);
+	}
 }
 
 std::string	ServotronUI::getLastClickedIp(void) const
 {
 	return _clickedIP;
+}
+
+void		ServotronUI::setClickedIp(std::string const & ip)
+{
+	_clickedIP = ip;
 }
 
 void		ServotronUI::setWinSize(const int w, const int h)

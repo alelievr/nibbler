@@ -329,10 +329,12 @@ void		Servotron::sendEvent(KEY & k, std::string const & ip)
 	this->sendData(data, sizeof(data), ip);
 }
 
-void		Servotron::connectToServer(Client const & c)
+void		Servotron::connectToServer(std::string const & ip)
 {
+	Client id = getClientId(ip.c_str());
+
 	for (auto const & tmpc : _onlineClients)
-		if (tmpc.id == c)
+		if (tmpc.id == id)
 		{
 			this->_currentConnectedServer = tmpc;
 			this->_state = STATE::CLIENT;

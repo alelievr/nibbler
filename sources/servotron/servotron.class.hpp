@@ -78,7 +78,7 @@ class		Servotron : IServotron
 
 		void	getState(STATE & s) const;
 
-		void	connectToServer(const Client & c);
+		void	connectToServer(std::string const & ip);
 		void	disconnectServer(void);
 
 		void	scanClientsOnFloor(void);

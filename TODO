@@ -1,7 +1,0 @@
-- add a GUI to servotron with
-	- a list of players and at top, your local game
-	- in each element, the status of the player (host or client)
-- test the servotron with a real party
-- implement the servotron in the nibbler
-- fix the nibbler program for a single-player game
-- add sounds (maybe with sfml lib)

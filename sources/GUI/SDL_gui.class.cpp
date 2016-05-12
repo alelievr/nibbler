@@ -6,7 +6,7 @@
 /*   By: alelievr <alelievr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/04/29 22:09:48 by alelievr          #+#    #+#             */
-/*   Updated: 2016/05/12 03:59:28 by alelievr         ###   ########.fr       */
+/*   Updated: 2016/05/13 01:41:16 by alelievr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -135,6 +135,11 @@ void	SDL_gui::render(Points const & snake, Items const & items, bool pause, bool
 	(void)started;
 
 	SDL_GL_SwapWindow(window);
+}
+
+void	SDL_gui::getClickedIp(std::string & ip) const
+{
+	ip = GUI::getLastClickedIp();
 }
 
 void	SDL_gui::close(EVENT event)

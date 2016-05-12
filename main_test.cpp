@@ -6,7 +6,7 @@
 /*   By: alelievr <alelievr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/04/29 17:22:36 by alelievr          #+#    #+#             */
-/*   Updated: 2016/05/12 19:18:15 by alelievr         ###   ########.fr       */
+/*   Updated: 2016/05/13 01:45:27 by alelievr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -100,7 +100,7 @@ int			main(__attribute__((unused)) int ac, char **av)
 		servo->getOnlineIpList(ipList);
 		gui->render(snake, items, false, true, ipList);
 		gui->getClickedIp(clickedIP);
-		std::cout << "ip = " << clickedIP << std::endl;
+		servo->connectToServer(clickedIP);
 		if (ev == KEY::ESCAPE)
 			exit(0);
 		if (ev == KEY::LEFT)

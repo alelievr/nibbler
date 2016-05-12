@@ -6,7 +6,7 @@
 /*   By: alelievr <alelievr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/05/04 19:23:45 by alelievr          #+#    #+#             */
-/*   Updated: 2016/05/12 04:07:35 by alelievr         ###   ########.fr       */
+/*   Updated: 2016/05/13 01:47:29 by alelievr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,7 +46,7 @@ class	IServotron
 	public:
 		virtual void		getConnectedClients(Clients & clients) const = 0;
 		virtual void		getClientEvent(Client const & c, KEY & key) const = 0;
-		virtual void		connectToServer(Client const & c) = 0;
+		virtual void		connectToServer(std::string const & ip) = 0;
 		virtual void		getOnlineIpList(std::deque< std::string > & clist) const = 0;
 		virtual void		disconnectServer(void) = 0;
 		virtual void		sendEvent(KEY & k) = 0;

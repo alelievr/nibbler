@@ -98,6 +98,8 @@ Game::run(void)
 			case KEY::ENTER:
 				_started = true;
 				break ;
+			case KEY::JOINSEVER:
+				break ;
 			case KEY::NONE: break ;
 		}
 		if (_started && !_paused)
