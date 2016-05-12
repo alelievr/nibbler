@@ -6,7 +6,7 @@
 /*   By: alelievr <alelievr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/05/08 23:24:05 by alelievr          #+#    #+#             */
-/*   Updated: 2016/05/12 03:49:02 by alelievr         ###   ########.fr       */
+/*   Updated: 2016/05/12 04:22:55 by alelievr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -162,7 +162,6 @@ void		GUI::render(Points const & snake, Items const & items, bool paused, bool s
 
 	ratio = _winSize.x / (float)_winSize.y;
 	(void)ratio;
-	glViewport(0, 0, _winSize.x, _winSize.y);
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -206,7 +205,7 @@ void	GUI::open(std::size_t w, std::size_t h, Point const & ws)
 	_squareSize.x = _winSize.x / _width;
 	_squareSize.y = _winSize.y / _height;
 
-	_servoUI.setWinSize((const int)w, (const int)h);
+	_servoUI.setWinSize((const int)ws.x, (const int)ws.y);
 	loadTextures();
 }
 
