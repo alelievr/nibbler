@@ -6,7 +6,7 @@
 /*   By: fdaudre- <fdaudre-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/04/28 19:58:37 by fdaudre-          #+#    #+#             */
-/*   Updated: 2016/05/12 04:01:05 by alelievr         ###   ########.fr       */
+/*   Updated: 2016/05/12 17:40:02 by alelievr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,6 +49,7 @@ enum class KEY
 	THREE,
 	ENTER,
 	ESCAPE,
+	JOINSEVER,
 	FIRST = NONE,
 	LAST = ESCAPE
 };
@@ -77,6 +78,9 @@ struct ISlave
 
 	virtual void
 	render(Points const & snake, Items const & items, bool pause, bool start, std::deque< std::string > const & ipList) = 0;
+
+	virtual void
+	getClickedIp(std::string & ip) const = 0;
 
 	virtual void
 	close(EVENT event) = 0;

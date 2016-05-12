@@ -6,7 +6,7 @@
 /*   By: alelievr <alelievr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/04/29 22:09:48 by alelievr          #+#    #+#             */
-/*   Updated: 2016/05/12 04:11:22 by alelievr         ###   ########.fr       */
+/*   Updated: 2016/05/12 19:06:11 by alelievr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,8 @@
 #include <unistd.h>
 #include "SOIL.h"
 
-KEY GLFW_gui::pressedKey = KEY::NONE;
+KEY		GLFW_gui::pressedKey = KEY::NONE;
+Point	GLFW_gui::mouse = {0, 0};
 std::map<int, KEY > keyMap = {
 	{GLFW_KEY_UP, KEY::UP},
 	{GLFW_KEY_DOWN, KEY::DOWN},
@@ -46,6 +47,23 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
 	(void)scancode;
 	(void)mods;
 	(void)window;
+}
+
+static void	mouseClickCallback(GLFWwindow *window, int button, int action, int mods)
+{
+	std::cout << "clicked on " << button << " action = " << action << std::endl;
+	if (button == 0 && action == 1)
+		GUI::onMouseClick(GLFW_gui::mouse);
+	(void)window;
+	(void)action;
+	(void)mods;
+}
+
+static void mouseMoveCallback(GLFWwindow *window, double xpos, double ypos)
+{
+	(void)window;
+	GLFW_gui::mouse.x = (int)xpos;
+	GLFW_gui::mouse.y = (int)ypos;
 }
 
 GLFW_gui::GLFW_gui(void)
@@ -91,10 +109,17 @@ bool	GLFW_gui::open(std::size_t width, std::size_t height, std::string const & n
 	}
 	glfwMakeContextCurrent(this->win);
 	glfwSetKeyCallback(this->win, key_callback);
+	glfwSetCursorPosCallback(this->win, mouseMoveCallback);
+	glfwSetMouseButtonCallback(this->win, mouseClickCallback);
 
 	GUI::open(width, height, winSize);
 
 	return (true);
+}
+
+void	GLFW_gui::getClickedIp(std::string & ip) const
+{
+	ip = GUI::getLastClickedIp();
 }
 
 void	GLFW_gui::getEvent(KEY & key) const

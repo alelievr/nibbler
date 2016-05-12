@@ -37,10 +37,12 @@ class		GUI
 		void		drawStartScreen(void);
 		void		render(Points const & snake, Items const & items, bool paused, bool stared);
 		void		renderServotron(std::deque< std::string > const & ipList);
-		std::string	onMouseClick(Point const & position);
 		void		open(std::size_t width, std::size_t height, Point const & winSize);
 		void		close(EVENT e);
 		TEXTURE &	itemToTexture(Item::TYPE const & i) const;
+		std::string	getLastClickedIp(void) const;
+
+		static void	onMouseClick(Point const & position);
 };
 
 std::ostream &	operator<<(std::ostream & o, GUI const & r);

@@ -6,7 +6,7 @@
 /*   By: alelievr <alelievr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/05/08 23:24:05 by alelievr          #+#    #+#             */
-/*   Updated: 2016/05/12 15:31:36 by alelievr         ###   ########.fr       */
+/*   Updated: 2016/05/12 18:37:53 by alelievr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -192,9 +192,14 @@ void	GUI::renderServotron(std::deque< std::string > const & ipList)
 	_servoUI.render(ipList);
 }
 
-std::string	GUI::onMouseClick(Point const & p)
+void	GUI::onMouseClick(Point const & p)
 {
-	return (_servoUI.onMouseClick(p));
+	return (ServotronUI::onMouseClick(p));
+}
+
+std::string	GUI::getLastClickedIp(void) const
+{
+	return (_servoUI.getLastClickedIp());
 }
 
 void	GUI::open(std::size_t w, std::size_t h, Point const & ws)

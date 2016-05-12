@@ -3,8 +3,11 @@
 #include <sstream>
 #include <sys/time.h>
 
+ServotronUI	*ServotronUI::self = NULL;
+
 ServotronUI::ServotronUI(void)
 {
+	ServotronUI::self = this;
 	std::cout << "Default constructor of ServotronUI called" << std::endl;
 	_basicFont.loadFontFile("assets/fonts/SourceSansPro-Semibold.otf");
 }
@@ -40,8 +43,8 @@ void		ServotronUI::renderClientCase(const char *name, const char *ip, int & y)
 	_basicFont.setSize(32);
 	_basicFont.drawText(name, 20, y);
 	_basicFont.setSize(20);
-	_basicFont.drawText((std::string("(") + ip + std::string(")")).c_str(), 120, y + 24);
-	y += 60;
+	_basicFont.drawText((std::string("(") + ip + std::string(")")).c_str(), 220, y + 10);
+	y += 40;
 }
 
 void		ServotronUI::renderClientList(std::deque< std::string > const & ipList)
@@ -54,25 +57,11 @@ void		ServotronUI::renderClientList(std::deque< std::string > const & ipList)
 		renderClientCase(ipToMacNumber(ip.c_str()), ip.c_str(), y);
 }
 
-float timedifference_msec(struct timeval t0, struct timeval t1)
-{
-	    return (t1.tv_sec - t0.tv_sec) * 1000.0f + (t1.tv_usec - t0.tv_usec) / 1000.0f;
-}
-
 void		ServotronUI::render(std::deque< std::string > const & ipList)
 {
-	struct timeval	now, begin;
-	static bool		init = 0;
-	float			timeSpend;
-//	float ratio;
-
-	if (!init && ((init = true)))
-		gettimeofday(&begin, NULL);
-	gettimeofday(&now, NULL);
 	_ipList = ipList;
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glEnable(GL_BLEND);
-	std::cout << _width << std::endl;
 //	ratio = _width / (float)_height;
 	glViewport(1000, 0, 400, _height);
 //	glClear(GL_COLOR_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
@@ -82,8 +71,7 @@ void		ServotronUI::render(std::deque< std::string > const & ipList)
 //	glMatrixMode(GL_MODELVIEW);
 	glPushMatrix();
 	glLoadIdentity();
-	timeSpend = timedifference_msec(begin, now);
-//	glRotatef(timeSpend * 100, 0, 0, 1);
+	glRotatef(clock() / 5000, 0, 0, 1);
 	glBegin(GL_TRIANGLES);
 	glColor3f(1.f, 0.f, 0.f);
 	glVertex3f(-3.6f, -2.4f, 0.f);
@@ -97,12 +85,18 @@ void		ServotronUI::render(std::deque< std::string > const & ipList)
 	renderClientList(ipList);
 }
 
-std::string	ServotronUI::onMouseClick(Point const & p)
+void		ServotronUI::onMouseClick(Point const & p)
 {
+	std::cout << "clicked servo entered\n";
 	if (p.x == 0 && p.y == 0)
-		return ("");
+		ServotronUI::self->_clickedIP = "";
 	else
-		return ("127.0.0.1");
+		ServotronUI::self->_clickedIP = "127.0.0.1";
+}
+
+std::string	ServotronUI::getLastClickedIp(void) const
+{
+	return _clickedIP;
 }
 
 void		ServotronUI::setWinSize(const int w, const int h)

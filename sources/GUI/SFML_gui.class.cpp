@@ -6,7 +6,7 @@
 /*   By: alelievr <alelievr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/04/29 22:09:48 by alelievr          #+#    #+#             */
-/*   Updated: 2016/05/12 04:01:33 by alelievr         ###   ########.fr       */
+/*   Updated: 2016/05/12 19:07:48 by alelievr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -157,6 +157,12 @@ void	SFML_gui::render(Points const & snake, Items const & items, bool pause, boo
 	(void)items;
 	(void)pause;
 	(void)started;
+}
+
+void	SFML_gui::getClickedIp(std::string & ip) const
+{
+	(void)ip;
+	//return (GUI::getLastClickedIp());
 }
 
 void	SFML_gui::close(EVENT event)

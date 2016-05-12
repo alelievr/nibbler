@@ -18,6 +18,7 @@ class		ServotronUI
 		std::deque< std::string >	_ipList;
 		int							_width;
 		int							_height;
+		std::string					_clickedIP;
 
 		void		onClick(sf::Vector2i const & pos);
 		void		renderClientList(std::deque< std::string > const & ipList);
@@ -30,9 +31,12 @@ class		ServotronUI
 
 		void		setWinSize(const int w, const int h);
 		void		render(std::deque< std::string > const & ipList);
-		std::string	onMouseClick(Point const & pos);
+		std::string	getLastClickedIp(void) const;
 
 		ServotronUI &	operator=(ServotronUI const & src);
+
+		static ServotronUI		*self;
+		static void		onMouseClick(Point const & pos);
 };
 
 std::ostream &	operator<<(std::ostream & o, ServotronUI const & r);
