@@ -1,6 +1,7 @@
 #include "ServotronUI.class.hpp"
 #include "servotron.class.hpp"
 #include <sstream>
+#include <sys/time.h>
 
 ServotronUI::ServotronUI(void)
 {
@@ -37,9 +38,9 @@ static const char * ipToMacNumber(const char *ip) {
 void		ServotronUI::renderClientCase(const char *name, const char *ip, int & y)
 {
 	_basicFont.setSize(32);
-	_basicFont.drawText(name, _width - 1200, y);
+	_basicFont.drawText(name, 20, y);
 	_basicFont.setSize(20);
-	_basicFont.drawText((std::string("(") + ip + std::string(")")).c_str(), _width - 100, y + 24);
+	_basicFont.drawText((std::string("(") + ip + std::string(")")).c_str(), 120, y + 24);
 	y += 60;
 }
 
@@ -53,32 +54,45 @@ void		ServotronUI::renderClientList(std::deque< std::string > const & ipList)
 		renderClientCase(ipToMacNumber(ip.c_str()), ip.c_str(), y);
 }
 
+float timedifference_msec(struct timeval t0, struct timeval t1)
+{
+	    return (t1.tv_sec - t0.tv_sec) * 1000.0f + (t1.tv_usec - t0.tv_usec) / 1000.0f;
+}
+
 void		ServotronUI::render(std::deque< std::string > const & ipList)
 {
+	struct timeval	now, begin;
+	static bool		init = 0;
+	float			timeSpend;
 //	float ratio;
 
+	if (!init && ((init = true)))
+		gettimeofday(&begin, NULL);
+	gettimeofday(&now, NULL);
 	_ipList = ipList;
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glEnable(GL_BLEND);
 	std::cout << _width << std::endl;
 //	ratio = _width / (float)_height;
-//	glViewport(0, 0, _width, _height);
+	glViewport(1000, 0, 400, _height);
 //	glClear(GL_COLOR_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 //	glMatrixMode(GL_PROJECTION);
 //	glLoadIdentity();
 //	glOrtho(-ratio, ratio, -1.f, 1.f, 1.f, -1.f);
 //	glMatrixMode(GL_MODELVIEW);
-//	glPushMatrix();
-//	glLoadIdentity();
-/*	glBegin(GL_TRIANGLES);
+	glPushMatrix();
+	glLoadIdentity();
+	timeSpend = timedifference_msec(begin, now);
+//	glRotatef(timeSpend * 100, 0, 0, 1);
+	glBegin(GL_TRIANGLES);
 	glColor3f(1.f, 0.f, 0.f);
-	glVertex3f(-2.4f, -1.6f, 0.f);
+	glVertex3f(-3.6f, -2.4f, 0.f);
 	glColor3f(0.f, 1.f, 0.f);
-	glVertex3f(2.4f, -1.6f, 0.f);
+	glVertex3f(3.6f, -2.4f, 0.f);
 	glColor3f(0.f, 0.f, 1.f);
-	glVertex3f(0.f, 2.4f, 0.f);
-	glEnd();*/
-//	glPopMatrix();
+	glVertex3f(0.f, 3.6f, 0.f);
+	glEnd();
+	glPopMatrix();
 
 	renderClientList(ipList);
 }

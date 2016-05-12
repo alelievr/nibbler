@@ -6,7 +6,7 @@
 /*   By: alelievr <alelievr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/05/08 23:24:05 by alelievr          #+#    #+#             */
-/*   Updated: 2016/05/12 04:22:55 by alelievr         ###   ########.fr       */
+/*   Updated: 2016/05/12 15:31:36 by alelievr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -165,7 +165,7 @@ void		GUI::render(Points const & snake, Items const & items, bool paused, bool s
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	glViewport(0, 0, _winSize.x, _winSize.y);
+	glViewport(0, 0, 1000, _winSize.y);
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 

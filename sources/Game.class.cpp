@@ -49,6 +49,7 @@ int
 Game::run(void)
 {
 	KEY					key;
+	std::deque< std::string >	ipList;
 
 	this->getGUI(_args[3]);
 	while (42)
@@ -56,7 +57,7 @@ Game::run(void)
 		//timer causing input lag if > 0, wtf ?
 		if (_timer.frame(0))
 		{
-			_gui->render(_snake, _items, _paused, _started);
+			_gui->render(_snake, _items, _paused, _started, ipList);
 		}
 		_gui->getEvent(key);
 		std::size_t	n;
