@@ -6,7 +6,7 @@
 /*   By: alelievr <alelievr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/05/08 17:27:04 by alelievr          #+#    #+#             */
-/*   Updated: 2016/05/13 22:06:44 by alelievr         ###   ########.fr       */
+/*   Updated: 2016/05/13 22:17:04 by alelievr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@ SoundPlayer::SoundPlayer(void) :
 	_soundList[2]("assets/sounds/coin.ogg"),
 	_soundList[3]("assets/sounds/door_open.ogg"),
 	_soundList[4]("assets/sounds/door_close.ogg"),*/
-	_background("assets/sounds/arcade_loop.ogg")
+	_background("assets/sounds/mirai_nikki.ogg")
 {
 }
 
