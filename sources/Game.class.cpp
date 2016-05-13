@@ -262,9 +262,9 @@ Game::run(void)
 					_players.insert(std::pair< Client, Player >(c, Player{newSnake(_width, _height), DIRECTION::LEFT, true}));
 				moveOnePlayer(c);
 			}
-			if (!moveMe(key))
-				break ;
 		}
+		if (!moveMe(key))
+			break ;
 		// manage food && bonus
 	}
 	lastKey = key;
