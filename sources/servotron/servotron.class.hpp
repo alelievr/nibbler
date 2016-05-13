@@ -22,12 +22,12 @@ class		Servotron : IServotron
 		{
 			char		ip[IP_SIZE + 1];
 			Client		id;
-			KEY			lastEvent;
+			Points		pts;
 
 			ClientInfo & operator=(ClientInfo const & c) {
 				strcpy(this->ip, c.ip);
 				this->id = c.id;
-				this->lastEvent = c.lastEvent;
+				pts = c.pts;
 				return (*this);
 			}
 		};
@@ -43,8 +43,6 @@ class		Servotron : IServotron
 		std::string					_localIP;
 
 		void		eventThread(void);
-		char		keyToChar(const KEY k) const;
-		KEY			charToKey(const char c) const;
 		void		createUdpSocket(int & s, const int port, bool bind_port) const;
 		void		sendDataToFloor(char *data, std::size_t size);
 		void		sendDisconnection(void);
@@ -65,9 +63,7 @@ class		Servotron : IServotron
 
 		Servotron &	operator=(Servotron const & src) = delete;
 
-		void	setScanInterval(const int millis);
 		void	getConnectedClients(Clients & clients) const;
-		void	getClientEvent(Client const & c, KEY & key) const;
 		void	startServer(void) const;
 		void	stopServer(void) const;
 
@@ -75,8 +71,7 @@ class		Servotron : IServotron
 		void	setInterval(int tmp);
 		void	getOnlineIpList(std::deque< std::string > & clist) const;
 
-		void		sendEvent(KEY & k);
-		void		sendEventToClients(KEY & k, Client const c = -1);
+		void	sendEventToClients(Points & pts, Client const c = -1);
 
 		void	getState(STATE & s) const;
 
@@ -84,6 +79,11 @@ class		Servotron : IServotron
 		void	disconnectServer(void);
 
 		void	scanClientsOnFloor(void);
+
+		void	sendDataToConnectedClients(char *data, size_t size, Client cid = -1);
+		void	popSnakeBlock(Point const & p);
+		void	addSnakeBlock(Point const & p);
+		void	getPlayerInfo(Players & players) const;
 };
 
 std::ostream &	operator<<(std::ostream & o, Servotron const & r);

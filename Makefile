@@ -68,7 +68,7 @@ NAME		=	nibbler
 
 #	Compiler
 WERROR		=	-Werror
-CFLAGS		=	-Wall -Wextra -pedantic
+CFLAGS		=	-Wall -Wextra -pedantic -ferror-limit=999
 CPROTECTION	=	-z execstack -fno-stack-protector
 
 DEBUGFLAGS1	=	-ggdb -fsanitize=address -fno-omit-frame-pointer -fno-optimize-sibling-calls -O0

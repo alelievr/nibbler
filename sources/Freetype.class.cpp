@@ -6,7 +6,7 @@
 /*   By: alelievr <alelievr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/05/10 23:36:18 by alelievr          #+#    #+#             */
-/*   Updated: 2016/05/11 18:53:48 by alelievr         ###   ########.fr       */
+/*   Updated: 2016/05/13 22:26:29 by alelievr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,12 +20,10 @@ Freetype::Freetype(void) : _padding(0)
 Freetype::Freetype(Freetype const & src)
 {
 	*this = src;
-	std::cout << "Copy constructor called" << std::endl;
 }
 
 Freetype::~Freetype(void)
 {
-	std::cout << "Destructor of Freetype called" << std::endl;
 }
 
 bool		Freetype::loadFontFile(const char *ftf)
@@ -133,7 +131,6 @@ void		Freetype::setFontTransform(FT_Matrix & matrix, FT_Vector & pen)
 
 Freetype &	Freetype::operator=(Freetype const & src)
 {
-	std::cout << "Assignment operator called" << std::endl;
 
 	if (this != &src) {
 		this->_library = src.getLibrary();

@@ -6,7 +6,7 @@
 /*   By: fdaudre- <fdaudre-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/04/28 19:58:37 by fdaudre-          #+#    #+#             */
-/*   Updated: 2016/05/13 21:45:55 by alelievr         ###   ########.fr       */
+/*   Updated: 2016/05/14 00:43:46 by alelievr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,9 @@ struct Point
 {	/* Origin: Up && Left */
 	std::size_t		x;
 	std::size_t		y;
+	inline bool operator==(Point const & p) { return (x == p.x && y == p.y); }
 };
+
 
 struct Item
 {

@@ -6,7 +6,7 @@
 /*   By: alelievr <alelievr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/05/04 19:23:45 by alelievr          #+#    #+#             */
-/*   Updated: 2016/05/13 16:04:10 by alelievr         ###   ########.fr       */
+/*   Updated: 2016/05/14 00:45:27 by alelievr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,30 +30,27 @@ enum class	STATE
 	SERVER,
 };
 
-enum class	BYTECODE
-{
-	KEYEVENT = '1',
-};
-
 enum	NETWORK_BYTES
 {
-	POKE_BYTE	= '\x1',
-	REPLY_BYTE	= '\x2'
+	CONNECTION_BYTE		= '\x78',
+	DISCONNECTION_BYTE	= '\x79',
+	POKE_BYTE			= '\x01',
+	REPLY_BYTE			= '\x02',
+	ADD_BLOCK_BYTE		= '\x8F',
+	POP_BLOCK_BYTE		= '\x8F'
 };
 
 class	IServotron
 {
 	public:
 		virtual void		getConnectedClients(Clients & clients) const = 0;
-		virtual void		getClientEvent(Client const & c, KEY & key) const = 0;
 		virtual void		connectToServer(std::string const & ip) = 0;
 		virtual void		getOnlineIpList(std::deque< std::string > & clist) const = 0;
 		virtual void		disconnectServer(void) = 0;
-		virtual void		sendEvent(KEY & k) = 0;
-		virtual void		sendEventToClients(KEY & k, Client const c = -1) = 0;
-		virtual void		startServer(void) const = 0;
-		virtual void		stopServer(void) const = 0;
 		virtual void		getState(STATE & s) const = 0;
+		virtual void		getPlayerInfo(Players & players) const = 0;
+		virtual void		popSnakeBlock(Point const & p) = 0;
+		virtual void		addSnakeBlock(Point const & p) = 0;
 };
 
 typedef IServotron	*(*createServotronF)(void);

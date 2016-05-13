@@ -37,17 +37,15 @@ void		Servotron::sendDataToFloor(char *data, std::size_t size)
 
 void		Servotron::makeConnectedPackage(char *data, bool type)
 {
-	data[0] = 'I';
-	data[1] = 'P';
-	data[2] = (type) ? POKE_BYTE : REPLY_BYTE;
+	data[0] = NETWORK_BYTES::CONNECTION_BYTE;
+	data[1] = (type) ? POKE_BYTE : REPLY_BYTE;
 	inet_pton(AF_INET, this->_localIP.c_str(), data + 3);
 }
 
 void		Servotron::makeDisconnectedPackage(char *data)
 {
-	data[0] = 'P';
-	data[1] = 'I';
-	data[2] = POKE_BYTE;
+	data[0] = NETWORK_BYTES::CONNECTION_BYTE;
+	data[1] = POKE_BYTE;
 	inet_pton(AF_INET, this->_localIP.c_str(), data + 3);
 }
 
@@ -68,13 +66,11 @@ void		Servotron::sendDisconnection(void)
 	sendDataToFloor(data, sizeof(data));
 }
 
-void		Servotron::sendEventToClients(KEY & key, Client const cid)
+void		Servotron::sendDataToConnectedClients(char *data, size_t size, Client cid)
 {
-//	std::cout << "sending key to every connected clients" << std::endl;
-
 	for (auto & c : _onlineClients)
 		if (c.id != cid)
-			sendEvent(key, std::string(c.ip));
+			sendData(data, size, std::string(c.ip));
 }
 
 void		Servotron::readData(void)
@@ -88,8 +84,8 @@ void		Servotron::readData(void)
 		perror("recvfrom");
 
 	std::cout << "buff = "<< buff << std::endl;
-	if (!strncmp(buff, "IP", 2)) {
-		inet_ntop(AF_INET, buff + 3, str, INET_ADDRSTRLEN);
+	if (buff[0] == (char)NETWORK_BYTES::CONNECTION_BYTE) {
+		inet_ntop(AF_INET, buff + 2, str, INET_ADDRSTRLEN);
 		ClientInfo	tmp;
 		strcpy(tmp.ip, str);
 		tmp.id = getClientId(tmp.ip);
@@ -99,39 +95,37 @@ void		Servotron::readData(void)
 			_onlineClients.push_back(tmp);
 			std::cout << "connected : " << str << std::endl;
 		}
-		else
-			std::cout << "already in list !\n";
 		if (buff[2] == POKE_BYTE) {
 			char	data[7];
 			makeConnectedPackage(data, false);
 			this->sendData(data, sizeof(data), str);
 		}
 	}
-	if (!strncmp(buff, "PI", 2)) {
-		inet_ntop(AF_INET, buff + 3, str, INET_ADDRSTRLEN);
+	if (buff[0] == (char)NETWORK_BYTES::DISCONNECTION_BYTE) {
+		inet_ntop(AF_INET, buff + 2, str, INET_ADDRSTRLEN);
 		Client		cid = getClientId(str);
 		_onlineClients.erase(std::find_if(_onlineClients.begin(), _onlineClients.end(),
 					[&](ClientInfo & c) { return (c.id == cid); }));
 		std::cout << "disconnected : " << str << std::endl;
 	}
-	if (buff[0] == (char)BYTECODE::KEYEVENT) {
-		inet_ntop(AF_INET, buff + 2, str, INET_ADDRSTRLEN);
+	if (buff[0] == (char)NETWORK_BYTES::ADD_BLOCK_BYTE || buff[0] == (char)NETWORK_BYTES::POP_BLOCK_BYTE) {
+		inet_ntop(AF_INET, buff + 3, str, INET_ADDRSTRLEN);
 		Client		cid = getClientId(str);
 
 		auto client = std::find_if(_onlineClients.begin(), _onlineClients.end(), [&](ClientInfo & c) { return (c.id == cid); });
 		if (client != _onlineClients.end())
 		{
-			client->lastEvent = charToKey(buff[1]);
-
 			if (this->_state == STATE::SERVER)
-				sendEventToClients(client->lastEvent, cid);
-//			else
-//				std::cout << "TODO: client gesture" << std::endl;
+				sendDataToConnectedClients(buff, 7, cid);
+			if (buff[0] == (char)NETWORK_BYTES::ADD_BLOCK_BYTE)
+				client->pts.push_back(Point{static_cast< std::size_t >(buff[1]), static_cast< std::size_t>(buff[2])});
+			else
+				client->pts.erase(std::remove(client->pts.begin(), client->pts.end(), Point{static_cast< std::size_t>(buff[1]), static_cast< std::size_t >(buff[2])}));
 		}
 	}
 
-	for (auto & c : _onlineClients)
-		std::cout << c.ip << std::endl;
+//	for (auto & c : _onlineClients)
+//		std::cout << c.ip << std::endl;
 }
 
 void		Servotron::sendData(char *data, std::size_t size, struct sockaddr_in *co)
@@ -184,7 +178,6 @@ void		Servotron::eventThread(void)
 		read_set = old_set;
 		if (this->_threadStop)
 			break ;
-//		std::cout << "waiting for event on port " << SERVER_PORT << "\n";
 		if (select(FD_SETSIZE, &read_set, NULL, NULL, &timeout) < 0)
 			perror("select");
 		for (int i = 0; i < FD_SETSIZE; i++)
@@ -193,10 +186,9 @@ void		Servotron::eventThread(void)
 					readData();
 					//to read datas ....
 				} else {
-					printf("reading on %i ...\n", i);
+				//	printf("reading on %i ...\n", i);
 					char	buf[128];
 					read(i, buf, 128);
-					//do nothing
 				}
 			}
 	}
@@ -227,10 +219,9 @@ void		Servotron::createUdpSocket(int & ret, const int port, bool bind_port) cons
 }
 
 Servotron::Servotron(void) :
-	_interval(1000),
 	_threadStop(false),
 	_state(STATE::SERVER),
-	_currentConnectedServer({{0}, 0, KEY::NONE})
+	_currentConnectedServer({{0}, 0, Points{0}})
 {
 	this->_localIP = sf::IpAddress::getLocalAddress().toString();
 
@@ -249,11 +240,6 @@ Servotron::~Servotron(void)
 	_eventThread.join();
 }
 
-void		Servotron::setScanInterval(const int millis)
-{
-	this->_interval = millis;
-}
-
 void		Servotron::getConnectedClients(Clients & clients) const
 {
 	clients.clear();
@@ -262,24 +248,11 @@ void		Servotron::getConnectedClients(Clients & clients) const
 		clients.push_back(c.id);
 }
 
-void		Servotron::getClientEvent(Client const & cid, KEY & key) const
+void		Servotron::getPlayerInfo(Players & players) const
 {
-	key = KEY::NONE;
-
-	const auto client = std::find_if(_onlineClients.begin(), _onlineClients.end(),
-			[cid](ClientInfo const & cl) { return (cl.id == cid); });
-	if (client != _onlineClients.end())
-		key = client->lastEvent;
-}
-
-void		Servotron::startServer(void) const
-{
-	//lol nothing, it's UDP sockets !
-}
-
-void		Servotron::stopServer(void) const
-{
-	//nothing is running !
+	for (auto & c : _onlineClients)
+		if (players.count(c.id))
+			players[c.id].snake = c.pts;
 }
 
 void		Servotron::getState(STATE & s) const
@@ -287,48 +260,32 @@ void		Servotron::getState(STATE & s) const
 	s = this->_state;
 }
 
-char		Servotron::keyToChar(const KEY key) const
+void		Servotron::popSnakeBlock(Point const & p)
 {
-	char	ret = '0';
+	char			data[7];
 
-	for (const auto & k : KEY()) {
-		if (k == key)
-			return (ret);
-		ret++;
-	}
-	return (0);
-}
-
-KEY			Servotron::charToKey(const char c) const
-{
-	char	ret = '0';
-
-	for (const auto & k : KEY()) {
-		if (ret == c)
-			return (k);
-		ret++;
-	}
-	return (KEY::NONE);
-}
-
-void		Servotron::sendEvent(KEY & k)
-{
-	char			data[6];
-
-	data[0] = (char)BYTECODE::KEYEVENT;
-	data[1] = keyToChar(k);
+	data[0] = (char)NETWORK_BYTES::POP_BLOCK_BYTE;
+	data[1] = (char)p.x;
+	data[2] = (char)p.y;
 	inet_pton(AF_INET, this->_localIP.c_str(), data + 2);
-	this->sendData(data, sizeof(data));
+	if (_state == STATE::CLIENT)
+		this->sendData(data, sizeof(data), _currentConnectedServer.ip);
+	else
+		this->sendDataToConnectedClients(data, sizeof(data));
 }
 
-void		Servotron::sendEvent(KEY & k, std::string const & ip)
+void		Servotron::addSnakeBlock(Point const & p)
 {
-	char			data[6];
+	char			data[7];
 
-	data[0] = (char)BYTECODE::KEYEVENT;
-	data[1] = keyToChar(k);
+	data[0] = (char)NETWORK_BYTES::ADD_BLOCK_BYTE;
+	data[1] = (char)p.x;
+	data[2] = (char)p.y;
 	inet_pton(AF_INET, this->_localIP.c_str(), data + 2);
-	this->sendData(data, sizeof(data), ip);
+	if (_state == STATE::CLIENT)
+		this->sendData(data, sizeof(data), _currentConnectedServer.ip);
+	else
+		this->sendDataToConnectedClients(data, sizeof(data));
 }
 
 void		Servotron::connectToServer(std::string const & ip)
@@ -348,7 +305,7 @@ void		Servotron::connectToServer(std::string const & ip)
 
 void		Servotron::disconnectServer(void)
 {
-	this->_currentConnectedServer = {{0}, 0, KEY::NONE};
+	this->_currentConnectedServer = {{0}, 0, Points{0}};
 	this->_state = STATE::SERVER;
 }
 

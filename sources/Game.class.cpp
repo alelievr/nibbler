@@ -78,71 +78,6 @@ Game::getSoundPlayer(void)
 }
 
 #define MOVE_TICKS	20000
-void
-Game::moveOnePlayer(Client const & c)
-{
-	DIRECTION &	dir		= _players[c].dir;
-	Points &	snake	= _players[c].snake;
-	KEY			key;
-
-	static clock_t		time = 0;
-	if (!time)
-		time = clock();
-
-	_servo->getClientEvent(c, key);
-	switch (key)
-	{
-		case KEY::LEFT:
-			if (dir != DIRECTION::RIGHT)
-				dir = DIRECTION::LEFT;
-			break ;
-		case KEY::RIGHT:
-			if (dir != DIRECTION::LEFT)
-				dir = DIRECTION::RIGHT;
-			break ;
-		case KEY::UP:
-			if (dir != DIRECTION::DOWN)
-				dir = DIRECTION::UP;
-			break ;
-		case KEY::DOWN:
-			if (dir != DIRECTION::UP)
-				dir = DIRECTION::DOWN;
-			break ;
-		case KEY::ENTER:
-			if (_players[c].paused)
-				_players[c].paused = false;
-			break ;
-		case KEY::PAUSE:
-				_players[c].paused = !_players[c].paused;
-				break ;
-		case KEY::ONE:
-		case KEY::TWO:
-		case KEY::THREE:
-		case KEY::ESCAPE:
-		case KEY::JOINSEVER:
-		case KEY::NONE: break ;
-	}
-	if (!_players[c].paused && clock() - time > MOVE_TICKS)
-	{
-		time = clock();
-		std::size_t		x(snake.back().x);
-		std::size_t		y(snake.back().y);
-		snake.pop_front();
-		switch (dir)
-		{
-			case DIRECTION::LEFT:
-				--x; break ;
-			case DIRECTION::RIGHT:
-				++x; break ;
-			case DIRECTION::UP:
-				--y; break ;
-			case DIRECTION::DOWN:
-				++y; break ;
-		}
-		snake.push_back(Point{x, y});
-	}
-}
-
 bool
 Game::moveMe(KEY const & key)
 {
@@ -200,6 +135,7 @@ Game::moveMe(KEY const & key)
 		time = clock();
 		std::size_t		x(snake.back().x);
 		std::size_t		y(snake.back().y);
+		_servo->popSnakeBlock(snake.front());
 		snake.pop_front();
 		switch (dir)
 		{
@@ -215,20 +151,10 @@ Game::moveMe(KEY const & key)
 		if (x >= _width or y >= _height or is_in_snake(x, y, snake))
 			return _gui->close(EVENT::GAMEOVER), 0;
 		snake.push_back(Point{x, y});
+		_servo->addSnakeBlock(snake.back());
 	}
+	// manage food && bonus
 	return 1;
-}
-
-Points	newSnake(std::size_t w, std::size_t h) {
-	std::size_t		x(w / 2);
-	std::size_t		y(h / 2);
-	Points			s;
-
-	s.push_back({x, y});
-	s.push_back({x + 1, y});
-	s.push_back({x + 1, y + 1});
-	s.push_back({x, y + 1});
-	return (s);
 }
 
 int
@@ -239,11 +165,6 @@ Game::run(void)
 	STATE						state;
 	std::deque< std::string >	ipList;
 	std::string					clickedIp;
-
-	//		TODO:
-	//do a list of players and send if to the clients
-	//
-	//add the sound: play a sound with _sp->playSound(SOUND const & s);
 
 	this->getGUI(_args[3]);
 	this->getServo();
@@ -261,23 +182,28 @@ Game::run(void)
 		if (clickedIp.compare(""))
 			_servo->connectToServer(clickedIp);
 
-		if (state == STATE::CLIENT && key != KEY::NONE && key != lastKey)
-			_servo->sendEvent(key);
-		else
+		_servo->getConnectedClients(_clients);
+		for (auto const & c : _clients)
 		{
-			if (key != KEY::NONE && key != lastKey)
-			_servo->sendEventToClients(key);
-			_servo->getConnectedClients(_clients);
-			for (auto const & c : _clients) {
-				if (!(_players.count(c))) //index does not exists in map
-					_players.insert(std::pair< Client, Player >(c, Player{newSnake(_width, _height), DIRECTION::LEFT, true}));
-				moveOnePlayer(c);
+			if (!(_players.count(c))) //index does not exists in map
+				_players.insert(std::pair< Client, Player >(c, Player{Points{0}, DIRECTION::LEFT, true}));
+			else
+			{
+				std::map< Client, Player >::const_iterator	index;
+				if (((index = std::find_if(_players.begin(), _players.end(),
+									[this]
+									(const std::pair< Client, Player > & tmp) -> bool
+									{
+									return !_players.count(tmp.first);
+									}
+									))) != _players.end())
+					_players.erase(index);
 			}
+			_servo->getPlayerInfo(_players);
 		}
 		if (!moveMe(key))
 			break ;
 		lastKey = key;
-		// manage food && bonus
 	}
 	_delete_gui(_gui);
 	_delete_servo(_servo);

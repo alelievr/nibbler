@@ -17,8 +17,6 @@ class Game : public Main
 
 		int
 		run(void);
-		void
-		moveOnePlayer(Client const & c);
 		bool
 		moveMe(KEY const & k);
 
