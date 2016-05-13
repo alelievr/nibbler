@@ -265,9 +265,11 @@ Game::run(void)
 		}
 		if (!moveMe(key))
 			break ;
+		lastKey = key;
 		// manage food && bonus
 	}
-	lastKey = key;
-	// never reached
+	_delete_gui(_gui);
+	_delete_servo(_servo);
+	_delete_soundPlayer(_sp);
 	return 0;
 }

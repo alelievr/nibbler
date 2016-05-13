@@ -26,7 +26,6 @@ void		Servotron::sendDataToFloor(char *data, std::size_t size)
 	connection.sin_family = AF_INET;
 	connection.sin_port = htons(SERVER_PORT);
 
-	std::cout << "sended message\n" << std::endl;
 	for (std::string ip : ipList) {
 		if (!inet_aton(ip.c_str(), &connection.sin_addr))
 			perror("inet_aton1");
@@ -233,7 +232,6 @@ Servotron::Servotron(void) :
 	_state(STATE::SERVER),
 	_currentConnectedServer({{0}, 0, KEY::NONE})
 {
-	std::cout << "constructed servotron !" << std::endl;
 	this->_localIP = sf::IpAddress::getLocalAddress().toString();
 
 	createUdpSocket(this->_sendDataSocket, SENDING_PORT, false);
@@ -249,7 +247,6 @@ Servotron::~Servotron(void)
 
 	_threadStop = true;
 	_eventThread.join();
-	std::cout << "Destructor of Servotron called" << std::endl;
 }
 
 void		Servotron::setScanInterval(const int millis)
