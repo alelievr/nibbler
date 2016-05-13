@@ -6,7 +6,7 @@
 /*   By: alelievr <alelievr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/05/08 23:24:05 by alelievr          #+#    #+#             */
-/*   Updated: 2016/05/12 18:37:53 by alelievr         ###   ########.fr       */
+/*   Updated: 2016/05/13 18:37:01 by alelievr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -156,7 +156,7 @@ void		GUI::drawStartScreen(void)
 	glClear(GL_DEPTH_BUFFER_BIT);
 }
 
-void		GUI::render(Points const & snake, Items const & items, bool paused, bool started)
+void		GUI::render(Players const & players, Items const & items, bool paused, bool started)
 {
     float	ratio;
 
@@ -174,8 +174,9 @@ void		GUI::render(Points const & snake, Items const & items, bool paused, bool s
 	if (!started && !paused)
 		drawStartScreen();
 
-	for (auto & s : snake) {
-		drawRect(s, 0xFF00FF);
+	for (auto & player : players) {
+		for (auto & s : player.second.snake)
+			drawRect(s, 0xFF00FF);
 	}
 
 	glDisable(GL_LIGHTING);

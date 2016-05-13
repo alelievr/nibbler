@@ -6,7 +6,7 @@
 /*   By: fdaudre- <fdaudre-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/04/28 19:58:37 by fdaudre-          #+#    #+#             */
-/*   Updated: 2016/05/12 17:40:02 by alelievr         ###   ########.fr       */
+/*   Updated: 2016/05/13 18:24:54 by alelievr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 
 #include <deque>
 #include <iostream>
+#include <map>
 
 struct Point
 {	/* Origin: Up && Left */
@@ -33,8 +34,23 @@ struct Item
 	TYPE			type;
 };
 
-typedef std::deque<Point>	Points;
-typedef std::deque<Item>	Items;
+typedef std::deque< Point >			Points;
+typedef std::deque< Item >			Items;
+typedef int							Client;
+
+enum class DIRECTION
+{
+	UP, DOWN, LEFT, RIGHT
+};
+
+struct Player
+{
+	Points		snake;
+	DIRECTION	dir;
+};
+
+typedef std::map< Client, Player >	Players;
+
 
 enum class KEY
 {
@@ -77,7 +93,7 @@ struct ISlave
 	getEvent(KEY & key) const = 0;
 
 	virtual void
-	render(Points const & snake, Items const & items, bool pause, bool start, std::deque< std::string > const & ipList) = 0;
+	render(Players const & snake, Items const & items, bool pause, bool start, std::deque< std::string > const & ipList) = 0;
 
 	virtual void
 	getClickedIp(std::string & ip) const = 0;

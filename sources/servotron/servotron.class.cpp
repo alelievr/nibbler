@@ -68,6 +68,15 @@ void		Servotron::sendDisconnection(void)
 	sendDataToFloor(data, sizeof(data));
 }
 
+void		Servotron::sendEventToClients(KEY & key, Client const cid)
+{
+	std::cout << "sending key to every connected clients" << std::endl;
+
+	for (auto & c : _onlineClients)
+		if (c.id != cid)
+			sendEvent(key, std::string(c.ip));
+}
+
 void		Servotron::readData(void)
 {
 	struct		sockaddr_in	co;
@@ -114,12 +123,7 @@ void		Servotron::readData(void)
 			client->lastEvent = charToKey(buff[1]);
 
 			if (this->_state == STATE::SERVER)
-			{
-				std::cout << "sending key to every connected clients" << std::endl;
-				for (auto & c : _onlineClients)
-					if (c.id != cid)
-						sendEvent(client->lastEvent, std::string(c.ip));
-			}
+				sendEventToClients(client->lastEvent, cid);
 			else
 				std::cout << "TODO: client gesture" << std::endl;
 		}
@@ -204,18 +208,19 @@ void		Servotron::createUdpSocket(int & ret, const int port, bool bind_port) cons
 	struct sockaddr_in  connection;
 	const int           yes = 1;
 
+	//TODO socket open failing when reserved by system ?
 	srand((unsigned int)clock());
 	if ((ret = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP)) == -1)
 		perror("sock"), exit(-1);
 	bzero(&connection, sizeof(connection));
 	connection.sin_family = AF_INET;
 	connection.sin_port = htons(port);
+	if (setsockopt(ret, SOL_SOCKET, SO_REUSEPORT, &yes, sizeof(int)) == -1)
+		perror("setsockopt");
+	if (setsockopt(ret, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(int)) == -1)
+		perror("setsockopt");
 	if (bind_port)
 	{
-		if (setsockopt(ret, SOL_SOCKET, SO_REUSEPORT, &yes, sizeof(int)) == -1)
-			perror("setsockopt");
-		if (setsockopt(ret, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(int)) == -1)
-			perror("setsockopt");
 		connection.sin_addr.s_addr = htonl(INADDR_ANY);
 		if (bind(ret, (struct sockaddr *)&connection, sizeof(connection)) == -1)
 			perror("(fatal) bind"), exit(-1);
