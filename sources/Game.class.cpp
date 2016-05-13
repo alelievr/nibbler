@@ -210,6 +210,7 @@ Game::run(void)
 	KEY							key;
 	STATE						state;
 	std::deque< std::string >	ipList;
+	std::string					clickedIp;
 
 	//		TODO:
 	//do a list of players and send if to the clients
@@ -227,6 +228,10 @@ Game::run(void)
 
 		_gui->getEvent(key);
 		_servo->getState(state);
+		_gui->getClickedIp(clickedIp);
+		_servo->getOnlineIpList(ipList);
+		if (clickedIp.compare(""))
+			_servo->connectToServer(clickedIp);
 
 		if (state == STATE::CLIENT && key != KEY::NONE && key != lastKey)
 			_servo->sendEvent(key);
@@ -235,8 +240,10 @@ Game::run(void)
 			if (key != KEY::NONE && key != lastKey)
 			_servo->sendEventToClients(key);
 			_servo->getConnectedClients(_clients);
-			for (auto const & c : _clients)
+			for (auto const & c : _clients) {
+				std::cout << "connected client list: " << c << std::endl;
 				moveOnePlayer(c);
+			}
 			if (!moveMe(key))
 				break ;
 		}

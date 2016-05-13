@@ -70,7 +70,7 @@ void		Servotron::sendDisconnection(void)
 
 void		Servotron::sendEventToClients(KEY & key, Client const cid)
 {
-	std::cout << "sending key to every connected clients" << std::endl;
+//	std::cout << "sending key to every connected clients" << std::endl;
 
 	for (auto & c : _onlineClients)
 		if (c.id != cid)
@@ -336,6 +336,8 @@ void		Servotron::sendEvent(KEY & k, std::string const & ip)
 
 void		Servotron::connectToServer(std::string const & ip)
 {
+	if (!ip.compare(_currentConnectedServer.ip))
+		return ;
 	Client id = getClientId(ip.c_str());
 
 	for (auto const & tmpc : _onlineClients)

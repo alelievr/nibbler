@@ -6,7 +6,7 @@
 /*   By: alelievr <alelievr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/05/08 23:24:05 by alelievr          #+#    #+#             */
-/*   Updated: 2016/05/13 18:37:01 by alelievr         ###   ########.fr       */
+/*   Updated: 2016/05/13 19:06:42 by alelievr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,22 @@
     	glVertex2f(1, -1); \
     	glVertex2f(1, 1); \
     	glVertex2f(-1, 1);
+
+std::deque< unsigned int > colorList = {
+	0x00FFBF,
+	0xBF00FF,
+	0xFF8000,
+	0xFF0040,
+	0xF7FE2E,
+	0x2E9AFE,
+	0xFE2EF7,
+	0x00FF00,
+	0xA4A4A4,
+	0xBCA9F5,
+	0xE1F5A9,
+	0xF5A9A9,
+	0x0101DF
+};
 
 std::map< TEXTURE, std::string > textureMaps = {
 	{TEXTURE::FOOD, "assets/sprites/pizza.png"},
@@ -176,7 +192,7 @@ void		GUI::render(Players const & players, Items const & items, bool paused, boo
 
 	for (auto & player : players) {
 		for (auto & s : player.second.snake)
-			drawRect(s, 0xFF00FF);
+			drawRect(s, colorList[player.first % colorList.size()]);
 	}
 
 	glDisable(GL_LIGHTING);
