@@ -124,13 +124,11 @@ void		Servotron::readData(void)
 
 			if (this->_state == STATE::SERVER)
 				sendEventToClients(client->lastEvent, cid);
-			else
-				std::cout << "TODO: client gesture" << std::endl;
+//			else
+//				std::cout << "TODO: client gesture" << std::endl;
 		}
 	}
 
-	std::cout << "debug [" << buff << "]" << std::endl;
-	std::cout << "client list: " << std::endl;
 	for (auto & c : _onlineClients)
 		std::cout << c.ip << std::endl;
 }

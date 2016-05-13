@@ -6,7 +6,7 @@
 /*   By: fdaudre- <fdaudre-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/04/28 19:58:37 by fdaudre-          #+#    #+#             */
-/*   Updated: 2016/05/13 18:24:54 by alelievr         ###   ########.fr       */
+/*   Updated: 2016/05/13 21:45:55 by alelievr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,6 +47,7 @@ struct Player
 {
 	Points		snake;
 	DIRECTION	dir;
+	bool		paused;
 };
 
 typedef std::map< Client, Player >	Players;

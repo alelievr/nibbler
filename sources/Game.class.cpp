@@ -80,8 +80,8 @@ Game::getSoundPlayer(void)
 void
 Game::moveOnePlayer(Client const & c)
 {
-	DIRECTION &	dir = _players[c].dir;
-	Points &	snake = _players[c].snake;
+	DIRECTION &	dir		= _players[c].dir;
+	Points &	snake	= _players[c].snake;
 	KEY			key;
 
 	_servo->getClientEvent(c, key);
@@ -103,16 +103,21 @@ Game::moveOnePlayer(Client const & c)
 			if (dir != DIRECTION::UP)
 				dir = DIRECTION::DOWN;
 			break ;
+		case KEY::ENTER:
+			if (_players[c].paused)
+				_players[c].paused = false;
+			break ;
 		case KEY::PAUSE:
+				_players[c].paused = !_players[c].paused;
+				break ;
 		case KEY::ONE:
 		case KEY::TWO:
 		case KEY::THREE:
 		case KEY::ESCAPE:
-		case KEY::ENTER:
 		case KEY::JOINSEVER:
 		case KEY::NONE: break ;
 	}
-	if (_started && !_paused)
+	if (!_players[c].paused)
 	{
 		std::size_t		x(snake.back().x);
 		std::size_t		y(snake.back().y);
@@ -203,6 +208,18 @@ Game::moveMe(KEY const & key)
 	return 1;
 }
 
+Points	newSnake(std::size_t w, std::size_t h) {
+	std::size_t		x(w / 2);
+	std::size_t		y(h / 2);
+	Points			s;
+
+	s.push_back({x, y});
+	s.push_back({x + 1, y});
+	s.push_back({x + 1, y + 1});
+	s.push_back({x, y + 1});
+	return (s);
+}
+
 int
 Game::run(void)
 {
@@ -241,7 +258,8 @@ Game::run(void)
 			_servo->sendEventToClients(key);
 			_servo->getConnectedClients(_clients);
 			for (auto const & c : _clients) {
-				std::cout << "connected client list: " << c << std::endl;
+				if (!(_players.count(c))) //index does not exists in map
+					_players.insert(std::pair< Client, Player >(c, Player{newSnake(_width, _height), DIRECTION::LEFT, true}));
 				moveOnePlayer(c);
 			}
 			if (!moveMe(key))
