@@ -26,6 +26,7 @@ void		Servotron::sendDataToFloor(char *data, std::size_t size)
 	connection.sin_family = AF_INET;
 	connection.sin_port = htons(SERVER_PORT);
 
+	std::cout << "sended message\n" << std::endl;
 	for (std::string ip : ipList) {
 		if (!inet_aton(ip.c_str(), &connection.sin_addr))
 			perror("inet_aton1");
@@ -87,6 +88,7 @@ void		Servotron::readData(void)
 	if (recvfrom(this->_receiveDataSocket, buff, sizeof(buff), 0, (struct sockaddr *)&co, &colen) <= 0)
 		perror("recvfrom");
 
+	std::cout << "buff = "<< buff << std::endl;
 	if (!strncmp(buff, "IP", 2)) {
 		inet_ntop(AF_INET, buff + 3, str, INET_ADDRSTRLEN);
 		ClientInfo	tmp;
