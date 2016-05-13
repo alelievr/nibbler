@@ -352,7 +352,7 @@ int			Servotron::getInterval(void) const { return (this->_interval); }
 void		Servotron::setInterval(int tmp) { this->_interval = tmp; }
 void		Servotron::getOnlineIpList(std::deque< std::string > & clist) const
 {
-	clist.empty();
+	clist.clear();
 	for (auto const & c : _onlineClients)
 		clist.push_back(c.ip);
 }
