@@ -77,12 +77,17 @@ Game::getSoundPlayer(void)
 	_sp->playBackground();
 }
 
+#define MOVE_TICKS	20000
 void
 Game::moveOnePlayer(Client const & c)
 {
 	DIRECTION &	dir		= _players[c].dir;
 	Points &	snake	= _players[c].snake;
 	KEY			key;
+
+	static clock_t		time = 0;
+	if (!time)
+		time = clock();
 
 	_servo->getClientEvent(c, key);
 	switch (key)
@@ -117,8 +122,9 @@ Game::moveOnePlayer(Client const & c)
 		case KEY::JOINSEVER:
 		case KEY::NONE: break ;
 	}
-	if (!_players[c].paused)
+	if (!_players[c].paused && clock() - time > MOVE_TICKS)
 	{
+		time = clock();
 		std::size_t		x(snake.back().x);
 		std::size_t		y(snake.back().y);
 		snake.pop_front();
@@ -143,6 +149,10 @@ Game::moveMe(KEY const & key)
 	DIRECTION &		dir = _players[0].dir;
 	Points &		snake = _players[0].snake;
 	std::size_t		n;
+
+	static clock_t		time = 0;
+	if (!time)
+		time = clock();
 
 	switch (key)
 	{
@@ -185,8 +195,9 @@ Game::moveMe(KEY const & key)
 			break ;
 		case KEY::NONE: break ;
 	}
-	if (_started && !_paused)
+	if (_started && !_paused && clock() - time > MOVE_TICKS)
 	{
+		time = clock();
 		std::size_t		x(snake.back().x);
 		std::size_t		y(snake.back().y);
 		snake.pop_front();
