@@ -261,7 +261,7 @@ $(SDLLIB): $(SDLDIR_CHECK)
 	cd SDL2 && ./configure && make
 
 $(SFMLLIB): $(SFMLDIR_CHECK)
-	cd SFML patch -fi src/SFML/Graphics/CMakeLists.txt ../assets/SFMLG_CmakeList.txt.diff || echo && ./install.sh
+	cd SFML patch -fi ../assets/SFMLG_CmakeList.txt.diff src/SFML/Graphics/CMakeLists.txt || echo && ./install.sh
 
 $(GLFWLIB): $(GLFWDIR_CHECK)
 	cd GLFW && cmake . && make
