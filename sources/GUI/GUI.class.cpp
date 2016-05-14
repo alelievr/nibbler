@@ -6,7 +6,7 @@
 /*   By: alelievr <alelievr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/05/08 23:24:05 by alelievr          #+#    #+#             */
-/*   Updated: 2016/05/14 16:20:24 by alelievr         ###   ########.fr       */
+/*   Updated: 2016/05/14 19:39:33 by alelievr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,18 +51,15 @@ std::map< Item::TYPE, TEXTURE > itemTexMaps = {
 GUI::GUI(void)
 {
 	_pixelFont.loadFontFile("assets/fonts/slkscr.ttf");
-	std::cout << "Default constructor of GUI called" << std::endl;
 }
 
 GUI::GUI(GUI const & src)
 {
 	*this = src;
-	std::cout << "Copy constructor called" << std::endl;
 }
 
 GUI::~GUI(void)
 {
-	std::cout << "Destructor of GUI called" << std::endl;
 }
 
 bool		GUI::loadTextures(void)

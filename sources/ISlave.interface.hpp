@@ -6,7 +6,7 @@
 /*   By: fdaudre- <fdaudre-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/04/28 19:58:37 by fdaudre-          #+#    #+#             */
-/*   Updated: 2016/05/14 16:17:46 by alelievr         ###   ########.fr       */
+/*   Updated: 2016/05/14 18:26:13 by alelievr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,7 @@ struct Point
 	inline bool operator==(Point const & p) { return (x == p.x && y == p.y); }
 };
 
+inline std::ostream & operator<<(std::ostream & o, Point const & p) { o << p.x << " | " << p.y; return o; }
 
 struct Item
 {

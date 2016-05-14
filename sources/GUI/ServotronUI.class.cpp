@@ -89,7 +89,6 @@ void		ServotronUI::onMouseClick(Point const & p)
 	if (p.x >= 1000)
 	{
 		pos = (p.y - (20 + clickBox)) / clickBox;
-		std::cout << "pos = " << pos << std::endl;
 		if ((int)p.y >= 20 && (int)p.y < 20 + clickBox)
 			ServotronUI::self->setClickedIp("127.0.0.1");
 		else if ((int)ServotronUI::self->ipList.size() > pos)

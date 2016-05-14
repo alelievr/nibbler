@@ -6,7 +6,7 @@
 /*   By: alelievr <alelievr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/04/29 22:09:48 by alelievr          #+#    #+#             */
-/*   Updated: 2016/05/14 16:20:30 by alelievr         ###   ########.fr       */
+/*   Updated: 2016/05/14 19:40:20 by alelievr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,7 +80,6 @@ GLFW_gui::GLFW_gui(GLFW_gui const & src)
 
 GLFW_gui::~GLFW_gui(void)
 {
-	std::cout << "Destructor of GLFW_gui called" << std::endl;
 }
 
 GLFW_gui &	GLFW_gui::operator=(GLFW_gui const & src)

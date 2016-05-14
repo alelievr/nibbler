@@ -81,6 +81,7 @@ Game::getSoundPlayer(void)
 bool
 Game::moveMe(KEY const & key)
 {
+	static KEY		lastKey = KEY::NONE;
 	DIRECTION &		dir = _players[0].dir;
 	Points &		snake = _players[0].snake;
 	std::size_t		n;
@@ -89,47 +90,48 @@ Game::moveMe(KEY const & key)
 	if (!time)
 		time = clock();
 
-	switch (key)
-	{
-		case KEY::LEFT:
-			if (dir != DIRECTION::RIGHT)
-				dir = DIRECTION::LEFT;
-			break ;
-		case KEY::RIGHT:
-			if (dir != DIRECTION::LEFT)
-				dir = DIRECTION::RIGHT;
-			break ;
-		case KEY::UP:
-			if (dir != DIRECTION::DOWN)
-				dir = DIRECTION::UP;
-			break ;
-		case KEY::DOWN:
-			if (dir != DIRECTION::UP)
-				dir = DIRECTION::DOWN;
-			break ;
-		case KEY::PAUSE:
-			_paused = !_paused;
-			break ;
-		case KEY::ONE:
-		case KEY::TWO:
-		case KEY::THREE:
-			n = static_cast<std::size_t>(key)
-				- static_cast<std::size_t>(KEY::ONE) + 1;
-			if (_active_ui == n or _args.size() < 3 + n)
+	if (key != lastKey)
+		switch (key)
+		{
+			case KEY::LEFT:
+				if (dir != DIRECTION::RIGHT)
+					dir = DIRECTION::LEFT;
 				break ;
-			_gui->close(EVENT::SWITCH);
-			this->getGUI(_args[2 + n]);
-			_active_ui = n;
-			break ;
-		case KEY::ESCAPE:
-			return _gui->close(EVENT::GAMEOVER), 0;
-		case KEY::ENTER:
-			_started = true;
-			break ;
-		case KEY::JOINSEVER:
-			break ;
-		case KEY::NONE: break ;
-	}
+			case KEY::RIGHT:
+				if (dir != DIRECTION::LEFT)
+					dir = DIRECTION::RIGHT;
+				break ;
+			case KEY::UP:
+				if (dir != DIRECTION::DOWN)
+					dir = DIRECTION::UP;
+				break ;
+			case KEY::DOWN:
+				if (dir != DIRECTION::UP)
+					dir = DIRECTION::DOWN;
+				break ;
+			case KEY::PAUSE:
+				_paused = !_paused;
+				break ;
+			case KEY::ONE:
+			case KEY::TWO:
+			case KEY::THREE:
+				n = static_cast<std::size_t>(key)
+					- static_cast<std::size_t>(KEY::ONE) + 1;
+				if (_active_ui == n or _args.size() < 3 + n)
+					break ;
+				_gui->close(EVENT::SWITCH);
+				this->getGUI(_args[2 + n]);
+				_active_ui = n;
+				break ;
+			case KEY::ESCAPE:
+				return _gui->close(EVENT::GAMEOVER), 0;
+			case KEY::ENTER:
+				_started = true;
+				break ;
+			case KEY::JOINSEVER:
+				break ;
+			case KEY::NONE: break ;
+		}
 	if (_started && !_paused && clock() - time > MOVE_TICKS)
 	{
 		time = clock();
@@ -153,6 +155,7 @@ Game::moveMe(KEY const & key)
 		snake.push_back(Point{x, y});
 		_servo->addSnakeBlock(snake.back());
 	}
+	lastKey = key;
 	// manage food && bonus
 	return 1;
 }
@@ -187,6 +190,13 @@ Game::run(void)
 			_servo->connectToServer(clickedIp);
 			_servo->getServerInfos(serverGridSize);
 			_gui->updateGridSize(serverGridSize);
+			std::size_t		x(serverGridSize.x / 2);
+			std::size_t		y(serverGridSize.y / 2);
+			_snake.clear();
+			_snake.push_back({x, y});
+			_snake.push_back({x + 1, y});
+			_snake.push_back({x + 1, y + 1});
+			_snake.push_back({x, y + 1});
 		}
 
 		_servo->getConnectedClients(_clients);

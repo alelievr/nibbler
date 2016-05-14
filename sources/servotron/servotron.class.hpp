@@ -29,6 +29,7 @@ class		Servotron : IServotron
 				strcpy(this->ip, c.ip);
 				this->id = c.id;
 				pts = c.pts;
+				gridSize = c.gridSize;
 				return (*this);
 			}
 		};
@@ -42,6 +43,8 @@ class		Servotron : IServotron
 		int							_sendDataSocket;
 		int							_receiveDataSocket;
 		std::string					_localIP;
+		std::size_t					_width;
+		std::size_t					_height;
 
 		void		eventThread(void);
 		void		createUdpSocket(int & s, const int port, bool bind_port) const;
@@ -56,6 +59,7 @@ class		Servotron : IServotron
 
 		void		makeConnectedPackage(char *data, bool type);
 		void		makeDisconnectedPackage(char *data);
+		void		makeMovementPackage(char *data, Point const & p, NETWORK_BYTES const & n);
 
 	public:
 		Servotron(std::size_t w, std::size_t h);
