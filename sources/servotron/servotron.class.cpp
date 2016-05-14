@@ -39,14 +39,14 @@ void		Servotron::makeConnectedPackage(char *data, bool type)
 {
 	data[0] = NETWORK_BYTES::CONNECTION_BYTE;
 	data[1] = (type) ? POKE_BYTE : REPLY_BYTE;
-	inet_pton(AF_INET, this->_localIP.c_str(), data + 3);
+	inet_pton(AF_INET, this->_localIP.c_str(), data + 2);
 }
 
 void		Servotron::makeDisconnectedPackage(char *data)
 {
 	data[0] = NETWORK_BYTES::CONNECTION_BYTE;
 	data[1] = POKE_BYTE;
-	inet_pton(AF_INET, this->_localIP.c_str(), data + 3);
+	inet_pton(AF_INET, this->_localIP.c_str(), data + 2);
 }
 
 void		Servotron::scanClientsOnFloor(void)
