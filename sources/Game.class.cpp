@@ -57,7 +57,7 @@ Game::getServo(void)
     if (!(_delete_servo = (deleteServotronF)dlsym(servoHandler, "deleteServotron")))
 		throw Exception(dlerror());
 
-    _servo = _create_servo();
+    _servo = _create_servo(_width, _height);
 	//_servo->startServer();
 }
 
@@ -160,11 +160,13 @@ Game::moveMe(KEY const & key)
 int
 Game::run(void)
 {
-	static KEY					lastKey = KEY::NONE;
+	KEY							lastKey = KEY::NONE;
+	std::string					lastClickedIP = "";
 	KEY							key;
 	STATE						state;
 	std::deque< std::string >	ipList;
 	std::string					clickedIp;
+	Point						serverGridSize;
 
 	this->getGUI(_args[3]);
 	this->getServo();
@@ -179,8 +181,13 @@ Game::run(void)
 		_servo->getState(state);
 		_gui->getClickedIp(clickedIp);
 		_servo->getOnlineIpList(ipList);
-		if (clickedIp.compare(""))
+
+		if (clickedIp.compare("") && clickedIp.compare(lastClickedIP))
+		{
 			_servo->connectToServer(clickedIp);
+			_servo->getServerInfos(serverGridSize);
+			_gui->updateGridSize(serverGridSize);
+		}
 
 		_servo->getConnectedClients(_clients);
 		for (auto const & c : _clients)
@@ -204,6 +211,7 @@ Game::run(void)
 		if (!moveMe(key))
 			break ;
 		lastKey = key;
+		lastClickedIP = clickedIp;
 	}
 	_delete_gui(_gui);
 	_delete_servo(_servo);

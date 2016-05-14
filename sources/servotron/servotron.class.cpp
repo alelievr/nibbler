@@ -218,10 +218,10 @@ void		Servotron::createUdpSocket(int & ret, const int port, bool bind_port) cons
 	}
 }
 
-Servotron::Servotron(void) :
+Servotron::Servotron(std::size_t w, std::size_t h) :
 	_threadStop(false),
 	_state(STATE::SERVER),
-	_currentConnectedServer({{0}, 0, Points{0}})
+	_currentConnectedServer({{0}, 0, Points{0}, Point{w, h}})
 {
 	this->_localIP = sf::IpAddress::getLocalAddress().toString();
 
@@ -288,6 +288,11 @@ void		Servotron::addSnakeBlock(Point const & p)
 		this->sendDataToConnectedClients(data, sizeof(data));
 }
 
+void		Servotron::getServerInfos(Point & gridSize) const
+{
+	gridSize = _currentConnectedServer.gridSize;
+}
+
 void		Servotron::connectToServer(std::string const & ip)
 {
 	if (!ip.compare(_currentConnectedServer.ip))
@@ -305,7 +310,7 @@ void		Servotron::connectToServer(std::string const & ip)
 
 void		Servotron::disconnectServer(void)
 {
-	this->_currentConnectedServer = {{0}, 0, Points{0}};
+	this->_currentConnectedServer = {{0}, 0, Points{0}, Point{30, 30}};
 	this->_state = STATE::SERVER;
 }
 
@@ -326,8 +331,8 @@ std::ostream &	operator<<(std::ostream & o, Servotron const & r)
 }
 
 extern "C" {
-	Servotron	*createServotron(void) {
-		return new Servotron();
+	Servotron	*createServotron(std::size_t w, std::size_t h) {
+		return new Servotron(w, h);
 	}
 
 	void		deleteServotron(Servotron *s) {
@@ -336,7 +341,7 @@ extern "C" {
 }
 
 int			main(void) {
-	Servotron	s;
+	Servotron	s(30, 30);
 
 	while (42)
 		;

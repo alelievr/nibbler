@@ -36,6 +36,7 @@ class		GUI
 		void		drawPauseScreen(void);
 		void		drawStartScreen(void);
 		void		render(Players const & players, Items const & items, bool paused, bool stared);
+		void		updateGridSize(Point const & gd);
 		void		renderServotron(std::deque< std::string > const & ipList);
 		void		open(std::size_t width, std::size_t height, Point const & winSize);
 		void		close(EVENT e);

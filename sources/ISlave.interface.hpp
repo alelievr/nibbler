@@ -6,7 +6,7 @@
 /*   By: fdaudre- <fdaudre-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/04/28 19:58:37 by fdaudre-          #+#    #+#             */
-/*   Updated: 2016/05/14 00:43:46 by alelievr         ###   ########.fr       */
+/*   Updated: 2016/05/14 16:17:46 by alelievr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -97,6 +97,9 @@ struct ISlave
 
 	virtual void
 	render(Players const & snake, Items const & items, bool pause, bool start, std::deque< std::string > const & ipList) = 0;
+
+	virtual void
+	updateGridSize(Point const & gridSize) = 0;
 
 	virtual void
 	getClickedIp(std::string & ip) const = 0;

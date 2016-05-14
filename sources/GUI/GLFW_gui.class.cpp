@@ -6,7 +6,7 @@
 /*   By: alelievr <alelievr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/04/29 22:09:48 by alelievr          #+#    #+#             */
-/*   Updated: 2016/05/13 18:35:46 by alelievr         ###   ########.fr       */
+/*   Updated: 2016/05/14 16:20:30 by alelievr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -134,6 +134,11 @@ void	GLFW_gui::render(Players const & players, Items const & items, bool pause, 
 	glfwSwapBuffers(this->win);
 	glfwPollEvents();
 	(void)ipList;
+}
+
+void	GLFW_gui::updateGridSize(Point const & gd)
+{
+	GUI::updateGridSize(gd);
 }
 
 void	GLFW_gui::close(EVENT event)

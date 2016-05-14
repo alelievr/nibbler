@@ -6,7 +6,7 @@
 /*   By: alelievr <alelievr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/05/08 23:24:05 by alelievr          #+#    #+#             */
-/*   Updated: 2016/05/13 19:06:42 by alelievr         ###   ########.fr       */
+/*   Updated: 2016/05/14 16:20:24 by alelievr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -202,6 +202,14 @@ void		GUI::render(Players const & players, Items const & items, bool paused, boo
 	glDisable(GL_TEXTURE_2D);
 
    	glFlush();
+}
+
+void	GUI::updateGridSize(Point const & gd)
+{
+	_width = gd.x;
+	_height = gd.y;
+	_squareSize.x = _winSize.x / _width;
+	_squareSize.y = _winSize.y / _height;
 }
 
 void	GUI::renderServotron(std::deque< std::string > const & ipList)

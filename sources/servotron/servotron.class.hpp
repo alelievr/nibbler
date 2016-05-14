@@ -23,6 +23,7 @@ class		Servotron : IServotron
 			char		ip[IP_SIZE + 1];
 			Client		id;
 			Points		pts;
+			Point		gridSize;
 
 			ClientInfo & operator=(ClientInfo const & c) {
 				strcpy(this->ip, c.ip);
@@ -57,7 +58,7 @@ class		Servotron : IServotron
 		void		makeDisconnectedPackage(char *data);
 
 	public:
-		Servotron();
+		Servotron(std::size_t w, std::size_t h);
 		Servotron(const Servotron&) = delete;
 		virtual ~Servotron(void);
 
@@ -71,11 +72,10 @@ class		Servotron : IServotron
 		void	setInterval(int tmp);
 		void	getOnlineIpList(std::deque< std::string > & clist) const;
 
-		void	sendEventToClients(Points & pts, Client const c = -1);
-
 		void	getState(STATE & s) const;
 
 		void	connectToServer(std::string const & ip);
+		void	getServerInfos(Point & gridSize) const;
 		void	disconnectServer(void);
 
 		void	scanClientsOnFloor(void);
