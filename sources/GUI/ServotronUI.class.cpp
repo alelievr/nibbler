@@ -8,14 +8,12 @@ ServotronUI	*ServotronUI::self = NULL;
 ServotronUI::ServotronUI(void) : clickBoxSize(45)
 {
 	ServotronUI::self = this;
-	std::cout << "Default constructor of ServotronUI called" << std::endl;
 	_basicFont.loadFontFile("assets/fonts/SourceSansPro-Semibold.otf");
 }
 
 ServotronUI::ServotronUI(ServotronUI const & src)
 {
 	*this = src;
-	std::cout << "Copy constructor called" << std::endl;
 }
 
 void		ServotronUI::onClick(sf::Vector2i const & pos)
@@ -114,13 +112,10 @@ void		ServotronUI::setWinSize(const int w, const int h)
 
 ServotronUI::~ServotronUI(void)
 {
-	std::cout << "Destructor of ServotronUI called" << std::endl;
 }
 
 ServotronUI &	ServotronUI::operator=(ServotronUI const & src)
 {
-	std::cout << "Assignment operator called" << std::endl;
-
 	if (this != &src) {
 	}
 	return (*this);

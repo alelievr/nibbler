@@ -6,7 +6,7 @@
 /*   By: fdaudre- <fdaudre-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/04/28 21:02:05 by fdaudre-          #+#    #+#             */
-/*   Updated: 2016/04/28 21:34:39 by fdaudre-         ###   ########.fr       */
+/*   Updated: 2016/05/14 19:58:04 by alelievr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,7 @@ class Main
 
 		std::vector<std::string>	_args;
 
-		std::size_t	const			_width;
-		std::size_t	const			_height;
+		std::size_t		_width;
+		std::size_t		_height;
 };
 

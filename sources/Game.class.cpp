@@ -192,6 +192,8 @@ Game::run(void)
 			_gui->updateGridSize(serverGridSize);
 			std::size_t		x(serverGridSize.x / 2);
 			std::size_t		y(serverGridSize.y / 2);
+			_width = serverGridSize.x;
+			_height = serverGridSize.y;
 			_snake.clear();
 			_snake.push_back({x, y});
 			_snake.push_back({x + 1, y});

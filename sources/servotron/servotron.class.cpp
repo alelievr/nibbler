@@ -58,6 +58,7 @@ void		Servotron::makeMovementPackage(char *data, Point const & p, NETWORK_BYTES 
 	data[1] = (char)p.x;
 	data[2] = (char)p.y;
 	inet_pton(AF_INET, this->_localIP.c_str(), data + 3);
+	data[7] = (char)this->_state;
 }
 
 void		Servotron::scanClientsOnFloor(void)
@@ -121,6 +122,8 @@ void		Servotron::readData(void)
 		std::cout << "disconnected : " << str << std::endl;
 	}
 	if (buff[0] == NETWORK_BYTES::ADD_BLOCK_BYTE || buff[0] == (char)NETWORK_BYTES::POP_BLOCK_BYTE) {
+		if (buff[7] == (char)STATE::SERVER && _state == STATE::SERVER)
+			return ;
 		inet_ntop(AF_INET, buff + 3, str, INET_ADDRSTRLEN);
 		Client		cid = getClientId(str);
 
@@ -157,7 +160,8 @@ void		Servotron::readData(void)
 void		Servotron::sendData(char *data, std::size_t size, struct sockaddr_in *co)
 {
 	if (sendto(this->_sendDataSocket, data, size, 0, (struct sockaddr *)co, sizeof(*co)) < 0)
-		perror("sendto");
+		;
+//		perror("sendto");
 }
 
 void		Servotron::sendData(char *data, std::size_t size)
@@ -290,7 +294,7 @@ void		Servotron::getState(STATE & s) const
 
 void		Servotron::popSnakeBlock(Point const & p)
 {
-	char			data[7];
+	char			data[8];
 
 	makeMovementPackage(data, p, NETWORK_BYTES::POP_BLOCK_BYTE);
 	if (_state == STATE::CLIENT)
@@ -301,7 +305,7 @@ void		Servotron::popSnakeBlock(Point const & p)
 
 void		Servotron::addSnakeBlock(Point const & p)
 {
-	char			data[7];
+	char			data[8];
 
 	makeMovementPackage(data, p, NETWORK_BYTES::ADD_BLOCK_BYTE);
 	if (_state == STATE::CLIENT)
