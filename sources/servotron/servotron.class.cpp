@@ -1,15 +1,22 @@
 #include "servotron.class.hpp"
 #include "SFML/Network.hpp"
 #include <string>
+#include <regex>
 
-static std::deque< std::string >	genE1IPList(std::string const & localIP) {
+std::deque< std::string >	Servotron::genLocalIPList(void) {
 	std::deque< std::string >	list;
 	char						ipData[4];
 
-	inet_pton(AF_INET, localIP.c_str(), ipData);
-	for (int i = 1; i <= 23; i++)
-		for (int j = 1; j <= 13; j++)
-			list.push_back(std::string("10.1") + std::to_string(ipData[1] - 10) + "." + std::to_string(i) + std::string(".") + std::to_string(j));
+	inet_pton(AF_INET, _localIP.c_str(), ipData);
+	if (_cluster)
+		for (int i = 1; i <= 23; i++)
+			for (int j = 1; j <= 13; j++)
+				list.push_back(std::string("10.1") + std::to_string(ipData[1] - 10) + "." + std::to_string(i) + std::string(".") + std::to_string(j));
+	else
+	{
+		//TODO: implement a local ip latency scan
+		list.push_back("192.168.1.1");
+	}
 	return (list);
 }
 
@@ -19,10 +26,12 @@ static Client	getClientId(const char *ip) {
 
 void		Servotron::sendDataToFloor(char *data, std::size_t size)
 {
-	std::deque< std::string >	ipList;	
-	struct sockaddr_in			connection;
+	static std::deque< std::string >	ipList;
+	static bool							init = false;
+	struct sockaddr_in					connection;
 
-	ipList = genE1IPList(this->_localIP);
+	if (!init && ((init = true)))
+		ipList = genLocalIPList();
 	connection.sin_family = AF_INET;
 	connection.sin_port = htons(SERVER_PORT);
 
@@ -251,12 +260,18 @@ void		Servotron::createUdpSocket(int & ret, const int port, bool bind_port) cons
 Servotron::Servotron(std::size_t w, std::size_t h) :
 	_threadStop(false),
 	_state(STATE::SERVER),
-	_currentConnectedServer({{0}, 0, Points{0}, Point{w, h}})
+	_currentConnectedServer({{0}, 0, Points{0}, Point{w, h}}),
+	_cluster(true)
 {
 	_width = w;
 	_height = h;
 	this->_localIP = sf::IpAddress::getLocalAddress().toString();
 
+	if (!std::regex_match(_localIP, std::regex("10.1[1-3].[0-9]{1,2}.[0-9]{1,2}")))
+	{
+		std::cout << "not in the cluster, your local network will be scaned with the mask 192.168.1.*\n";
+		_cluster = false;
+	}
 	createUdpSocket(this->_sendDataSocket, SENDING_PORT, false);
 	createUdpSocket(this->_receiveDataSocket, SERVER_PORT, true);
 

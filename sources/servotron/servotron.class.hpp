@@ -45,11 +45,13 @@ class		Servotron : IServotron
 		std::string					_localIP;
 		std::size_t					_width;
 		std::size_t					_height;
+		bool						_cluster;
 
 		void		eventThread(void);
 		void		createUdpSocket(int & s, const int port, bool bind_port) const;
 		void		sendDataToFloor(char *data, std::size_t size);
 		void		sendDisconnection(void);
+		std::deque< std::string >		genLocalIPList(void);
 
 		void		readData(void);
 		void		sendData(char *d, std::size_t size);
