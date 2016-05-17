@@ -73,7 +73,7 @@ GLFW_gui::GLFW_gui(void)
 }
 
 GLFW_gui::GLFW_gui(GLFW_gui const & src) :
-	GUI()
+	GUI(src)
 {
 	*this = src;
 	std::cout << "Copy constructor called" << std::endl;
