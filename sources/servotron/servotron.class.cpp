@@ -3,9 +3,15 @@
 #include <string>
 #include <regex>
 
+bool		isIpAvailable(std::string const & addr) {
+	sf::TcpSocket socket;
+	return (socket.connect(sf::IpAddress(addr), 80, sf::milliseconds(10)) == sf::Socket::Done);
+}
+
 std::deque< std::string >	Servotron::genLocalIPList(void) {
 	std::deque< std::string >	list;
 	char						ipData[4];
+	std::string					addr;
 
 	inet_pton(AF_INET, _localIP.c_str(), ipData);
 	if (_cluster)
@@ -14,8 +20,16 @@ std::deque< std::string >	Servotron::genLocalIPList(void) {
 				list.push_back(std::string("10.1") + std::to_string(ipData[1] - 10) + "." + std::to_string(i) + std::string(".") + std::to_string(j));
 	else
 	{
-		//TODO: implement a local ip latency scan
-		list.push_back("192.168.1.1");
+		for (int i = 1; i <= 256; i++)
+		{
+			addr = "192.168.1." + std::to_string(i);
+
+			if (isIpAvailable(addr)) {
+				std::cout << "added addr: " << addr << std::endl;
+				list.push_back(addr);
+			} else
+				;
+		}
 	}
 	return (list);
 }
