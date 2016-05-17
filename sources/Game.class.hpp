@@ -37,6 +37,7 @@ class Game : public Main
 		Timer				_timer;
 		bool				_started;
 		bool				_paused;
+		bool				_dead;
 
 		std::string	const	_title;
 		Points &			_snake;

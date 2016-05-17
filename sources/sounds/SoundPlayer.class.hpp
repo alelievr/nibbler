@@ -6,7 +6,7 @@
 /*   By: alelievr <alelievr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/05/08 17:26:59 by alelievr          #+#    #+#             */
-/*   Updated: 2016/05/08 17:47:52 by alelievr         ###   ########.fr       */
+/*   Updated: 2016/05/17 22:32:17 by alelievr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@ std::map< SOUND, std::string > soundMap = {
 	{SOUND::JOIN, "assets/sounds/door_open.ogg"},
 	{SOUND::LEFT, "assets/sounds/door_close.ogg"},
 	{SOUND::GAMEOVER, "assets/sounds/coin.ogg"}, //TODO change also
-	{SOUND::DEATH, "assets/sounds/death.ogg"},
+	{SOUND::DEATH, "assets/sounds/explosion.ogg"},
 };
 
 class		SoundPlayer : ISoundPlayer

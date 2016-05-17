@@ -17,6 +17,7 @@ Game::Game(int argc, char **argv) :
 	Main(argc, argv),
 	_started(false),
 	_paused(false),
+	_dead(false),
 	_title("Olol nibble"),
 	_snake(_players[0].snake),
 	_active_ui(1ul)
@@ -158,7 +159,10 @@ Game::moveMe(KEY const & key)
 				++y; break ;
 		}
 		if (x >= _width or y >= _height or is_in_snake(x, y, snake))
+		{
+			_dead = true;
 			return _gui->close(EVENT::GAMEOVER), 0;
+		}
 		snake.push_back(Point{x, y});
 		_servo->addSnakeBlock(snake.back());
 
@@ -170,14 +174,17 @@ Game::moveMe(KEY const & key)
 				{
 					case Item::TYPE::FOOD:
 						snake.push_front(front);
+						_sp->playSound(SOUND::FOOD);
 					//	_servo->addSnakeBlock(front);
 						break ;
 					case Item::TYPE::POOP:
+						_sp->playSound(SOUND::POOP);
 					//	_servo->popSnakeBlock(snake.front());
 						snake.pop_front();
 						break ;
 					case Item::TYPE::WALL:
 						return _gui->close(EVENT::GAMEOVER), 0;
+						_dead = true;
 						break ;
 				}
 				_servo->deleteItem(i);
@@ -188,11 +195,14 @@ Game::moveMe(KEY const & key)
 		//manage others snake
 		for (auto const & p : _players)
 		{
+			if (p.first == me)
+				continue ;
 			for (auto const & s : p.second.snake)
-			{
 				if (snake.back() == s)
+				{
+					_dead = true;
 					return _gui->close(EVENT::GAMEOVER), 0;
-			}
+				}
 		}
 	}
 	lastKey = key;
@@ -242,6 +252,7 @@ Game::run(void)
 		if (clickedIp.compare("") && clickedIp.compare(lastClickedIP))
 		{
 			_servo->connectToServer(clickedIp);
+			_sp->playSound(SOUND::JOIN);
 			_servo->getServerInfos(serverGridSize);
 			_gui->updateGridSize(serverGridSize);
 			std::size_t		x(serverGridSize.x / 2);
@@ -287,6 +298,8 @@ Game::run(void)
 		lastKey = key;
 		lastClickedIP = clickedIp;
 	}
+	_sp->playSound(SOUND::DEATH);
+	sleep(2);
 	_delete_gui(_gui);
 	_delete_servo(_servo);
 	_delete_soundPlayer(_sp);
