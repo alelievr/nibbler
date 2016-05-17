@@ -72,7 +72,8 @@ GLFW_gui::GLFW_gui(void)
 	this->win = NULL;
 }
 
-GLFW_gui::GLFW_gui(GLFW_gui const & src)
+GLFW_gui::GLFW_gui(GLFW_gui const & src) :
+	GUI()
 {
 	*this = src;
 	std::cout << "Copy constructor called" << std::endl;
