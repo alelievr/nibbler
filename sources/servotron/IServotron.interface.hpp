@@ -6,7 +6,7 @@
 /*   By: alelievr <alelievr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/05/04 19:23:45 by alelievr          #+#    #+#             */
-/*   Updated: 2016/05/14 19:50:04 by alelievr         ###   ########.fr       */
+/*   Updated: 2016/05/17 18:56:42 by alelievr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,6 +52,7 @@ class	IServotron
 		virtual void		popSnakeBlock(Point const & p) = 0;
 		virtual void		addSnakeBlock(Point const & p) = 0;
 		virtual void		getServerInfos(Point & gridSize) const = 0;
+		virtual Client		getLocalId(void) const = 0;
 };
 
 typedef IServotron	*(*createServotronF)(std::size_t w, std::size_t h);

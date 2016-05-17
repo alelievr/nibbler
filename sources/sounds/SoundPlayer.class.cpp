@@ -6,7 +6,7 @@
 /*   By: alelievr <alelievr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/05/08 17:27:04 by alelievr          #+#    #+#             */
-/*   Updated: 2016/05/13 22:17:04 by alelievr         ###   ########.fr       */
+/*   Updated: 2016/05/17 19:18:12 by alelievr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,6 +47,7 @@ void			SoundPlayer::playSound(const SOUND & s)
 void			SoundPlayer::playBackground(void)
 {
 	_background.setLoop(true);
+	_background.setVolume(25);
 	_background.play();
 }
 

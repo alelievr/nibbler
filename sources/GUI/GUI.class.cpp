@@ -6,7 +6,7 @@
 /*   By: alelievr <alelievr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/05/08 23:24:05 by alelievr          #+#    #+#             */
-/*   Updated: 2016/05/14 19:39:33 by alelievr         ###   ########.fr       */
+/*   Updated: 2016/05/17 19:17:23 by alelievr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,6 @@ std::deque< unsigned int > colorList = {
 	0x2E9AFE,
 	0xFE2EF7,
 	0x00FF00,
-	0xA4A4A4,
 	0xBCA9F5,
 	0xE1F5A9,
 	0xF5A9A9,
@@ -107,7 +106,7 @@ void		GUI::drawRect(Point const & p, unsigned int const color) const
 		glColor1u(color);
     	glVertex2f(-1 + bx1, 1 - by1);
     	glVertex2f(-1 + bx2, 1 - by1);
-		glColor1u(0x9300FF);
+//		glColor1u(0x9300FF); //93
     	glVertex2f(-1 + bx2, 1 - by2);
     	glVertex2f(-1 + bx1, 1 - by2);
    	glEnd();

@@ -28,6 +28,7 @@ class Game : public Main
 		void
 		getSoundPlayer(void);
 
+		Client				me;
 		Players				_players;
 		Clients				_clients;
 		Items				_items;

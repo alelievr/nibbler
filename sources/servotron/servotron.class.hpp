@@ -35,7 +35,6 @@ class		Servotron : IServotron
 			}
 		};
 
-		int							_interval;
 		std::deque< ClientInfo >	_onlineClients;
 		std::thread					_eventThread;
 		bool						_threadStop;
@@ -75,8 +74,6 @@ class		Servotron : IServotron
 		void	startServer(void) const;
 		void	stopServer(void) const;
 
-		int		getInterval(void) const;
-		void	setInterval(int tmp);
 		void	getOnlineIpList(std::deque< std::string > & clist) const;
 
 		void	getState(STATE & s) const;
@@ -91,6 +88,7 @@ class		Servotron : IServotron
 		void	popSnakeBlock(Point const & p);
 		void	addSnakeBlock(Point const & p);
 		void	getPlayerInfo(Players & players) const;
+		Client	getLocalId(void) const;
 };
 
 std::ostream &	operator<<(std::ostream & o, Servotron const & r);

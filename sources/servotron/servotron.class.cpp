@@ -316,6 +316,11 @@ void		Servotron::getPlayerInfo(Players & players) const
 			players[c.id].snake = c.pts;
 }
 
+Client		Servotron::getLocalId(void) const
+{
+	return (getClientId(_localIP.c_str()));
+}
+
 void		Servotron::getState(STATE & s) const
 {
 	s = this->_state;
@@ -371,8 +376,6 @@ void		Servotron::disconnectServer(void)
 	this->_state = STATE::SERVER;
 }
 
-int			Servotron::getInterval(void) const { return (this->_interval); }
-void		Servotron::setInterval(int tmp) { this->_interval = tmp; }
 void		Servotron::getOnlineIpList(std::deque< std::string > & clist) const
 {
 	clist.clear();

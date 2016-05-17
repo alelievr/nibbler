@@ -3,10 +3,10 @@
 # include <iostream>
 # include <string>
 # include "ft2build.h"
-# ifdef __GNUC__
-#  include <GL/gl.h>
-# else
+# ifdef __APPLE__
 #  include <Opengl/gl.h>
+# else
+#  include <GL/gl.h>
 #endif
 # include FT_FREETYPE_H
 

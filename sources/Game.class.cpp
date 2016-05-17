@@ -59,6 +59,9 @@ Game::getServo(void)
 		throw Exception(dlerror());
 
     _servo = _create_servo(_width, _height);
+	me = _servo->getLocalId();
+	auto const & it = _players.begin();
+	std::swap(_players[me], it->second);
 	//_servo->startServer();
 }
 
@@ -83,8 +86,8 @@ bool
 Game::moveMe(KEY const & key)
 {
 	static KEY		lastKey = KEY::NONE;
-	DIRECTION &		dir = _players[0].dir;
-	Points &		snake = _players[0].snake;
+	DIRECTION &		dir = _players[me].dir;
+	Points &		snake = _players[me].snake;
 	std::size_t		n;
 
 	static clock_t		time = 0;

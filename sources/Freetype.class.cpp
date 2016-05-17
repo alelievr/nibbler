@@ -6,12 +6,13 @@
 /*   By: alelievr <alelievr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/05/10 23:36:18 by alelievr          #+#    #+#             */
-/*   Updated: 2016/05/17 12:09:46 by alelievr         ###   ########.fr       */
+/*   Updated: 2016/05/17 18:35:25 by alelievr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Freetype.class.hpp"
 #include <algorithm>
+#include <unistd.h>
 
 Freetype::Freetype(void) : _padding(0)
 {
@@ -53,7 +54,6 @@ void		Freetype::setSize(const int size)
 	FT_Set_Pixel_Sizes(_face, 0, size);
 }
 
-#include <unistd.h>
 static void	my_draw_bitmap(FT_Bitmap *b, int _x, int _y, FT_GlyphSlot _slot, int _size)
 {
 	GLubyte		*bytes = new GLubyte[b->width * b->rows * 4];
