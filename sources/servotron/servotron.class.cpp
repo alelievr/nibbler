@@ -326,6 +326,23 @@ void		Servotron::getState(STATE & s) const
 	s = this->_state;
 }
 
+void	Servotron::getItems(Items & is) const
+{
+	is = _items;
+}
+
+void	Servotron::deleteItem(Item const & i)
+{
+	auto const & it = std::find(_items.begin(), _items.end(), i);
+	if (it != _items.end())
+		_items.erase(it);
+}
+
+void	Servotron::addItem(Item const & i)
+{
+	_items.push_back(i);
+}
+
 void		Servotron::popSnakeBlock(Point const & p)
 {
 	char			data[8];

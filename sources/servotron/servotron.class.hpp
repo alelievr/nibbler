@@ -46,6 +46,7 @@ class		Servotron : IServotron
 		std::size_t					_width;
 		std::size_t					_height;
 		bool						_cluster;
+		Items						_items;
 
 		void		eventThread(void);
 		void		createUdpSocket(int & s, const int port, bool bind_port) const;
@@ -89,6 +90,10 @@ class		Servotron : IServotron
 		void	addSnakeBlock(Point const & p);
 		void	getPlayerInfo(Players & players) const;
 		Client	getLocalId(void) const;
+
+		void	getItems(Items & is) const;
+		void	deleteItem(Item const & i);
+		void	addItem(Item const & i);
 };
 
 std::ostream &	operator<<(std::ostream & o, Servotron const & r);

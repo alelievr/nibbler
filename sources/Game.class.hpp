@@ -27,6 +27,8 @@ class Game : public Main
 		getServo(void);
 		void
 		getSoundPlayer(void);
+		void
+		genItems(void);
 
 		Client				me;
 		Players				_players;

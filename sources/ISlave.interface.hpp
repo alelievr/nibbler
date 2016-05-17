@@ -6,7 +6,7 @@
 /*   By: fdaudre- <fdaudre-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/04/28 19:58:37 by fdaudre-          #+#    #+#             */
-/*   Updated: 2016/05/14 18:26:13 by alelievr         ###   ########.fr       */
+/*   Updated: 2016/05/17 21:33:34 by alelievr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,8 +20,8 @@ struct Point
 {	/* Origin: Up && Left */
 	std::size_t		x;
 	std::size_t		y;
-	inline bool operator==(Point const & p) { return (x == p.x && y == p.y); }
 };
+inline bool operator==(Point const & p1, Point const & p2) { return (p1.x == p2.x && p1.y == p2.y); }
 
 inline std::ostream & operator<<(std::ostream & o, Point const & p) { o << p.x << " | " << p.y; return o; }
 
@@ -35,7 +35,9 @@ struct Item
 	};
 	Point			coo;
 	TYPE			type;
+	inline bool operator==(Item const & i) { return i.coo == coo && i.type == type; }
 };
+
 
 typedef std::deque< Point >			Points;
 typedef std::deque< Item >			Items;

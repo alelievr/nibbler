@@ -89,6 +89,7 @@ Game::moveMe(KEY const & key)
 	DIRECTION &		dir = _players[me].dir;
 	Points &		snake = _players[me].snake;
 	std::size_t		n;
+	bool			moved = false;
 
 	static clock_t		time = 0;
 	if (!time)
@@ -139,8 +140,10 @@ Game::moveMe(KEY const & key)
 	if (_started && !_paused && clock() - time > MOVE_TICKS)
 	{
 		time = clock();
+		moved = true;
 		std::size_t		x(snake.back().x);
 		std::size_t		y(snake.back().y);
+		Point			front(snake.front());
 		_servo->popSnakeBlock(snake.front());
 		snake.pop_front();
 		switch (dir)
@@ -158,10 +161,55 @@ Game::moveMe(KEY const & key)
 			return _gui->close(EVENT::GAMEOVER), 0;
 		snake.push_back(Point{x, y});
 		_servo->addSnakeBlock(snake.back());
+
+		//manage food && bonus
+		for (auto const & i : _items)
+			if (i.coo == snake.back())
+			{
+				switch (i.type)
+				{
+					case Item::TYPE::FOOD:
+						snake.push_front(front);
+					//	_servo->addSnakeBlock(front);
+						break ;
+					case Item::TYPE::POOP:
+					//	_servo->popSnakeBlock(snake.front());
+						snake.pop_front();
+						break ;
+					case Item::TYPE::WALL:
+						return _gui->close(EVENT::GAMEOVER), 0;
+						break ;
+				}
+				_servo->deleteItem(i);
+				_items.erase(std::find(_items.begin(), _items.end(), i));
+				break ;
+			}
+
+		//manage others snake
+		for (auto const & p : _players)
+		{
+			for (auto const & s : p.second.snake)
+			{
+				if (snake.back() == s)
+					return _gui->close(EVENT::GAMEOVER), 0;
+			}
+		}
 	}
 	lastKey = key;
-	// manage food && bonus
+
 	return 1;
+}
+
+void
+Game::genItems(void)
+{
+	if (rand() % 100)
+		return ;
+	Item	i;
+
+	i.coo = {rand() % _width, rand() % _height};
+	i.type = Item::TYPE::FOOD;
+	_servo->addItem(i);
 }
 
 int
@@ -175,7 +223,7 @@ Game::run(void)
 	std::string					clickedIp;
 	Point						serverGridSize;
 
-	(void)lastKey;
+	srand(clock());
 	this->getGUI(_args[3]);
 	this->getServo();
 	this->getSoundPlayer();
@@ -190,6 +238,7 @@ Game::run(void)
 		_gui->getClickedIp(clickedIp);
 		_servo->getOnlineIpList(ipList);
 
+		//servotron GUI management
 		if (clickedIp.compare("") && clickedIp.compare(lastClickedIP))
 		{
 			_servo->connectToServer(clickedIp);
@@ -206,6 +255,7 @@ Game::run(void)
 			_snake.push_back({x, y + 1});
 		}
 
+		//Clients and server management
 		_servo->getConnectedClients(_clients);
 		for (auto const & c : _clients)
 		{
@@ -225,6 +275,13 @@ Game::run(void)
 			}
 			_servo->getPlayerInfo(_players);
 		}
+
+		// Items add/delete management
+		if (state == STATE::SERVER)
+			genItems();
+		_servo->getItems(_items);
+
+		//Events
 		if (!moveMe(key))
 			break ;
 		lastKey = key;
