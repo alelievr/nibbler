@@ -3,7 +3,11 @@
 # include <iostream>
 # include <string>
 # include "ft2build.h"
-# include <Opengl/gl.h>
+# ifdef __GNUC__
+#  include <GL/gl.h>
+# else
+#  include <Opengl/gl.h>
+#endif
 # include FT_FREETYPE_H
 
 class		Freetype

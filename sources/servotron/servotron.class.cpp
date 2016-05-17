@@ -169,7 +169,7 @@ void		Servotron::readData(void)
 void		Servotron::sendData(char *data, std::size_t size, struct sockaddr_in *co)
 {
 	if (sendto(this->_sendDataSocket, data, size, 0, (struct sockaddr *)co, sizeof(*co)) < 0)
-		;
+		{;}
 //		perror("sendto");
 }
 

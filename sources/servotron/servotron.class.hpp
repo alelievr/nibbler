@@ -2,6 +2,7 @@
 # define SERVOTRON_HPP
 # include <iostream>
 # include <string>
+# include <cstring>
 # include <deque>
 # include <thread>
 # include "IServotron.interface.hpp"
