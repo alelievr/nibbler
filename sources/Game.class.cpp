@@ -2,6 +2,7 @@
 
 #include <dlfcn.h>
 #include <unistd.h>
+#include <algorithm>
 
 __attribute((unused)) static inline bool
 is_in_snake(std::size_t x, std::size_t y, Points & snake)
@@ -171,6 +172,7 @@ Game::run(void)
 	std::string					clickedIp;
 	Point						serverGridSize;
 
+	(void)lastKey;
 	this->getGUI(_args[3]);
 	this->getServo();
 	this->getSoundPlayer();
