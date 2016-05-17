@@ -28,7 +28,7 @@ std::deque< std::string >	Servotron::genLocalIPList(void) {
 				std::cout << "added addr: " << addr << std::endl;
 				list.push_back(addr);
 			} else
-				;
+			{;}
 		}
 	}
 	return (list);
