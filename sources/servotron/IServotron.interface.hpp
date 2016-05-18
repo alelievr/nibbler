@@ -6,7 +6,7 @@
 /*   By: alelievr <alelievr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/05/04 19:23:45 by alelievr          #+#    #+#             */
-/*   Updated: 2016/05/17 21:11:45 by alelievr         ###   ########.fr       */
+/*   Updated: 2016/05/18 01:34:04 by alelievr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,6 +38,8 @@ enum	NETWORK_BYTES
 	REPLY_BYTE			= '\x02',
 	ADD_BLOCK_BYTE		= '\x8E',
 	POP_BLOCK_BYTE		= '\x8F',
+	DELETE_ITEM_BYTE	= '\x90',
+	ADD_ITEM_BYTE		= '\x91',
 };
 
 class	IServotron

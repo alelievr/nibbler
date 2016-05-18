@@ -63,6 +63,7 @@ class		Servotron : IServotron
 		void		makeConnectedPackage(char *data, bool type);
 		void		makeDisconnectedPackage(char *data);
 		void		makeMovementPackage(char *data, Point const & p, NETWORK_BYTES const & n);
+		void		makeItemPackage(char *data, Item const & i, NETWORK_BYTES const & n);
 
 	public:
 		Servotron(std::size_t w, std::size_t h);

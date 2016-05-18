@@ -258,28 +258,28 @@ $(SOILDIR_CHECK):
 	@git submodule update
 
 $(SDLLIB): $(SDLDIR_CHECK)
-	cd SDL2 && ./configure && make
+	cd SDL2 && ./configure && make -j 4
 
 $(SFMLLIB): $(SFMLDIR_CHECK)
 	cd SFML && patch -fi ../assets/SFMLG_CmakeList.txt.diff src/SFML/Graphics/CMakeLists.txt || echo && ./install.sh
 
 $(GLFWLIB): $(GLFWDIR_CHECK)
-	cd GLFW && cmake . && make
+	cd GLFW && cmake . && make -j 4
 
 $(SOILLIB): $(SOILDIR_CHECK)
-	cd SOIL && make
+	cd SOIL && make -j 4
 
 $(FREETYPELIB):
-	cd freetype && chmod +x ./configure builds/unix/configure && sh autogen.sh && ./configure --without-zlib --without-bzip2 --without-png && make
+	cd freetype && chmod +x ./configure builds/unix/configure && sh autogen.sh && ./configure --without-zlib --without-bzip2 --without-png && make -j 4
 
 $(OGGLIB):
-	cd ogg && ./autogen.sh && ./configure && make
+	cd ogg && ./autogen.sh && ./configure && make -j 4
 
 $(VORBISLIB):
-	cd vorbis && ./autogen.sh && cmake . -DOGG_INCLUDE_DIRS=../ogg/include -DOGG_LIBRARIES=../ogg/src/.libs/ && make
+	cd vorbis && ./autogen.sh && cmake . -DOGG_INCLUDE_DIRS=../ogg/include -DOGG_LIBRARIES=../ogg/src/.libs/ && make -j 4
 
 $(FLACLIB):
-	cd flac && ./autogen.sh && ./configure && patch -fi ../assets/libFLAC++_Makefile.diff ./src/libFLAC++/Makefile || echo && make
+	cd flac && ./autogen.sh && ./configure && patch -fi ../assets/libFLAC++_Makefile.diff ./src/libFLAC++/Makefile || echo && make -j 4
 
 $(GLFW_NIBBLER_LIB): $(GLFWLIB_OBJ)
 	@$(call color_exec,$(CLINK_T),$(CLINK),"Link of $(GLFW_NIBBLER_LIB):",\

@@ -84,6 +84,32 @@ void		Servotron::makeMovementPackage(char *data, Point const & p, NETWORK_BYTES 
 	data[7] = (char)this->_state;
 }
 
+Item::TYPE	charToItemType(char type)
+{
+	switch (type)
+	{
+		case (char)Item::TYPE::FOOD:
+			return Item::TYPE::FOOD;
+		case (char)Item::TYPE::POOP:
+			return Item::TYPE::POOP;
+		default:
+			return Item::TYPE::WALL;
+	}
+}
+
+char		ItemTypeToChar(Item::TYPE const & i)
+{
+	return (char)i;
+}
+
+void		Servotron::makeItemPackage(char *data, Item const & i, NETWORK_BYTES const & n)
+{
+	data[0] = (char)n;
+	data[1] = i.coo.x;
+	data[2] = i.coo.y;
+	data[3] = (char)i.type;
+}
+
 void		Servotron::scanClientsOnFloor(void)
 {
 	char						data[8];
@@ -171,6 +197,27 @@ void		Servotron::readData(void)
 					client->pts.erase(to_remove_point);
 			}
 		}
+	}
+	if (buff[0] == NETWORK_BYTES::ADD_ITEM_BYTE)
+		_items.push_back(Item{
+				Point{
+					static_cast< std::size_t >(buff[1]),
+					static_cast< std::size_t >(buff[2])
+				},
+				charToItemType(buff[3])});
+	if (buff[0] == NETWORK_BYTES::DELETE_ITEM_BYTE)
+	{
+		Item	val = Item{
+				Point{
+					static_cast< std::size_t >(buff[1]),
+					static_cast< std::size_t >(buff[2])
+				},
+				charToItemType(buff[3])};
+		if (_state == STATE::SERVER)
+			sendDataToConnectedClients(buff, 5);
+		auto const & it = std::find(_items.begin(), _items.end(), val);
+		if (it != _items.end())
+		_items.erase(it);
 	}
 
 //	std::for_each(buff, buff + 7, [](char c){std::cout << std::hex << "\\x"	<< static_cast< int >(c) << " "; });
@@ -333,14 +380,26 @@ void	Servotron::getItems(Items & is) const
 
 void	Servotron::deleteItem(Item const & i)
 {
+	char	data[8];
+
 	auto const & it = std::find(_items.begin(), _items.end(), i);
 	if (it != _items.end())
 		_items.erase(it);
+	makeItemPackage(data, i, NETWORK_BYTES::DELETE_ITEM_BYTE);
+	if (_state == STATE::SERVER)
+		sendDataToConnectedClients(data, sizeof(data));
+	else
+		this->sendData(data, sizeof(data), _currentConnectedServer.ip);
+
 }
 
 void	Servotron::addItem(Item const & i)
 {
+	char	data[8];
+
 	_items.push_back(i);
+	makeItemPackage(data, i, NETWORK_BYTES::ADD_BLOCK_BYTE);
+	sendDataToConnectedClients(data, sizeof(data));
 }
 
 void		Servotron::popSnakeBlock(Point const & p)

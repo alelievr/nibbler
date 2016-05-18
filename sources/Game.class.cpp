@@ -82,7 +82,6 @@ Game::getSoundPlayer(void)
 	_sp->playBackground();
 }
 
-#define MOVE_TICKS	20000
 bool
 Game::moveMe(KEY const & key)
 {
@@ -132,6 +131,7 @@ Game::moveMe(KEY const & key)
 			case KEY::ESCAPE:
 				return _gui->close(EVENT::GAMEOVER), 0;
 			case KEY::ENTER:
+				_invincibleClock = clock();
 				_started = true;
 				break ;
 			case KEY::JOINSEVER:
@@ -193,16 +193,22 @@ Game::moveMe(KEY const & key)
 			}
 
 		//manage others snake
-		for (auto const & p : _players)
+		if (_invincibleClock + INVINCIBLE_TICKS <= clock())
 		{
-			if (p.first == me)
-				continue ;
-			for (auto const & s : p.second.snake)
-				if (snake.back() == s)
+			for (auto const & p : _players)
+			{
+				if (p.first == me)
+					continue ;
+				for (auto const & s : p.second.snake)
 				{
-					_dead = true;
-					return _gui->close(EVENT::GAMEOVER), 0;
+					std::cout << s << std::endl;
+					if (snake.back() == s)
+					{
+						_dead = true;
+						return _gui->close(EVENT::GAMEOVER), 0;
+					}
 				}
+			}
 		}
 	}
 	lastKey = key;
@@ -259,11 +265,14 @@ Game::run(void)
 			std::size_t		y(serverGridSize.y / 2);
 			_width = serverGridSize.x;
 			_height = serverGridSize.y;
+			_players.clear();
 			_snake.clear();
 			_snake.push_back({x, y});
 			_snake.push_back({x + 1, y});
 			_snake.push_back({x + 1, y + 1});
 			_snake.push_back({x, y + 1});
+			_players.insert(std::pair< Client, Player >(me, Player{_snake, DIRECTION::LEFT, true}));
+			_started = false;
 		}
 
 		//Clients and server management

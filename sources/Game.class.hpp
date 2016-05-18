@@ -6,6 +6,9 @@
 #include "ISoundPlayer.interface.hpp"
 #include "Timer.class.hpp"
 
+#define MOVE_TICKS			20000
+#define INVINCIBLE_TICKS	3000000
+
 class Game : public Main
 {
 
@@ -38,6 +41,8 @@ class Game : public Main
 		bool				_started;
 		bool				_paused;
 		bool				_dead;
+
+		clock_t				_invincibleClock;
 
 		std::string	const	_title;
 		Points &			_snake;
