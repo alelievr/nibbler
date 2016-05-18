@@ -462,6 +462,7 @@ void		Servotron::connectToServer(std::string const & ip)
 			this->_currentConnectedServer = tmpc;
 			this->_state = STATE::CLIENT;
 			makeSyncItemPackage(data);
+			sendData(data, sizeof(data), _currentConnectedServer.ip);
 			break ;
 		}
 }

@@ -265,13 +265,12 @@ Game::run(void)
 			std::size_t		y(serverGridSize.y / 2);
 			_width = serverGridSize.x;
 			_height = serverGridSize.y;
-			_players.clear();
-			_snake.clear();
+//			_players.clear();
 			_snake.push_back({x, y});
 			_snake.push_back({x + 1, y});
 			_snake.push_back({x + 1, y + 1});
 			_snake.push_back({x, y + 1});
-			_players.insert(std::pair< Client, Player >(me, Player{_snake, DIRECTION::LEFT, true}));
+//			_players.insert(std::pair< Client, Player >(me, Player{_snake, DIRECTION::LEFT, true}));
 			_started = false;
 		}
 
@@ -307,8 +306,6 @@ Game::run(void)
 		lastKey = key;
 		lastClickedIP = clickedIp;
 	}
-	_sp->playSound(SOUND::DEATH);
-	sleep(2);
 	_delete_gui(_gui);
 	_delete_servo(_servo);
 	_delete_soundPlayer(_sp);
