@@ -41,6 +41,7 @@ class Game : public Main
 		bool				_started;
 		bool				_paused;
 		bool				_dead;
+		bool				_invincible;
 
 		clock_t				_invincibleClock;
 

@@ -58,7 +58,7 @@ void		Servotron::sendDataToFloor(char *data, std::size_t size)
 	}
 }
 
-void		Servotron::makeConnectedPackage(char *data, bool type)
+void		Servotron::makeConnectedPackage(char *data, bool type) const
 {
 	data[0] = NETWORK_BYTES::CONNECTION_BYTE;
 	data[1] = (type) ? NETWORK_BYTES::POKE_BYTE : NETWORK_BYTES::REPLY_BYTE;
@@ -67,14 +67,14 @@ void		Servotron::makeConnectedPackage(char *data, bool type)
 	data[7] = static_cast< char >(_height);
 }
 
-void		Servotron::makeDisconnectedPackage(char *data)
+void		Servotron::makeDisconnectedPackage(char *data) const
 {
 	data[0] = NETWORK_BYTES::DISCONNECTION_BYTE;
 	data[1] = POKE_BYTE;
 	inet_pton(AF_INET, this->_localIP.c_str(), data + 2);
 }
 
-void		Servotron::makeMovementPackage(char *data, Point const & p, NETWORK_BYTES const & n)
+void		Servotron::makeMovementPackage(char *data, Point const & p, NETWORK_BYTES const & n) const
 {
 	data[0] = (char)n;
 //	std::cout << "created package with network byte " << std::hex << (int)n << std::endl;
@@ -84,10 +84,26 @@ void		Servotron::makeMovementPackage(char *data, Point const & p, NETWORK_BYTES 
 	data[7] = (char)this->_state;
 }
 
-void		Servotron::makeSyncItemPackage(char *data)
+void		Servotron::makeSyncItemPackage(char *data) const
 {
 	data[0] = NETWORK_BYTES::SYNC_ITEM_BYTE;
 	inet_pton(AF_INET, this->_localIP.c_str(), data + 1);
+}
+
+void		Servotron::makeSyncClientPackage(char *data, CLIENT_BYTE const & n, int value) const
+{
+	data[0] = NETWORK_BYTES::SYNC_CLIENT_BYTE;
+	data[1] = (char)n;
+	memcpy(data + 2, &value, sizeof(value));
+	inet_pton(AF_INET, _localIP.c_str(), data + 2 + sizeof(value));
+}
+
+void		Servotron::makeItemPackage(char *data, Item const & i, NETWORK_BYTES const & n) const
+{
+	data[0] = (char)n;
+	data[1] = i.coo.x;
+	data[2] = i.coo.y;
+	data[3] = (char)i.type;
 }
 
 Item::TYPE	charToItemType(char type)
@@ -108,14 +124,6 @@ char		ItemTypeToChar(Item::TYPE const & i)
 	return (char)i;
 }
 
-void		Servotron::makeItemPackage(char *data, Item const & i, NETWORK_BYTES const & n)
-{
-	data[0] = (char)n;
-	data[1] = i.coo.x;
-	data[2] = i.coo.y;
-	data[3] = (char)i.type;
-}
-
 void		Servotron::scanClientsOnFloor(void)
 {
 	char						data[8];
@@ -133,7 +141,7 @@ void		Servotron::sendDisconnection(void)
 	sendDataToFloor(data, sizeof(data));
 }
 
-void		Servotron::sendDataToConnectedClients(char *data, size_t size, Client cid)
+void		Servotron::sendDataToConnectedClients(char *data, size_t size, Client cid) const
 {
 	for (auto & c : _onlineClients)
 		if (c.id != cid)
@@ -235,6 +243,29 @@ void		Servotron::readData(void)
 			sendData(data, sizeof(data), str);
 		}
 	}
+	if (buff[0] == SYNC_CLIENT_BYTE)
+	{
+		inet_ntop(AF_INET, buff + 6, str, INET_ADDRSTRLEN);
+		Client		cid = getClientId(str);
+
+		if (_state == STATE::SERVER)
+			sendDataToConnectedClients(buff, 10);
+		auto const & it = std::find_if(_onlineClients.begin(), _onlineClients.end(),
+				[cid]
+				(ClientInfo const & ci) {
+					return (ci.id == cid);
+				});
+		if (it != _onlineClients.end())
+		{
+			int		val = *(int *)(buff + 2);
+			if (buff[1] == CLIENT_BYTE::STARTED_BYTE)
+				it->started = (bool)val;
+			if (buff[1] == CLIENT_BYTE::INVINCIBLE_BYTE)
+				it->invincible = (bool)val;
+			if (buff[1] == CLIENT_BYTE::SPEED_BYTE)
+				it->speed = (bool)val;
+		}
+	}
 
 //	std::for_each(buff, buff + 7, [](char c){std::cout << std::hex << "\\x"	<< static_cast< int >(c) << " "; });
 //	std::cout << std::endl;
@@ -243,14 +274,14 @@ void		Servotron::readData(void)
 //		std::cout << c.ip << std::endl;
 }
 
-void		Servotron::sendData(char *data, std::size_t size, struct sockaddr_in *co)
+void		Servotron::sendData(char *data, std::size_t size, struct sockaddr_in *co) const
 {
 	if (sendto(this->_sendDataSocket, data, size, 0, (struct sockaddr *)co, sizeof(*co)) < 0)
 		{;}
 //		perror("sendto");
 }
 
-void		Servotron::sendData(char *data, std::size_t size)
+void		Servotron::sendData(char *data, std::size_t size) const
 {
 	struct sockaddr_in			connection;
 
@@ -264,7 +295,7 @@ void		Servotron::sendData(char *data, std::size_t size)
 	this->sendData(data, size, &connection);
 }
 
-void		Servotron::sendData(char *data, std::size_t size, std::string const & ip)
+void		Servotron::sendData(char *data, std::size_t size, std::string const & ip) const
 {
 	struct sockaddr_in			connection;
 
@@ -337,7 +368,7 @@ void		Servotron::createUdpSocket(int & ret, const int port, bool bind_port) cons
 Servotron::Servotron(std::size_t w, std::size_t h) :
 	_threadStop(false),
 	_state(STATE::SERVER),
-	_currentConnectedServer({{0}, 0, Points{0}, Point{w, h}}),
+	_currentConnectedServer(ClientInfo{0, 0, Points{0}, Point{w, h}}),
 	_cluster(true)
 {
 	_width = w;
@@ -393,6 +424,23 @@ void	Servotron::getItems(Items & is) const
 {
 	std::cout << _items.size() << std::endl;
 	is = _items;
+}
+
+void	Servotron::updateClientState(CLIENT_BYTE const & n, int value)
+{
+	char	data[10];
+
+	if (n == CLIENT_BYTE::INVINCIBLE_BYTE)
+		_me.invincible = (bool)value;
+	if (n == CLIENT_BYTE::SPEED_BYTE)
+		_me.speed = (bool)value;
+	if (n == CLIENT_BYTE::STARTED_BYTE)
+		_me.started = (bool)value;
+	makeSyncClientPackage(data, n, value);
+	if (_state == STATE::SERVER)
+		sendDataToConnectedClients(data, sizeof(data));
+	else
+		this->sendData(data, sizeof(data), _currentConnectedServer.ip);
 }
 
 void	Servotron::deleteItem(Item const & i)
@@ -453,7 +501,7 @@ void		Servotron::connectToServer(std::string const & ip)
 	if (!ip.compare(_currentConnectedServer.ip))
 		return ;
 	if (!ip.compare("127.0.0.1"))
-		this->_currentConnectedServer = {{0}, 0, Points{0}, Point{_width, _height}};
+		this->_currentConnectedServer = {0, 0, Points{0}, Point{_width, _height}};
 	Client id = getClientId(ip.c_str());
 
 	for (auto const & tmpc : _onlineClients)
@@ -469,7 +517,7 @@ void		Servotron::connectToServer(std::string const & ip)
 
 void		Servotron::disconnectServer(void)
 {
-	this->_currentConnectedServer = {{0}, 0, Points{0}, Point{_width, _height}};
+	this->_currentConnectedServer = {0, 0, Points{0}, Point{_width, _height}};
 	this->_state = STATE::SERVER;
 }
 

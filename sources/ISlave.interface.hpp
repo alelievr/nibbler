@@ -6,7 +6,7 @@
 /*   By: fdaudre- <fdaudre-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/04/28 19:58:37 by fdaudre-          #+#    #+#             */
-/*   Updated: 2016/05/17 21:33:34 by alelievr         ###   ########.fr       */
+/*   Updated: 2016/05/18 18:26:54 by alelievr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,6 +53,19 @@ struct Player
 	Points		snake;
 	DIRECTION	dir;
 	bool		paused;
+	bool		started;
+	bool		invincible;
+	bool		dead;
+
+	Player() = default;
+	Player(Points s, DIRECTION d) :
+		snake(s),
+		dir(d),
+		paused(false),
+		started(false),
+		invincible(false),
+		dead(false)
+	{}
 };
 
 typedef std::map< Client, Player >	Players;
@@ -73,14 +86,14 @@ enum class KEY
 	ESCAPE,
 	JOINSEVER,
 	FIRST = NONE,
-	LAST = ESCAPE
+	LAST = JOINSEVER
 };
 
-inline KEY operator++(KEY & x) { return x = (KEY)(std::underlying_type<KEY>::type(x) + 1); }
-inline KEY operator++(KEY & x, int) { return x = (KEY)(std::underlying_type<KEY>::type(x) + 1); }
+inline KEY operator++(KEY & x) { return x = (KEY)(std::underlying_type< KEY >::type(x) + 1); }
+inline KEY operator++(KEY & x, int) { return x = (KEY)(std::underlying_type< KEY >::type(x) + 1); }
 inline KEY operator*(KEY c) { return c; } 
 inline KEY begin(KEY r) { return KEY::FIRST; (void)r; }
-inline KEY end(KEY r) { KEY l=KEY::LAST; return l++; (void)r; }
+inline KEY end(KEY r) { KEY l = KEY::LAST; return l++; (void)r; }
 
 enum class EVENT
 {

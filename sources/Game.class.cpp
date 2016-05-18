@@ -131,7 +131,13 @@ Game::moveMe(KEY const & key)
 			case KEY::ESCAPE:
 				return _gui->close(EVENT::GAMEOVER), 0;
 			case KEY::ENTER:
-				_invincibleClock = clock();
+				if (!_started)
+				{
+					_invincibleClock = clock();
+					_invincible = true;
+					_servo->updateClientState(CLIENT_BYTE::INVINCIBLE_BYTE, true);
+					_servo->updateClientState(CLIENT_BYTE::STARTED_BYTE, true);
+				}
 				_started = true;
 				break ;
 			case KEY::JOINSEVER:
@@ -175,11 +181,11 @@ Game::moveMe(KEY const & key)
 					case Item::TYPE::FOOD:
 						snake.push_front(front);
 						_sp->playSound(SOUND::FOOD);
-					//	_servo->addSnakeBlock(front);
+						_servo->addSnakeBlock(front);
 						break ;
 					case Item::TYPE::POOP:
 						_sp->playSound(SOUND::POOP);
-					//	_servo->popSnakeBlock(snake.front());
+						_servo->popSnakeBlock(snake.front());
 						snake.pop_front();
 						break ;
 					case Item::TYPE::WALL:
@@ -195,6 +201,11 @@ Game::moveMe(KEY const & key)
 		//manage others snake
 		if (_invincibleClock + INVINCIBLE_TICKS <= clock())
 		{
+			if (_invincible)
+			{
+				_invincible = false;
+				_servo->updateClientState(CLIENT_BYTE::INVINCIBLE_BYTE, false);
+			}
 			for (auto const & p : _players)
 			{
 				if (p.first == me)
@@ -271,6 +282,7 @@ Game::run(void)
 			_snake.push_back({x + 1, y + 1});
 			_snake.push_back({x, y + 1});
 //			_players.insert(std::pair< Client, Player >(me, Player{_snake, DIRECTION::LEFT, true}));
+			_servo->updateClientState(CLIENT_BYTE::STARTED_BYTE, false);
 			_started = false;
 		}
 
@@ -279,7 +291,7 @@ Game::run(void)
 		for (auto const & c : _clients)
 		{
 			if (!(_players.count(c))) //index does not exists in map
-				_players.insert(std::pair< Client, Player >(c, Player{Points{0}, DIRECTION::LEFT, true}));
+				_players.insert(std::pair< Client, Player >(c, Player{Points{0}, DIRECTION::LEFT}));
 			else
 			{
 				std::map< Client, Player >::const_iterator	index;
