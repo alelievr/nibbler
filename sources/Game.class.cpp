@@ -15,7 +15,6 @@ is_in_snake(std::size_t x, std::size_t y, Points & snake)
 
 Game::Game(int argc, char **argv) :
 	Main(argc, argv),
-	_started(false),
 	_paused(false),
 	_dead(false),
 	_title("Olol nibble"),
@@ -131,20 +130,20 @@ Game::moveMe(KEY const & key)
 			case KEY::ESCAPE:
 				return _gui->close(EVENT::GAMEOVER), 0;
 			case KEY::ENTER:
-				if (!_started)
+				if (!_players[me].started)
 				{
 					_invincibleClock = clock();
-					_invincible = true;
+					_players[me].invincible = true;
 					_servo->updateClientState(CLIENT_BYTE::INVINCIBLE_BYTE, true);
 					_servo->updateClientState(CLIENT_BYTE::STARTED_BYTE, true);
 				}
-				_started = true;
+				_players[me].started = true;
 				break ;
 			case KEY::JOINSEVER:
 				break ;
 			case KEY::NONE: break ;
 		}
-	if (_started && !_paused && clock() - time > MOVE_TICKS)
+	if (_players[me].started && !_paused && clock() - time > MOVE_TICKS)
 	{
 		time = clock();
 		moved = true;
@@ -201,9 +200,9 @@ Game::moveMe(KEY const & key)
 		//manage others snake
 		if (_invincibleClock + INVINCIBLE_TICKS <= clock())
 		{
-			if (_invincible)
+			if (_players[me].invincible)
 			{
-				_invincible = false;
+				_players[me].invincible = false;
 				_servo->updateClientState(CLIENT_BYTE::INVINCIBLE_BYTE, false);
 			}
 			for (auto const & p : _players)
@@ -212,7 +211,6 @@ Game::moveMe(KEY const & key)
 					continue ;
 				for (auto const & s : p.second.snake)
 				{
-					std::cout << s << std::endl;
 					if (snake.back() == s)
 					{
 						_dead = true;
@@ -258,7 +256,7 @@ Game::run(void)
 	{
 		//timer causing input lag if > 0
 		if (_timer.frame(0))
-			_gui->render(_players, _items, _paused, _started, ipList);
+			_gui->render(_players, _items, _paused, _players[me].started, ipList);
 
 		_gui->getEvent(key);
 		_servo->getState(state);
@@ -283,7 +281,7 @@ Game::run(void)
 			_snake.push_back({x, y + 1});
 //			_players.insert(std::pair< Client, Player >(me, Player{_snake, DIRECTION::LEFT, true}));
 			_servo->updateClientState(CLIENT_BYTE::STARTED_BYTE, false);
-			_started = false;
+			_players[me].started = false;
 		}
 
 		//Clients and server management

@@ -6,7 +6,7 @@
 /*   By: fdaudre- <fdaudre-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/04/28 19:58:37 by fdaudre-          #+#    #+#             */
-/*   Updated: 2016/05/18 18:26:54 by alelievr         ###   ########.fr       */
+/*   Updated: 2016/05/18 19:29:13 by alelievr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,6 +56,7 @@ struct Player
 	bool		started;
 	bool		invincible;
 	bool		dead;
+	bool		speed;
 
 	Player() = default;
 	Player(Points s, DIRECTION d) :
@@ -64,7 +65,8 @@ struct Player
 		paused(false),
 		started(false),
 		invincible(false),
-		dead(false)
+		dead(false),
+		speed(false)
 	{}
 };
 

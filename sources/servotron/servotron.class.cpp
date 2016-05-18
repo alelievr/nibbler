@@ -422,7 +422,6 @@ void		Servotron::getState(STATE & s) const
 
 void	Servotron::getItems(Items & is) const
 {
-	std::cout << _items.size() << std::endl;
 	is = _items;
 }
 

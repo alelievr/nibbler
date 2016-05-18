@@ -6,7 +6,7 @@
 /*   By: alelievr <alelievr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/05/08 23:24:05 by alelievr          #+#    #+#             */
-/*   Updated: 2016/05/17 22:35:39 by alelievr         ###   ########.fr       */
+/*   Updated: 2016/05/18 19:49:20 by alelievr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -92,8 +92,21 @@ void	GUI::getCasesBounds(Point const & p, float & x1, float & y1, float & x2, fl
 	y2 = ((float)_squareSize.y * (p.y + 1) / _winSize.y) * 2;
 }
 
+static void	effectToColor(Player const & player)
+{
+	static int		blink = 0;
+
+	if (player.invincible && (blink / 40) % 2)
+		glColor4f(1, 1, 1, 0.7);
+	else if (player.speed)
+		glColor3f(0, 1, 0);
+	else
+		glColor4f(0, 0, 0, 0);
+	blink++;
+}
+
 #define glColor1u(x) glColor3ub((char)(x >> 16), (char)(x >> 8), (char)x)
-void		GUI::drawRect(Point const & p, unsigned int const color) const
+void		GUI::drawRect(Point const & p, unsigned int const color, Player const & player) const
 {
 	float	bx1, bx2, by1, by2;
 
@@ -110,6 +123,14 @@ void		GUI::drawRect(Point const & p, unsigned int const color) const
     	glVertex2f(-1 + bx2, 1 - by2);
     	glVertex2f(-1 + bx1, 1 - by2);
    	glEnd();
+
+	glBegin(GL_QUADS);
+		effectToColor(player);
+    	glVertex2f(-1 + bx1, 1 - by1);
+    	glVertex2f(-1 + bx2, 1 - by1);
+    	glVertex2f(-1 + bx2, 1 - by2);
+    	glVertex2f(-1 + bx1, 1 - by2);
+	glEnd();
 }
 
 TEXTURE & 	GUI::itemToTexture(Item::TYPE const & i) const
@@ -188,7 +209,7 @@ void		GUI::render(Players const & players, Items const & items, bool paused, boo
 
 	for (auto & player : players) {
 		for (auto & s : player.second.snake)
-			drawRect(s, colorList[player.first % colorList.size()]);
+			drawRect(s, colorList[player.first % colorList.size()], player.second);
 	}
 
 	glDisable(GL_LIGHTING);

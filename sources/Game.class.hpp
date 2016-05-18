@@ -7,7 +7,7 @@
 #include "Timer.class.hpp"
 
 #define MOVE_TICKS			20000
-#define INVINCIBLE_TICKS	3000000
+#define INVINCIBLE_TICKS	300000
 
 class Game : public Main
 {
@@ -38,10 +38,8 @@ class Game : public Main
 		Clients				_clients;
 		Items				_items;
 		Timer				_timer;
-		bool				_started;
 		bool				_paused;
 		bool				_dead;
-		bool				_invincible;
 
 		clock_t				_invincibleClock;
 
