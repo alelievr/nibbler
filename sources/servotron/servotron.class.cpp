@@ -84,6 +84,12 @@ void		Servotron::makeMovementPackage(char *data, Point const & p, NETWORK_BYTES 
 	data[7] = (char)this->_state;
 }
 
+void		Servotron::makeSyncItemPackage(char *data)
+{
+	data[0] = NETWORK_BYTES::SYNC_ITEM_BYTE;
+	inet_pton(AF_INET, this->_localIP.c_str(), data + 1);
+}
+
 Item::TYPE	charToItemType(char type)
 {
 	switch (type)
@@ -218,6 +224,16 @@ void		Servotron::readData(void)
 		auto const & it = std::find(_items.begin(), _items.end(), val);
 		if (it != _items.end())
 		_items.erase(it);
+	}
+	if (buff[0] == NETWORK_BYTES::SYNC_ITEM_BYTE)
+	{
+		char	data[8];
+		inet_ntop(AF_INET, buff + 1, str, INET_ADDRSTRLEN);
+		for (auto const & i : _items)
+		{
+			makeItemPackage(data, i, NETWORK_BYTES::ADD_ITEM_BYTE);
+			sendData(data, sizeof(data), str);
+		}
 	}
 
 //	std::for_each(buff, buff + 7, [](char c){std::cout << std::hex << "\\x"	<< static_cast< int >(c) << " "; });
@@ -375,6 +391,7 @@ void		Servotron::getState(STATE & s) const
 
 void	Servotron::getItems(Items & is) const
 {
+	std::cout << _items.size() << std::endl;
 	is = _items;
 }
 
@@ -398,7 +415,7 @@ void	Servotron::addItem(Item const & i)
 	char	data[8];
 
 	_items.push_back(i);
-	makeItemPackage(data, i, NETWORK_BYTES::ADD_BLOCK_BYTE);
+	makeItemPackage(data, i, NETWORK_BYTES::ADD_ITEM_BYTE);
 	sendDataToConnectedClients(data, sizeof(data));
 }
 
@@ -431,6 +448,8 @@ void		Servotron::getServerInfos(Point & gridSize) const
 
 void		Servotron::connectToServer(std::string const & ip)
 {
+	char		data[5];
+
 	if (!ip.compare(_currentConnectedServer.ip))
 		return ;
 	if (!ip.compare("127.0.0.1"))
@@ -442,6 +461,7 @@ void		Servotron::connectToServer(std::string const & ip)
 		{
 			this->_currentConnectedServer = tmpc;
 			this->_state = STATE::CLIENT;
+			makeSyncItemPackage(data);
 			break ;
 		}
 }
