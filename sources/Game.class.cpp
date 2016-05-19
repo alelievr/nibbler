@@ -62,6 +62,7 @@ Game::getServo(void)
 	me = _servo->getLocalId();
 	auto const & it = _players.begin();
 	std::swap(_players[me], it->second);
+	_players.erase(0);
 	//_servo->startServer();
 }
 
@@ -88,15 +89,19 @@ Game::respawnSnake(void)
 	//			_players.clear();
 	std::size_t		x(_width / 2);
 	std::size_t		y(_height / 2);
-	_snake.clear();
-	_snake.push_back({x, y});
-	_snake.push_back({x + 1, y});
-	_snake.push_back({x + 1, y + 1});
-	_snake.push_back({x, y + 1});
-	//			_players.insert(std::pair< Client, Player >(me, Player{_snake, DIRECTION::LEFT, true}));
+
+	for (auto i : _players[me].snake)
+		_servo->popSnakeBlock(i);
+	_players[me].snake.clear();
+	_players[me].snake.push_back({x, y});
+	_players[me].snake.push_back({x + 1, y});
+	_players[me].snake.push_back({x + 1, y + 1});
+	_players[me].snake.push_back({x, y + 1});
+//	_players[me].snake = _snake;
 	_servo->updateClientState(CLIENT_BYTE::STARTED_BYTE, false);
 	_players[me].started = false;
 	_players[me].dead = false;
+	std::cout << "end\n";
 }
 
 bool
@@ -297,13 +302,22 @@ Game::run(void)
 			_gui->updateGridSize(serverGridSize);
 //			std::size_t		x(serverGridSize.x / 2);
 //			std::size_t		y(serverGridSize.y / 2);
+			std::cout << "lol\n";
 			this->respawnSnake();
+			std::cout << "lol\n";
 			_width = serverGridSize.x;
 			_height = serverGridSize.y;
 			
+			std::cout << "cleaning players\n";
 			for (auto it = _players.begin(); it != _players.end(); ++it)
 				if (it->first != me)
+				{
+					std::cout << "erasing player " << it->first << std::endl;
 					_players.erase(it->first);
+				}
+			std::cout << "map:\n";
+			for (auto m : _players)
+				std::cout << "player " << m.first << std::endl;
 //			_players.clear();
 /*			_snake.push_back({x, y});
 			_snake.push_back({x + 1, y});
@@ -333,8 +347,8 @@ Game::run(void)
 									))) != _players.end())
 					_players.erase(index);
 			}
-			_servo->getPlayerInfo(_players);
 		}
+		_servo->getPlayerInfo(_players);
 
 		// Items add/delete management
 		if (state == STATE::SERVER)
