@@ -41,7 +41,6 @@ class Game : public Main
 		Items				_items;
 		Timer				_timer;
 		bool				_paused;
-		bool				_dead;
 
 		clock_t				_invincibleClock;
 

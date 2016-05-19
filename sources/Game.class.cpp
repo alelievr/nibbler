@@ -16,7 +16,6 @@ is_in_snake(std::size_t x, std::size_t y, Points & snake)
 Game::Game(int argc, char **argv) :
 	Main(argc, argv),
 	_paused(false),
-	_dead(false),
 	_title("Olol nibble"),
 	_snake(_players[0].snake),
 	_active_ui(1ul)
@@ -94,14 +93,17 @@ Game::respawnSnake(void)
 		_servo->popSnakeBlock(i);
 	_players[me].snake.clear();
 	_players[me].snake.push_back({x, y});
+	_servo->addSnakeBlock({x, y});
 	_players[me].snake.push_back({x + 1, y});
+	_servo->addSnakeBlock({x + 1, y});
 	_players[me].snake.push_back({x + 1, y + 1});
+	_servo->addSnakeBlock({x + 1, y + 1});
 	_players[me].snake.push_back({x, y + 1});
+	_servo->addSnakeBlock({x, y + 1});
 //	_players[me].snake = _snake;
 	_servo->updateClientState(CLIENT_BYTE::STARTED_BYTE, false);
 	_players[me].started = false;
 	_players[me].dead = false;
-	std::cout << "end\n";
 }
 
 bool
@@ -169,7 +171,7 @@ Game::moveMe(KEY const & key)
 				break ;
 			case KEY::NONE: break ;
 		}
-	if (_players[me].started && !_paused && clock() - time > MOVE_TICKS)
+	if (_players[me].started && !_paused && clock() - time > MOVE_TICKS && !_players[me].dead)
 	{
 		std::cout << "DEBUG: " << "mouved snake\n";
 		time = clock();
@@ -192,9 +194,9 @@ Game::moveMe(KEY const & key)
 		}
 		if (x >= _width or y >= _height or is_in_snake(x, y, snake))
 		{
-			_dead = true;
+			_players[me].dead = true;
 			_servo->updateClientState(CLIENT_BYTE::DEAD_BYTE, true);
-			return _gui->close(EVENT::GAMEOVER), 0;
+			return _gui->close(EVENT::GAMEOVER), 1;
 		}
 		snake.push_back(Point{x, y});
 		_servo->addSnakeBlock(snake.back());
@@ -218,7 +220,7 @@ Game::moveMe(KEY const & key)
 					case Item::TYPE::WALL:
 						return _gui->close(EVENT::GAMEOVER), 0;
 						_servo->updateClientState(CLIENT_BYTE::DEAD_BYTE, true);
-						_dead = true;
+						_players[me].dead = true;
 						break ;
 				}
 				_servo->deleteItem(i);
@@ -242,9 +244,9 @@ Game::moveMe(KEY const & key)
 				{
 					if (snake.back() == s)
 					{
-						_dead = true;
+						_players[me].dead = true;
 						_servo->updateClientState(CLIENT_BYTE::DEAD_BYTE, true);
-						return _gui->close(EVENT::GAMEOVER), 0;
+						return _gui->close(EVENT::GAMEOVER), 1;
 					}
 				}
 			}
@@ -285,7 +287,7 @@ Game::run(void)
 	while (42)
 	{
 		//timer causing input lag if > 0
-		if (_timer.frame(0))
+		//if (_timer.frame(30))
 			_gui->render(_players, _items, _paused, _players[me].started, ipList);
 
 		_gui->getEvent(key);
@@ -302,22 +304,13 @@ Game::run(void)
 			_gui->updateGridSize(serverGridSize);
 //			std::size_t		x(serverGridSize.x / 2);
 //			std::size_t		y(serverGridSize.y / 2);
-			std::cout << "lol\n";
 			this->respawnSnake();
-			std::cout << "lol\n";
 			_width = serverGridSize.x;
 			_height = serverGridSize.y;
 			
-			std::cout << "cleaning players\n";
 			for (auto it = _players.begin(); it != _players.end(); ++it)
 				if (it->first != me)
-				{
-					std::cout << "erasing player " << it->first << std::endl;
 					_players.erase(it->first);
-				}
-			std::cout << "map:\n";
-			for (auto m : _players)
-				std::cout << "player " << m.first << std::endl;
 //			_players.clear();
 /*			_snake.push_back({x, y});
 			_snake.push_back({x + 1, y});

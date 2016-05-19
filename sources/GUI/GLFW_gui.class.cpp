@@ -6,7 +6,7 @@
 /*   By: alelievr <alelievr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/04/29 22:09:48 by alelievr          #+#    #+#             */
-/*   Updated: 2016/05/14 19:40:20 by alelievr         ###   ########.fr       */
+/*   Updated: 2016/05/19 21:21:04 by alelievr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -152,8 +152,8 @@ void	GLFW_gui::close(EVENT event)
 			if (pressedKey ==  KEY::ENTER or pressedKey == KEY::ESCAPE)
 				break ;
 		}
-	glfwDestroyWindow(this->win);
-	glfwTerminate();
+//	glfwDestroyWindow(this->win);
+//	glfwTerminate();
 	(void)event;
 }
 
