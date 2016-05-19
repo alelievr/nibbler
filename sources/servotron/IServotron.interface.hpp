@@ -6,7 +6,7 @@
 /*   By: alelievr <alelievr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/05/04 19:23:45 by alelievr          #+#    #+#             */
-/*   Updated: 2016/05/18 18:57:28 by alelievr         ###   ########.fr       */
+/*   Updated: 2016/05/19 17:52:26 by alelievr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,6 +49,7 @@ enum CLIENT_BYTE
 	INVINCIBLE_BYTE	= '\xA0',
 	STARTED_BYTE	= '\xA1',
 	SPEED_BYTE		= '\xA2',
+	DEAD_BYTE		= '\xA3',
 };
 
 class	IServotron

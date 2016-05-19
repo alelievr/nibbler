@@ -6,7 +6,7 @@
 /*   By: alelievr <alelievr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/05/08 23:24:05 by alelievr          #+#    #+#             */
-/*   Updated: 2016/05/18 19:49:20 by alelievr         ###   ########.fr       */
+/*   Updated: 2016/05/19 17:55:52 by alelievr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -100,6 +100,8 @@ static void	effectToColor(Player const & player)
 		glColor4f(1, 1, 1, 0.7);
 	else if (player.speed)
 		glColor3f(0, 1, 0);
+	else if (player.dead && (blink / 40) % 2)
+		glColor4f(0, 0, 0, 0.7);
 	else
 		glColor4f(0, 0, 0, 0);
 	blink++;

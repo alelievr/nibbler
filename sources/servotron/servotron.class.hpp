@@ -29,6 +29,7 @@ class		Servotron : IServotron
 			bool		paused = false;
 			bool		invincible = false;
 			bool		speed = false;
+			bool		dead = false;
 
 			ClientInfo() = default;
 			ClientInfo(char byte, Client i, Points p, Point grid) :
@@ -42,6 +43,11 @@ class		Servotron : IServotron
 				this->id = c.id;
 				pts = c.pts;
 				gridSize = c.gridSize;
+				started = c.started;
+				paused = c.paused;
+				invincible = c.invincible;
+				speed = c.speed;
+				dead = c.dead;
 				return (*this);
 			}
 		};

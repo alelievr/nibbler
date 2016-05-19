@@ -81,6 +81,24 @@ Game::getSoundPlayer(void)
 	_sp->playBackground();
 }
 
+void
+Game::respawnSnake(void)
+{
+	_players[me].started = false;
+	//			_players.clear();
+	std::size_t		x(_width / 2);
+	std::size_t		y(_height / 2);
+	_snake.clear();
+	_snake.push_back({x, y});
+	_snake.push_back({x + 1, y});
+	_snake.push_back({x + 1, y + 1});
+	_snake.push_back({x, y + 1});
+	//			_players.insert(std::pair< Client, Player >(me, Player{_snake, DIRECTION::LEFT, true}));
+	_servo->updateClientState(CLIENT_BYTE::STARTED_BYTE, false);
+	_players[me].started = false;
+	_players[me].dead = false;
+}
+
 bool
 Game::moveMe(KEY const & key)
 {
@@ -130,12 +148,15 @@ Game::moveMe(KEY const & key)
 			case KEY::ESCAPE:
 				return _gui->close(EVENT::GAMEOVER), 0;
 			case KEY::ENTER:
+				if (_players[me].dead)
+					this->respawnSnake();
 				if (!_players[me].started)
 				{
 					_invincibleClock = clock();
 					_players[me].invincible = true;
 					_servo->updateClientState(CLIENT_BYTE::INVINCIBLE_BYTE, true);
 					_servo->updateClientState(CLIENT_BYTE::STARTED_BYTE, true);
+					_servo->updateClientState(CLIENT_BYTE::DEAD_BYTE, false);
 				}
 				_players[me].started = true;
 				break ;
@@ -145,6 +166,7 @@ Game::moveMe(KEY const & key)
 		}
 	if (_players[me].started && !_paused && clock() - time > MOVE_TICKS)
 	{
+		std::cout << "DEBUG: " << "mouved snake\n";
 		time = clock();
 		moved = true;
 		std::size_t		x(snake.back().x);
@@ -166,6 +188,7 @@ Game::moveMe(KEY const & key)
 		if (x >= _width or y >= _height or is_in_snake(x, y, snake))
 		{
 			_dead = true;
+			_servo->updateClientState(CLIENT_BYTE::DEAD_BYTE, true);
 			return _gui->close(EVENT::GAMEOVER), 0;
 		}
 		snake.push_back(Point{x, y});
@@ -189,6 +212,7 @@ Game::moveMe(KEY const & key)
 						break ;
 					case Item::TYPE::WALL:
 						return _gui->close(EVENT::GAMEOVER), 0;
+						_servo->updateClientState(CLIENT_BYTE::DEAD_BYTE, true);
 						_dead = true;
 						break ;
 				}
@@ -214,6 +238,7 @@ Game::moveMe(KEY const & key)
 					if (snake.back() == s)
 					{
 						_dead = true;
+						_servo->updateClientState(CLIENT_BYTE::DEAD_BYTE, true);
 						return _gui->close(EVENT::GAMEOVER), 0;
 					}
 				}
@@ -228,7 +253,7 @@ Game::moveMe(KEY const & key)
 void
 Game::genItems(void)
 {
-	if (rand() % 100)
+	if (rand() % 200)
 		return ;
 	Item	i;
 
@@ -270,18 +295,24 @@ Game::run(void)
 			_sp->playSound(SOUND::JOIN);
 			_servo->getServerInfos(serverGridSize);
 			_gui->updateGridSize(serverGridSize);
-			std::size_t		x(serverGridSize.x / 2);
-			std::size_t		y(serverGridSize.y / 2);
+//			std::size_t		x(serverGridSize.x / 2);
+//			std::size_t		y(serverGridSize.y / 2);
+			this->respawnSnake();
 			_width = serverGridSize.x;
 			_height = serverGridSize.y;
+			
+			for (auto it = _players.begin(); it != _players.end(); ++it)
+				if (it->first != me)
+					_players.erase(it->first);
 //			_players.clear();
-			_snake.push_back({x, y});
+/*			_snake.push_back({x, y});
 			_snake.push_back({x + 1, y});
 			_snake.push_back({x + 1, y + 1});
 			_snake.push_back({x, y + 1});
 //			_players.insert(std::pair< Client, Player >(me, Player{_snake, DIRECTION::LEFT, true}));
 			_servo->updateClientState(CLIENT_BYTE::STARTED_BYTE, false);
 			_players[me].started = false;
+			_players[me].dead = false;*/
 		}
 
 		//Clients and server management

@@ -264,6 +264,8 @@ void		Servotron::readData(void)
 				it->invincible = (bool)val;
 			if (buff[1] == CLIENT_BYTE::SPEED_BYTE)
 				it->speed = (bool)val;
+			if (buff[1] == CLIENT_BYTE::DEAD_BYTE)
+				it->dead = (bool)val;
 		}
 	}
 
@@ -405,9 +407,13 @@ void		Servotron::getConnectedClients(Clients & clients) const
 
 void		Servotron::getPlayerInfo(Players & players) const
 {
+	static const Client	cid = getClientId(_localIP.c_str());
+
 	for (auto & c : _onlineClients)
-		if (players.count(c.id))
+		if (players.count(c.id) && c.id != cid)
+		{
 			players[c.id].snake = c.pts;
+		}
 }
 
 Client		Servotron::getLocalId(void) const
@@ -422,6 +428,7 @@ void		Servotron::getState(STATE & s) const
 
 void	Servotron::getItems(Items & is) const
 {
+	is.clear();
 	is = _items;
 }
 

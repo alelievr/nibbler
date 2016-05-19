@@ -32,6 +32,8 @@ class Game : public Main
 		getSoundPlayer(void);
 		void
 		genItems(void);
+		void
+		respawnSnake(void);
 
 		Client				me;
 		Players				_players;
