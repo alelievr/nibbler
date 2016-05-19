@@ -85,7 +85,6 @@ void
 Game::respawnSnake(void)
 {
 	_players[me].started = false;
-	//			_players.clear();
 	std::size_t		x(_width / 2);
 	std::size_t		y(_height / 2);
 
@@ -100,7 +99,6 @@ Game::respawnSnake(void)
 	_servo->addSnakeBlock({x + 1, y + 1});
 	_players[me].snake.push_back({x, y + 1});
 	_servo->addSnakeBlock({x, y + 1});
-//	_players[me].snake = _snake;
 	_servo->updateClientState(CLIENT_BYTE::STARTED_BYTE, false);
 	_players[me].started = false;
 	_players[me].dead = false;
@@ -115,11 +113,13 @@ Game::moveMe(KEY const & key)
 	std::size_t		n;
 	bool			moved = false;
 
-	static clock_t		time = 0;
-	if (!time)
-		time = clock();
+	static clock_t		keyTime = 0;
+	static clock_t		moveTime = 0;
+	if (!moveTime)
+		moveTime = clock();
 
-	if (key != lastKey)
+	if (key != lastKey && clock())
+	{
 		switch (key)
 		{
 			case KEY::LEFT:
@@ -171,10 +171,11 @@ Game::moveMe(KEY const & key)
 				break ;
 			case KEY::NONE: break ;
 		}
-	if (_players[me].started && !_paused && clock() - time > MOVE_TICKS && !_players[me].dead)
+		keyTime = clock();
+	}
+	if (_players[me].started && !_paused && clock() - moveTime > MOVE_TICKS && !_players[me].dead)
 	{
-		std::cout << "DEBUG: " << "mouved snake\n";
-		time = clock();
+		moveTime = clock();
 		moved = true;
 		std::size_t		x(snake.back().x);
 		std::size_t		y(snake.back().y);
@@ -302,8 +303,6 @@ Game::run(void)
 			_sp->playSound(SOUND::JOIN);
 			_servo->getServerInfos(serverGridSize);
 			_gui->updateGridSize(serverGridSize);
-//			std::size_t		x(serverGridSize.x / 2);
-//			std::size_t		y(serverGridSize.y / 2);
 			this->respawnSnake();
 			_width = serverGridSize.x;
 			_height = serverGridSize.y;
@@ -311,15 +310,6 @@ Game::run(void)
 			for (auto it = _players.begin(); it != _players.end(); ++it)
 				if (it->first != me)
 					_players.erase(it->first);
-//			_players.clear();
-/*			_snake.push_back({x, y});
-			_snake.push_back({x + 1, y});
-			_snake.push_back({x + 1, y + 1});
-			_snake.push_back({x, y + 1});
-//			_players.insert(std::pair< Client, Player >(me, Player{_snake, DIRECTION::LEFT, true}));
-			_servo->updateClientState(CLIENT_BYTE::STARTED_BYTE, false);
-			_players[me].started = false;
-			_players[me].dead = false;*/
 		}
 
 		//Clients and server management
