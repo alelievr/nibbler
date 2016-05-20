@@ -102,6 +102,7 @@ Game::respawnSnake(void)
 	_servo->updateClientState(CLIENT_BYTE::STARTED_BYTE, false);
 	_players[me].started = false;
 	_players[me].dead = false;
+	_players[me].dir = DIRECTION::UP;
 }
 
 bool

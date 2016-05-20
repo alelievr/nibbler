@@ -6,7 +6,7 @@
 /*   By: alelievr <alelievr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/05/08 23:24:05 by alelievr          #+#    #+#             */
-/*   Updated: 2016/05/20 19:26:23 by alelievr         ###   ########.fr       */
+/*   Updated: 2016/05/21 00:46:23 by alelievr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,6 +49,8 @@ std::map< Item::TYPE, TEXTURE > itemTexMaps = {
 
 GUI::GUI(void)
 {
+	_lastIpList.push_back("lol");
+	_lastIpList.clear();
 	_pixelFont.loadFontFile("assets/fonts/slkscr.ttf");
 }
 
@@ -233,9 +235,7 @@ void	GUI::updateGridSize(Point const & gd)
 
 void	GUI::renderServotron(std::deque< std::string > const & ipList)
 {
-//	_lastIpList.clear();
-	for (auto const & ip : ipList)
-		_lastIpList.push_back(ip);
+	_lastIpList = ipList;
 	_servoUI.render(ipList);
 }
 
