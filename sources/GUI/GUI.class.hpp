@@ -21,6 +21,7 @@ class		GUI
 		std::map< TEXTURE, GLuint >	_texMap;
 		Freetype					_pixelFont;
 		ServotronUI					_servoUI;
+		std::deque< std::string >	_lastIpList;
 		void		getCasesBounds(Point const & p, float & x1, float & y1, float & x2, float & y2) const;
 
 	public:

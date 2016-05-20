@@ -6,7 +6,7 @@
 /*   By: alelievr <alelievr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/05/08 23:24:05 by alelievr          #+#    #+#             */
-/*   Updated: 2016/05/19 17:55:52 by alelievr         ###   ########.fr       */
+/*   Updated: 2016/05/20 19:26:23 by alelievr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -233,6 +233,9 @@ void	GUI::updateGridSize(Point const & gd)
 
 void	GUI::renderServotron(std::deque< std::string > const & ipList)
 {
+//	_lastIpList.clear();
+	for (auto const & ip : ipList)
+		_lastIpList.push_back(ip);
 	_servoUI.render(ipList);
 }
 
@@ -263,6 +266,7 @@ void	GUI::close(EVENT e)
 {
 	if (e == EVENT::GAMEOVER)
 	{
+		glViewport(0, 0, 1000, _winSize.y);
 		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		glEnable(GL_BLEND);
@@ -277,6 +281,7 @@ void	GUI::close(EVENT e)
 		_pixelFont.drawText("GAME OVER", 0, _winSize.y - 300);
 
 		glClear(GL_DEPTH_BUFFER_BIT);
+		_servoUI.render(_lastIpList);
 	}
 }
 

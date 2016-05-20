@@ -108,6 +108,7 @@ bool
 Game::moveMe(KEY const & key)
 {
 	static KEY		lastKey = KEY::NONE;
+	static DIRECTION lastDirection = DIRECTION::LEFT;	
 	DIRECTION &		dir = _players[me].dir;
 	Points &		snake = _players[me].snake;
 	std::size_t		n;
@@ -123,19 +124,19 @@ Game::moveMe(KEY const & key)
 		switch (key)
 		{
 			case KEY::LEFT:
-				if (dir != DIRECTION::RIGHT)
+				if (lastDirection != DIRECTION::RIGHT)
 					dir = DIRECTION::LEFT;
 				break ;
 			case KEY::RIGHT:
-				if (dir != DIRECTION::LEFT)
+			if (lastDirection != DIRECTION::LEFT)
 					dir = DIRECTION::RIGHT;
 				break ;
 			case KEY::UP:
-				if (dir != DIRECTION::DOWN)
+				if (lastDirection != DIRECTION::DOWN)
 					dir = DIRECTION::UP;
 				break ;
 			case KEY::DOWN:
-				if (dir != DIRECTION::UP)
+				if (lastDirection != DIRECTION::UP)
 					dir = DIRECTION::DOWN;
 				break ;
 			case KEY::PAUSE:
@@ -193,6 +194,7 @@ Game::moveMe(KEY const & key)
 			case DIRECTION::DOWN:
 				++y; break ;
 		}
+		lastDirection = dir;
 		if (x >= _width or y >= _height or is_in_snake(x, y, snake))
 		{
 			_players[me].dead = true;
