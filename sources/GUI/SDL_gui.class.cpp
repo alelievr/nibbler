@@ -6,7 +6,7 @@
 /*   By: alelievr <alelievr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/04/29 22:09:48 by alelievr          #+#    #+#             */
-/*   Updated: 2016/05/13 01:41:16 by alelievr         ###   ########.fr       */
+/*   Updated: 2016/05/24 22:52:44 by alelievr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,32 +14,22 @@
 #include <unistd.h>
 #include "SOIL.h"
 
-int SDL_gui::pressedKey = 0;
-
-/*static void error_callback(int error, const char* description)
-{
-	(void)error;
-	fputs(description, stderr);
-}
-
-static void key_callback(SDLwindow* window, int key, int scancode, int action, int mods)
-{
-	if (keyMap.count(key))
-	{
-		if (action == 1)
-			SDL_gui::pressedKey |= 1 << keyMap[key].first;
-		else if (action == 0)
-			SDL_gui::pressedKey &= ~(1 << keyMap[key].first);
-	}
-	std::cout << SDL_gui::pressedKey << std::endl;
-	(void)scancode;
-	(void)mods;
-	(void)window;
-}*/
+Point		SDL_gui::mouse = {0, 0};
+std::map< int, KEY > keyMap = {
+	{SDLK_UP, KEY::UP},
+	{SDLK_DOWN, KEY::DOWN},
+	{SDLK_LEFT, KEY::LEFT},
+	{SDLK_RIGHT, KEY::RIGHT},
+	{SDLK_p, KEY::PAUSE},
+	{SDLK_ESCAPE, KEY::ESCAPE},
+	{SDLK_0, KEY::ONE},
+	{SDLK_1, KEY::TWO},
+	{SDLK_2, KEY::THREE},
+	{SDLK_RETURN, KEY::ENTER},
+};
 
 SDL_gui::SDL_gui(void)
 {
-//	glfwSetErrorCallback(error_callback);
 }
 
 SDL_gui::SDL_gui(SDL_gui const & src)
@@ -103,23 +93,41 @@ bool	SDL_gui::open(std::size_t width, std::size_t height, std::string const & na
 
 void	SDL_gui::getEvent(KEY & key) const
 {
-	SDL_Event		e = {0};
+	SDL_Event	event;
+	int			k;
 
-	SDL_WaitEvent(&e);
-	if (e.type == SDL_QUIT)
-		key = KEY::ESCAPE;
-	if (e.type == SDL_KEYDOWN)
+	while(SDL_PollEvent(&event))
 	{
+		switch (event.type)
+		{
+			case SDL_KEYDOWN:
+				k = event.key.keysym.sym;
+				if (keyMap.count(k))
+					key = keyMap[k];
+				break;
+			case SDL_MOUSEMOTION:
+				SDL_gui::mouse = {std::size_t(event.motion.x), std::size_t(event.motion.y)};
+				break ;
+			case SDL_MOUSEBUTTONDOWN:
+				break ;
+			case SDL_QUIT:
+				key = KEY::ESCAPE;
+				break;
+			default:
+				break;
+		}
 	}
-	key = KEY::NONE;
 }
 
-void	SDL_gui::render(Points const & snake, Items const & items, bool pause, bool started, std::deque< std::string > const & ipList)
+void    SDL_gui::updateGridSize(Point const & gd)
 {
+	    GUI::updateGridSize(gd);
+}
 
-
+void	SDL_gui::render(Players const & players, Items const & items, bool pause, bool started, std::deque< std::string > const & ipList)
+{
+	GUI::render(players, items, pause, started);
 	GUI::renderServotron(ipList);
-	GUI::render(snake, items, pause, started);
 /*	SDL_SetRenderDrawColor(this->renderer, 0, 0, 0, 255);
 	SDL_RenderClear(this->renderer);
 	SDL_RenderPresent(this->renderer);
@@ -129,10 +137,6 @@ void	SDL_gui::render(Points const & snake, Items const & items, bool pause, bool
 		drawRect(s, 0xFF00FF);*/
 
 	//	SDL_UpdateWindowSurface(this->window);
-	(void)snake;
-	(void)items;
-	(void)pause;
-	(void)started;
 
 	SDL_GL_SwapWindow(window);
 }
@@ -144,8 +148,13 @@ void	SDL_gui::getClickedIp(std::string & ip) const
 
 void	SDL_gui::close(EVENT event)
 {
-	SDL_DestroyWindow(this->window);
-	SDL_Quit();
+	if (event == EVENT::SWITCH)
+	{
+		GUI::close(event);
+		SDL_DestroyWindow(this->window);
+		SDL_Quit();
+		std::cout << "quitting\n";
+	}
 	(void)event;
 }
 

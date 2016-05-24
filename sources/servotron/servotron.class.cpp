@@ -413,6 +413,10 @@ void		Servotron::getPlayerInfo(Players & players) const
 		if (players.count(c.id) && c.id != cid)
 		{
 			players[c.id].snake = c.pts;
+			players[c.id].speed = c.speed;
+			players[c.id].invincible = c.invincible;
+			players[c.id].started = c.started;
+			players[c.id].dead = c.dead;
 		}
 }
 

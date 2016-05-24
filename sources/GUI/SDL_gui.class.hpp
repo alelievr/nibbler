@@ -17,7 +17,7 @@ class		SDL_gui : public ISlave, public GUI
 		const Point								winSize = {WIN_W, WIN_H};
 
 	public:
-		static int		pressedKey;
+		static Point	mouse;
 
 		SDL_gui();
 		SDL_gui(const SDL_gui&);
@@ -25,11 +25,12 @@ class		SDL_gui : public ISlave, public GUI
 
 		SDL_gui &	operator=(SDL_gui const & src);
 
-		bool open(std::size_t width, std::size_t height, std::string const & name);
-		void getEvent(KEY & key) const;
-		void render(Points const & snake, Items const & items, bool pause, bool started, std::deque< std::string > const & ipList);
+		bool	open(std::size_t width, std::size_t height, std::string const & name);
+		void	getEvent(KEY & key) const;
+		void	render(Players const & players, Items const & items, bool pause, bool started, std::deque< std::string > const & ipList);
+		void	updateGridSize(Point const & gd);
 		void	getClickedIp(std::string & ip) const;
-		void close(EVENT event);
+		void	close(EVENT event);
 };
 
 std::ostream &	operator<<(std::ostream & o, SDL_gui const & r);
