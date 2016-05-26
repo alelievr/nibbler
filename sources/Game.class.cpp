@@ -106,7 +106,7 @@ Game::respawnSnake(void)
 }
 
 bool
-Game::moveMe(KEY const & key)
+Game::moveMe(KEY & key)
 {
 	static KEY		lastKey = KEY::NONE;
 	static DIRECTION lastDirection = DIRECTION::LEFT;	
@@ -256,6 +256,8 @@ Game::moveMe(KEY const & key)
 			}
 		}
 	}
+	if (key == KEY::PAUSE || key == KEY::ENTER)
+		key = KEY::NONE;
 	lastKey = key;
 
 	return 1;

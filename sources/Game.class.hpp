@@ -21,7 +21,7 @@ class Game : public Main
 		int
 		run(void);
 		bool
-		moveMe(KEY const & k);
+		moveMe(KEY & k);
 
 	private:
 		void

@@ -6,7 +6,7 @@
 /*   By: alelievr <alelievr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/05/08 23:24:05 by alelievr          #+#    #+#             */
-/*   Updated: 2016/05/26 19:30:39 by alelievr         ###   ########.fr       */
+/*   Updated: 2016/05/26 19:47:58 by alelievr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -110,7 +110,7 @@ static void	effectToColor(Player const & player)
 }
 
 #define glColor1u(x) glColor3ub((char)(x >> 16), (char)(x >> 8), (char)x)
-void		GUI::drawRect(Point const & p, unsigned int const color, Player const & player) const
+void		GUI::drawRect(Point const & p, unsigned int color, Player const & player, bool first) const
 {
 	float	bx1, bx2, by1, by2;
 
@@ -118,6 +118,8 @@ void		GUI::drawRect(Point const & p, unsigned int const color, Player const & pl
 		return ;
 	getCasesBounds(p, bx1, by1, bx2, by2);
 
+	if (first)
+		color |= 0x202020lu;
 //	std::cout << bx1 << " | "<< by1 << " | "<< bx2 << " | "<< by2 << "\n";
    	glBegin(GL_QUADS);
 		glColor1u(color);
@@ -212,8 +214,11 @@ void		GUI::render(Players const & players, Items const & items, bool paused, boo
 		drawStartScreen();
 
 	for (auto & player : players) {
-		for (auto & s : player.second.snake)
-			drawRect(s, colorList[player.first % colorList.size()], player.second);
+		bool first = true;
+		for (auto & s : player.second.snake) {
+			drawRect(s, colorList[player.first % colorList.size()], player.second, first);
+			first = false;
+		}
 	}
 
 	glDisable(GL_LIGHTING);
@@ -224,17 +229,18 @@ void		GUI::render(Players const & players, Items const & items, bool paused, boo
 
 	if (dead)
 	{
+		std::cout << "display dead screen" << std::endl;
 //		glViewport(0, 0, 1000, _winSize.y);
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		glDisable(GL_TEXTURE_2D);
 		glEnable(GL_COLOR);
 
-		SCREEN_OVERLAY(glColor4f(0.5, 0.5, 0.5, 0.5F));
+		SCREEN_OVERLAY(glColor4f(1, 1, 1, 0.5F));
 
 		_pixelFont.setSize(48);
 		_pixelFont.setPadding(-5);
-		_pixelFont.drawText(" GAME OVER", 0, _winSize.y - 300);
+		_pixelFont.drawText("   GAME OVER", 0, _winSize.y - 300);
 
 		glClear(GL_DEPTH_BUFFER_BIT);
 		_servoUI.render(_lastIpList);

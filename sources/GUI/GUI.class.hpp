@@ -32,7 +32,7 @@ class		GUI
 		GUI &	operator=(GUI const & src);
 
 		bool		loadTextures(void);
-		void		drawRect(Point const & p, unsigned int const color, Player const & player) const;
+		void		drawRect(Point const & p, unsigned int color, Player const & player, bool first) const;
 		void		drawItem(Item const & i) const;
 		void		drawPauseScreen(void);
 		void		drawStartScreen(void);
