@@ -6,7 +6,7 @@
 /*   By: alelievr <alelievr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/05/08 23:24:05 by alelievr          #+#    #+#             */
-/*   Updated: 2016/05/26 19:47:58 by alelievr         ###   ########.fr       */
+/*   Updated: 2016/05/26 22:52:13 by alelievr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -110,6 +110,11 @@ static void	effectToColor(Player const & player)
 }
 
 #define glColor1u(x) glColor3ub((char)(x >> 16), (char)(x >> 8), (char)x)
+#define CMAX(x) ((x >= 200) ? 200 : x)
+#define RED(x) ((x >> 16) & 0xFF)
+#define GREEN(x) ((x >> 8) & 0xFF)
+#define BLUE(x) ((x >> 0) & 0xFF)
+#define LIGHTEN(x, c) x = ((CMAX((RED(x) + c))) << 16) | ((CMAX((GREEN(x) + c))) << 8) | CMAX((BLUE(x) + c))
 void		GUI::drawRect(Point const & p, unsigned int color, Player const & player, bool first) const
 {
 	float	bx1, bx2, by1, by2;
@@ -118,8 +123,10 @@ void		GUI::drawRect(Point const & p, unsigned int color, Player const & player, 
 		return ;
 	getCasesBounds(p, bx1, by1, bx2, by2);
 
+	printf("%x\n", color);
 	if (first)
-		color |= 0x202020lu;
+		LIGHTEN(color, 0x10);
+	printf("%x\n", color);
 //	std::cout << bx1 << " | "<< by1 << " | "<< bx2 << " | "<< by2 << "\n";
    	glBegin(GL_QUADS);
 		glColor1u(color);
@@ -214,10 +221,10 @@ void		GUI::render(Players const & players, Items const & items, bool paused, boo
 		drawStartScreen();
 
 	for (auto & player : players) {
-		bool first = true;
+		auto const endBlock = *(player.second.snake.end() - 1);
+		std::cout << endBlock << std::endl;
 		for (auto & s : player.second.snake) {
-			drawRect(s, colorList[player.first % colorList.size()], player.second, first);
-			first = false;
+			drawRect(s, colorList[player.first % colorList.size()], player.second, s == endBlock);
 		}
 	}
 

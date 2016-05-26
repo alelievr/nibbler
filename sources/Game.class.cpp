@@ -16,6 +16,7 @@ is_in_snake(std::size_t x, std::size_t y, Points & snake)
 Game::Game(int argc, char **argv) :
 	Main(argc, argv),
 	_paused(false),
+	_move_ticks(MOVE_TICKS),
 	_title("Olol nibble"),
 	_snake(_players[0].snake),
 	_active_ui(1ul)
@@ -175,7 +176,7 @@ Game::moveMe(KEY & key)
 		}
 		keyTime = clock();
 	}
-	if (_players[me].started && !_paused && clock() - moveTime > MOVE_TICKS && !_players[me].dead)
+	if (_players[me].started && !_paused && clock() - moveTime > this->_move_ticks && !_players[me].dead)
 	{
 		moveTime = clock();
 		moved = true;

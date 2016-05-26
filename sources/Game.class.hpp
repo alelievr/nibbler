@@ -14,7 +14,7 @@ class Game : public Main
 
 	public:
 		Game(int argc, char **argv);
-		~Game(void) = default;
+		~Game(void) {};
 		Game(Game const &) = delete;
 		Game & operator=(Game const &) = delete;
 
@@ -41,6 +41,7 @@ class Game : public Main
 		Items				_items;
 		Timer				_timer;
 		bool				_paused;
+		std::size_t			_move_ticks;
 
 		clock_t				_invincibleClock;
 
