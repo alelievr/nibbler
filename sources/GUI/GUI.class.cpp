@@ -6,7 +6,7 @@
 /*   By: alelievr <alelievr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/05/08 23:24:05 by alelievr          #+#    #+#             */
-/*   Updated: 2016/05/21 00:46:23 by alelievr         ###   ########.fr       */
+/*   Updated: 2016/05/26 19:30:39 by alelievr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -102,8 +102,8 @@ static void	effectToColor(Player const & player)
 		glColor4f(1, 1, 1, 0.7);
 	else if (player.speed)
 		glColor3f(0, 1, 0);
-	else if (player.dead && (blink / 40) % 2)
-		glColor4f(0, 0, 0, 0.7);
+	else if (player.dead && (blink / 60) % 2)
+		glColor4f(0.3, 0.3, 0.3, 0.7);
 	else
 		glColor4f(0, 0, 0, 0);
 	blink++;
@@ -172,7 +172,7 @@ void		GUI::drawPauseScreen(void)
 
 	_pixelFont.setSize(41);
 	_pixelFont.setPadding(-6);
-	_pixelFont.drawText("PRESS P TO UNPAUSE", 0, _winSize.y - 300);
+	_pixelFont.drawText(" PRESS P TO UNPAUSE", 0, _winSize.y - 300);
 
 	glClear(GL_DEPTH_BUFFER_BIT);
 }
@@ -188,12 +188,12 @@ void		GUI::drawStartScreen(void)
 
 	_pixelFont.setSize(41);
 	_pixelFont.setPadding(-8);
-	_pixelFont.drawText("PRESS ENTER TO START", 0, _winSize.y - 300);
+	_pixelFont.drawText(" PRESS ENTER TO START", 0, _winSize.y - 300);
 
 	glClear(GL_DEPTH_BUFFER_BIT);
 }
 
-void		GUI::render(Players const & players, Items const & items, bool paused, bool started)
+void		GUI::render(Players const & players, Items const & items, bool paused, bool started, bool dead)
 {
     float	ratio;
 
@@ -221,6 +221,24 @@ void		GUI::render(Players const & players, Items const & items, bool paused, boo
 	for (auto & i : items)
 		drawItem(i);
 	glDisable(GL_TEXTURE_2D);
+
+	if (dead)
+	{
+//		glViewport(0, 0, 1000, _winSize.y);
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		glDisable(GL_TEXTURE_2D);
+		glEnable(GL_COLOR);
+
+		SCREEN_OVERLAY(glColor4f(0.5, 0.5, 0.5, 0.5F));
+
+		_pixelFont.setSize(48);
+		_pixelFont.setPadding(-5);
+		_pixelFont.drawText(" GAME OVER", 0, _winSize.y - 300);
+
+		glClear(GL_DEPTH_BUFFER_BIT);
+		_servoUI.render(_lastIpList);
+	}
 
    	glFlush();
 }
@@ -266,22 +284,6 @@ void	GUI::close(EVENT e)
 {
 	if (e == EVENT::GAMEOVER)
 	{
-		glViewport(0, 0, 1000, _winSize.y);
-		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		glEnable(GL_BLEND);
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-		glDisable(GL_TEXTURE_2D);
-		glEnable(GL_COLOR);
-
-		SCREEN_OVERLAY(glColor4f(1, 1, 1, 0.5F));
-
-		_pixelFont.setSize(48);
-		_pixelFont.setPadding(-5);
-		_pixelFont.drawText("GAME OVER", 0, _winSize.y - 300);
-
-		glClear(GL_DEPTH_BUFFER_BIT);
-		_servoUI.render(_lastIpList);
 	}
 }
 

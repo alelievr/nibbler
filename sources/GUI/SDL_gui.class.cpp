@@ -6,7 +6,7 @@
 /*   By: alelievr <alelievr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/04/29 22:09:48 by alelievr          #+#    #+#             */
-/*   Updated: 2016/05/24 22:52:44 by alelievr         ###   ########.fr       */
+/*   Updated: 2016/05/26 19:28:47 by alelievr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -124,9 +124,9 @@ void    SDL_gui::updateGridSize(Point const & gd)
 	    GUI::updateGridSize(gd);
 }
 
-void	SDL_gui::render(Players const & players, Items const & items, bool pause, bool started, std::deque< std::string > const & ipList)
+void	SDL_gui::render(Players const & players, Items const & items, bool pause, bool started, bool dead, std::deque< std::string > const & ipList)
 {
-	GUI::render(players, items, pause, started);
+	GUI::render(players, items, pause, started, dead);
 	GUI::renderServotron(ipList);
 /*	SDL_SetRenderDrawColor(this->renderer, 0, 0, 0, 255);
 	SDL_RenderClear(this->renderer);

@@ -35,7 +35,7 @@ class		GLFW_gui : public ISlave, public GUI
 
 		bool	open(std::size_t width, std::size_t height, std::string const & name);
 		void	getEvent(KEY & key) const;
-		void	render(Players const & players, Items const & items, bool pause, bool started, std::deque< std::string > const & ipList);
+		void	render(Players const & players, Items const & items, bool pause, bool started, bool dead, std::deque< std::string > const & ipList);
 		void	updateGridSize(Point const & gd);
 		void	getClickedIp(std::string & ip) const;
 		void	close(EVENT event);

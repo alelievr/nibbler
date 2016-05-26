@@ -6,7 +6,7 @@
 /*   By: alelievr <alelievr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/04/29 22:09:48 by alelievr          #+#    #+#             */
-/*   Updated: 2016/05/21 16:11:08 by alelievr         ###   ########.fr       */
+/*   Updated: 2016/05/26 19:27:02 by alelievr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -127,9 +127,9 @@ void	GLFW_gui::getEvent(KEY & key) const
 	key = this->pressedKey;
 }
 
-void	GLFW_gui::render(Players const & players, Items const & items, bool pause, bool started, std::deque< std::string > const & ipList)
+void	GLFW_gui::render(Players const & players, Items const & items, bool pause, bool started, bool dead, std::deque< std::string > const & ipList)
 {
-	GUI::render(players, items, pause, started);
+	GUI::render(players, items, pause, started, dead);
 	GUI::renderServotron(ipList);
 	glfwSwapBuffers(this->win);
 	glfwPollEvents();

@@ -273,6 +273,8 @@ Game::genItems(void)
 	_servo->addItem(i);
 }
 
+#define TIME(x) c2 = clock(); printf("%s: %lu ticks\n", x, c2 - c1); c1 = clock();
+#define CLEAR_SCREEN puts("\x1b\x5b\x48\x1b\x5b\x32\x4a");
 int
 Game::run(void)
 {
@@ -283,6 +285,7 @@ Game::run(void)
 	std::deque< std::string >	ipList;
 	std::string					clickedIp;
 	Point						serverGridSize;
+	clock_t						c1,c2;
 
 	srand(clock());
 	this->getGUI(_args[3]);
@@ -290,14 +293,18 @@ Game::run(void)
 	this->getSoundPlayer();
 	while (42)
 	{
+		CLEAR_SCREEN;
+		c1 = clock();
 		//timer causing input lag if > 0
 		//if (_timer.frame(30))
-			_gui->render(_players, _items, _paused, _players[me].started, ipList);
+			_gui->render(_players, _items, _paused, _players[me].started, _players[me].dead, ipList);
+		TIME("render takes");
 
 		_gui->getEvent(key);
 		_servo->getState(state);
 		_gui->getClickedIp(clickedIp);
 		_servo->getOnlineIpList(ipList);
+		TIME("server events takes");
 
 		//servotron GUI management
 		if (clickedIp.compare("") && clickedIp.compare(lastClickedIP))
@@ -314,6 +321,7 @@ Game::run(void)
 				if (it->first != me)
 					_players.erase(it->first);
 		}
+		TIME("olol takes");
 
 		//Clients and server management
 		_servo->getConnectedClients(_clients);
@@ -334,16 +342,20 @@ Game::run(void)
 					_players.erase(index);
 			}
 		}
+		TIME("client managing takes");
 		_servo->getPlayerInfo(_players);
 
 		// Items add/delete management
 		if (state == STATE::SERVER)
 			genItems();
 		_servo->getItems(_items);
+		TIME("get items takes");
 
 		//Events
 		if (!moveMe(key))
 			break ;
+		TIME("moveme takes");
+		usleep(10000);
 		lastKey = key;
 		lastClickedIP = clickedIp;
 	}

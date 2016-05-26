@@ -6,7 +6,7 @@
 /*   By: fdaudre- <fdaudre-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/04/28 19:58:37 by fdaudre-          #+#    #+#             */
-/*   Updated: 2016/05/19 17:31:01 by alelievr         ###   ########.fr       */
+/*   Updated: 2016/05/26 19:26:40 by alelievr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -114,7 +114,7 @@ struct ISlave
 	getEvent(KEY & key) const = 0;
 
 	virtual void
-	render(Players const & snake, Items const & items, bool pause, bool start, std::deque< std::string > const & ipList) = 0;
+	render(Players const & snake, Items const & items, bool pause, bool start, bool dead, std::deque< std::string > const & ipList) = 0;
 
 	virtual void
 	updateGridSize(Point const & gridSize) = 0;
