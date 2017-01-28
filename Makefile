@@ -219,9 +219,9 @@ SFMLDIR_CHECK	= SFML/readme.txt
 SFMLINCDIR		= SFML/include
 SFML_NIBBLER_LIB = SFMLnibbler.so
 
-SOILLIB			= SOIL/lib/libSOIL.a
+SOILLIB			= SOIL/libSOIL2.a
 SOILDIR_CHECK	= SOIL/README.md
-SOILINCDIR		= SOIL/src
+SOILINCDIR		= SOIL/SOIL2/
 
 FREETYPELIB		= freetype/objs/.libs/libfreetype.a
 FREETYPEINCDIR	= freetype/include

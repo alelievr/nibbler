@@ -7,7 +7,7 @@
 # include <OpenGL/gl.h>
 # include "ISlave.interface.hpp"
 # include "constant.h"
-# include "SOIL.h"
+# include "SOIL2.h"
 # include "Freetype.class.hpp"
 # include "ServotronUI.class.hpp"
 

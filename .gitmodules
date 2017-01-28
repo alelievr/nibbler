@@ -21,3 +21,6 @@
 [submodule "freetype"]
 	path = freetype
 	url = https://github.com/winlibs/freetype
+[submodule "SOIL"]
+	path = SOIL
+	url = https://github.com/alelievr/SOIL2-clone

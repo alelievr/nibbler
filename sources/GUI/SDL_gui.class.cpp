@@ -6,13 +6,13 @@
 /*   By: alelievr <alelievr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/04/29 22:09:48 by alelievr          #+#    #+#             */
-/*   Updated: 2016/05/26 19:28:47 by alelievr         ###   ########.fr       */
+/*   Updated: 2017/01/28 01:36:59 by alelievr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "SDL_gui.class.hpp"
 #include <unistd.h>
-#include "SOIL.h"
+#include "SOIL2.h"
 
 Point		SDL_gui::mouse = {0, 0};
 std::map< int, KEY > keyMap = {
