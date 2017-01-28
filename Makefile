@@ -270,7 +270,7 @@ $(SOILLIB): $(SOILDIR_CHECK)
 	cd SOIL && make -j 4
 
 $(FREETYPELIB):
-	cd freetype && chmod +x ./configure builds/unix/configure && sh autogen.sh && ./configure --without-zlib --without-bzip2 --without-png && make -j 4
+	cd freetype && chmod +x ./configure builds/unix/configure && sh autogen.sh && ./configure --without-zlib --without-bzip2 --without-png --without-harfbuzz && make -j 4
 
 $(OGGLIB):
 	cd ogg && ./autogen.sh && ./configure && make -j 4

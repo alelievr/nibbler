@@ -9,9 +9,6 @@
 [submodule "GLFW"]
 	path = GLFW
 	url = https://github.com/glfw/glfw.git
-[submodule "SOIL"]
-	path = SOIL
-	url = https://github.com/kbranigan/Simple-OpenGL-Image-Library.git
 [submodule "ogg"]
 	path = ogg
 	url = https://github.com/soundcloud/ogg

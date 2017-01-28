@@ -6,7 +6,7 @@
 /*   By: alelievr <alelievr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/04/29 22:09:48 by alelievr          #+#    #+#             */
-/*   Updated: 2016/05/26 21:57:39 by alelievr         ###   ########.fr       */
+/*   Updated: 2017/01/28 01:07:54 by alelievr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -99,9 +99,11 @@ bool	GLFW_gui::open(std::size_t width, std::size_t height, std::string const & n
 		return false;
 	init = true;
 
-	glfwWindowHint(GLFW_SAMPLES, 4);
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 2);
+//	glfwWindowHint(GLFW_SAMPLES, 4);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
+	glfwWindowHint (GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+	glfwWindowHint (GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
 	if (!(this->win = glfwCreateWindow(winSize.x, winSize.y, name.c_str(), NULL, NULL))) {
 		glfwTerminate();
