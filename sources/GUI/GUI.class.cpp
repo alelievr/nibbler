@@ -6,7 +6,7 @@
 /*   By: alelievr <alelievr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/05/08 23:24:05 by alelievr          #+#    #+#             */
-/*   Updated: 2017/01/28 00:59:28 by alelievr         ###   ########.fr       */
+/*   Updated: 2017/05/26 22:05:36 by alelievr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -220,13 +220,20 @@ void		GUI::render(Players const & players, Items const & items, bool paused, boo
 	if (!started && !paused)
 		drawStartScreen();
 
+	std::cout << "start render players \n";
 	for (auto & player : players) {
+		std::cout << "get player end\n";
+		if (player.second.snake.size() == 0)
+			continue ;
+
 		auto const endBlock = *(player.second.snake.end() - 1);
+		std::cout << "success !\n";
 		std::cout << endBlock << std::endl;
 		for (auto & s : player.second.snake) {
 			drawRect(s, colorList[player.first % colorList.size()], player.second, s == endBlock);
 		}
 	}
+	std::cout << "end render players\n";
 
 	glDisable(GL_LIGHTING);
 	glEnable(GL_TEXTURE_2D);

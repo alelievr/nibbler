@@ -71,8 +71,8 @@ WERROR		=	-Werror
 CFLAGS		=	-Wall -Wextra -pedantic -ferror-limit=999
 CPROTECTION	=	-z execstack -fno-stack-protector
 
-DEBUGFLAGS1	=	-ggdb -fsanitize=address -fno-omit-frame-pointer -fno-optimize-sibling-calls -O0
-DEBUGFLAGS2	=	#-fsanitize-memory-track-origins=2
+DEBUGFLAGS1	=	-ggdb -fsanitize=address 
+DEBUGFLAGS2	=	-fsanitize=address -fno-omit-frame-pointer -fno-optimize-sibling-calls -O0 #-fsanitize-memory-track-origins=2
 OPTFLAGS1	=	-funroll-loops -O2
 OPTFLAGS2	=	-pipe -funroll-loops -Ofast
 
